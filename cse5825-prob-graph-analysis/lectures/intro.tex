@@ -1,0 +1,31 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Probabilistic graphical models}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+The two major problems found in PGMs are complexity and uncertainty, multivariate statistics plus structure. It can help solve real world problems that involve uncertainty and complex dependencies, we can use a structured way to represent joint distributions compactly.
+\subsection{Why we use PGMs?}
+We can use independences and conditional independences that hold among random variables. We use PGMs because we can use the compact representation fo complex joint distributions using conditional independencies, we can use the interpretability of the graph structure which reveals how variables depend on each other, we can use inference which enables reasoning about hidden variables given observed data. and we can use the integration of domain knowledge with data driven learning, we can use the modulatiry to model complex systems hierarchically. We can break down joint probabilities to smaller units to solve complex problems.
+We have to consider that the observations are not complete, or the observations are noisy, or nothing is deterministic.
+\subsection{Graphs}
+By using joint distribution, we can reason probabilistically about the values of some random variables, given observation about some others, PGMs use a graph-based representation as the basis for compactly encoding complex distribution over a high dimensional space.
+Nodes are variables, while edges are the probabilistic interaction between nodes which are variables so we can notice the directionality or the afinity between them. 
+
+\subsection{Bayesian network}
+We can represent the correlation and the causation between variables, by knowing the dependencies we can simplying the joint distributions, we can take advantage of conditional and marginal independences among random variables. We can take advantage of the structure to reduce the complexity.
+\subsection{High dimension}
+one conflict with PGMs is that they are not scalable.
+
+\end{document}
