@@ -1,0 +1,41 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Numerical Analysis I - Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Numbers, Problems and algorithms}
+ We are more interested in getting the relative error than the absolute error. The relative error is defined as
+\[  
+\frac{|x - x_{\text{true}}|}{|x_{\text{true}}|}
+\]
+where $x$ is the computed value and $x_{\text{true}}$ is the true value.
+
+WE can use conditional numbers to determine how good our computation is. The conditional number is defined as
+\[
+\kappa = \frac{\|J\| \cdot \|x\|}{\|f(x)\|}
+\]
+where $J$ is the Jacobian matrix of the function $f$.
+
+\subsection{Horner's algorithm}
+
+
+\[
+f(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n
+\]
+can be evaluated using Horner's algorithm:
+\[
+f(x) = a_0 + x(a_1 + x(a_2 + \cdots + x(a_{n-1} + x a_n) \cdots))
+\]
+
+\end{document}
