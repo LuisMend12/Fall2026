@@ -162,4 +162,6 @@ function main()
     println("Copy that folder to your phone and queue playlist.m3u for the commute.")
 end
 
-main()
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end

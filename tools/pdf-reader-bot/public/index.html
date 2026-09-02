@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF Reader Bot</title>
+<style>
+  :root {
+    --bg: #f7f7f5;
+    --panel: #ffffff;
+    --border: #e3e2de;
+    --text: #1c1c1a;
+    --muted: #6b6a66;
+    --accent: #a35d3a;
+    --accent-hover: #8a4c2e;
+    --badge: #e7efe5;
+    --badge-text: #3c6b3f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171715;
+      --panel: #211f1c;
+      --border: #35332e;
+      --text: #ecebe7;
+      --muted: #9b9a94;
+      --accent: #d98a5f;
+      --accent-hover: #e6a077;
+      --badge: #26332a;
+      --badge-text: #8fc98f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  #sidebar {
+    width: 340px;
+    min-width: 260px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+  }
+  #sidebar header {
+    padding: 16px 16px 8px;
+  }
+  #sidebar h1 {
+    font-size: 16px;
+    margin: 0 0 10px;
+  }
+  #search {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+  }
+  #note-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 16px;
+  }
+  .course-group {
+    margin-top: 10px;
+  }
+  .course-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    padding: 6px 8px 4px;
+  }
+  .note-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  .note-item:hover { background: var(--bg); }
+  .note-item.active { background: var(--accent); color: #fff; }
+  .note-item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--badge-text);
+    flex-shrink: 0;
+    opacity: 0;
+  }
+  .note-item.has-audio .dot { opacity: 1; }
+  .note-item.active .dot { background: #fff; }
+
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #detail {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 36px;
+  }
+  #empty-state {
+    color: var(--muted);
+    margin-top: 60px;
+    text-align: center;
+  }
+  .path {
+    color: var(--muted);
+    font-size: 12.5px;
+    margin-bottom: 18px;
+    word-break: break-all;
+  }
+  h2 { margin: 0 0 4px; font-size: 20px; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 18px 0;
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .controls label {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  select, input[type=range] {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  #status-line {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 8px 0 18px;
+  }
+  progress {
+    width: 100%;
+    height: 8px;
+    accent-color: var(--accent);
+  }
+  #player-block { margin-top: 10px; }
+  audio { width: 100%; margin-bottom: 14px; }
+  #track-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #track-list li {
+    padding: 9px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+  }
+  #track-list li:last-child { border-bottom: none; }
+  #track-list li:hover { background: var(--panel); }
+  #track-list li.playing { background: var(--badge); color: var(--badge-text); font-weight: 600; }
+  .links { margin-top: 14px; font-size: 12.5px; }
+  .links a { color: var(--accent); margin-right: 14px; }
+  .error-box {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #3a1f1f;
+    color: #f5b8b8;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <header>
+    <h1>📚 PDF Reader Bot</h1>
+    <input id="search" type="text" placeholder="Filter notes...">
+  </header>
+  <div id="note-list"></div>
+</div>
+
+<div id="main">
+  <div id="detail">
+    <div id="empty-state">Select a PDF on the left to generate an audio version.</div>
+  </div>
+</div>
+
+<script>
+const state = { notes: [], selected: null, voices: [], pollTimer: null };
+
+async function loadNotes() {
+  const res = await fetch('/api/notes');
+  state.notes = await res.json();
+  renderList();
+}
+
+async function loadVoices() {
+  try {
+    const res = await fetch('/api/voices');
+    state.voices = await res.json();
+  } catch (e) {
+    state.voices = [];
+  }
+}
+
+function renderList(filter = '') {
+  const container = document.getElementById('note-list');
+  container.innerHTML = '';
+  const f = filter.trim().toLowerCase();
+
+  const groups = {};
+  for (const n of state.notes) {
+    if (f && !(n.title.toLowerCase().includes(f) || n.course.toLowerCase().includes(f))) continue;
+    (groups[n.course] ||= []).push(n);
+  }
+
+  const courses = Object.keys(groups).sort();
+  if (courses.length === 0) {
+    container.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:13px;">No matching PDFs.</div>';
+    return;
+  }
+
+  for (const course of courses) {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'course-group';
+    const title = document.createElement('div');
+    title.className = 'course-title';
+    title.textContent = course;
+    groupEl.appendChild(title);
+
+    for (const note of groups[course]) {
+      const item = document.createElement('div');
+      item.className = 'note-item' + (note.has_audio ? ' has-audio' : '') + (state.selected && state.selected.id === note.id ? ' active' : '');
+      item.innerHTML = `<span class="name">${note.title}</span><span class="dot" title="Audio already generated"></span>`;
+      item.onclick = () => selectNote(note);
+      groupEl.appendChild(item);
+    }
+    container.appendChild(groupEl);
+  }
+}
+
+function selectNote(note) {
+  state.selected = note;
+  stopPolling();
+  renderList(document.getElementById('search').value);
+  renderDetail();
+  refreshStatus();
+}
+
+function voiceOptions() {
+  const opts = ['<option value="">(default voice)</option>'];
+  for (const v of state.voices) opts.push(`<option value="${v}">${v}</option>`);
+  return opts.join('');
+}
+
+function renderDetail() {
+  const note = state.selected;
+  const detail = document.getElementById('detail');
+  detail.innerHTML = `
+    <h2>${note.title}</h2>
+    <div class="path">${note.path}</div>
+    <div class="controls">
+      <label>Voice
+        <select id="voice-select">${voiceOptions()}</select>
+      </label>
+      <label>Rate <span id="rate-val">0</span>
+        <input id="rate-range" type="range" min="-10" max="10" value="0">
+      </label>
+      <button id="generate-btn">Generate audio</button>
+    </div>
+    <div id="status-line"></div>
+    <div id="player-block"></div>
+  `;
+  document.getElementById('rate-range').oninput = (e) => {
+    document.getElementById('rate-val').textContent = e.target.value;
+  };
+  document.getElementById('generate-btn').onclick = startConversion;
+}
+
+async function startConversion() {
+  const note = state.selected;
+  const voice = document.getElementById('voice-select').value;
+  const rate = parseInt(document.getElementById('rate-range').value, 10);
+  document.getElementById('generate-btn').disabled = true;
+
+  await fetch('/api/convert', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: note.path, voice, rate })
+  });
+  startPolling();
+}
+
+function startPolling() {
+  stopPolling();
+  refreshStatus();
+  state.pollTimer = setInterval(refreshStatus, 1200);
+}
+
+function stopPolling() {
+  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+}
+
+async function refreshStatus() {
+  const note = state.selected;
+  if (!note) return;
+  const res = await fetch(`/api/status?id=${encodeURIComponent(note.id)}`);
+  const s = await res.json();
+  renderStatus(s);
+  if (s.status === 'done' || s.status === 'error') stopPolling();
+}
+
+function renderStatus(s) {
+  const statusLine = document.getElementById('status-line');
+  const playerBlock = document.getElementById('player-block');
+  const genBtn = document.getElementById('generate-btn');
+  if (!statusLine) return;
+
+  if (s.status === 'running') {
+    genBtn.disabled = true;
+    statusLine.innerHTML = `Synthesizing... track ${s.done}/${s.total || '?'}` +
+      `<progress value="${s.done}" max="${Math.max(s.total, 1)}"></progress>`;
+  } else if (s.status === 'error') {
+    genBtn.disabled = false;
+    statusLine.textContent = '';
+    playerBlock.innerHTML = `<div class="error-box">${s.error || 'Something went wrong.'}</div>`;
+  } else if (s.status === 'done') {
+    genBtn.disabled = false;
+    statusLine.textContent = `${s.tracks.length} track(s) ready.`;
+    renderPlayer(s.tracks);
+  } else {
+    genBtn.disabled = false;
+    statusLine.textContent = 'No audio generated yet.';
+    playerBlock.innerHTML = '';
+  }
+}
+
+function renderPlayer(tracks) {
+  const note = state.selected;
+  const playerBlock = document.getElementById('player-block');
+  const base = `/audio/${note.id}`;
+  playerBlock.innerHTML = `
+    <audio id="audio-el" controls src="${base}/${tracks[0]}"></audio>
+    <ul id="track-list"></ul>
+    <div class="links">
+      <a href="${base}/playlist.m3u" download>Download playlist (.m3u)</a>
+      <a href="${base}/transcript.txt" target="_blank">Read transcript</a>
+    </div>
+  `;
+  const list = document.getElementById('track-list');
+  const audioEl = document.getElementById('audio-el');
+  let current = 0;
+
+  tracks.forEach((t, i) => {
+    const li = document.createElement('li');
+    li.textContent = t;
+    li.onclick = () => playTrack(i);
+    list.appendChild(li);
+  });
+
+  function playTrack(i) {
+    current = i;
+    audioEl.src = `${base}/${tracks[i]}`;
+    audioEl.play();
+    [...list.children].forEach((li, idx) => li.classList.toggle('playing', idx === i));
+  }
+  audioEl.onended = () => {
+    if (current < tracks.length - 1) playTrack(current + 1);
+  };
+  playTrack(0);
+}
+
+document.getElementById('search').addEventListener('input', (e) => renderList(e.target.value));
+
+loadNotes();
+loadVoices();
+</script>
+</body>
+</html>
