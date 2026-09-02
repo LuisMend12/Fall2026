@@ -6,174 +6,288 @@
 <title>PDF Reader Bot</title>
 <style>
   :root {
-    --bg: #f7f7f5;
+    --bg: #eef0f3;
     --panel: #ffffff;
-    --border: #e3e2de;
-    --text: #1c1c1a;
-    --muted: #6b6a66;
-    --accent: #a35d3a;
-    --accent-hover: #8a4c2e;
-    --badge: #e7efe5;
-    --badge-text: #3c6b3f;
+    --panel-2: #f6f7f9;
+    --border: #d7dbe1;
+    --text: #14161a;
+    --muted: #4b505a;
+    --muted-2: #6b7080;
+    --accent: #1d4ed8;
+    --accent-hover: #1740ac;
+    --accent-soft: #e4ecfd;
+    --accent-soft-text: #1740ac;
+    --good: #157a3d;
+    --good-soft: #dff5e6;
+    --bad: #b3261e;
+    --bad-soft: #fbe4e2;
+    --focus: #1d4ed8;
+    --shadow: 0 1px 2px rgba(20, 22, 26, 0.06), 0 8px 24px rgba(20, 22, 26, 0.05);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #171715;
-      --panel: #211f1c;
-      --border: #35332e;
-      --text: #ecebe7;
-      --muted: #9b9a94;
-      --accent: #d98a5f;
-      --accent-hover: #e6a077;
-      --badge: #26332a;
-      --badge-text: #8fc98f;
+      --bg: #101216;
+      --panel: #181b21;
+      --panel-2: #1e222a;
+      --border: #2c313b;
+      --text: #f2f3f5;
+      --muted: #b7bcc7;
+      --muted-2: #8a8f9c;
+      --accent: #6d9bff;
+      --accent-hover: #8fb1ff;
+      --accent-soft: #1c2740;
+      --accent-soft-text: #a8c3ff;
+      --good: #4fd486;
+      --good-soft: #123322;
+      --bad: #ff8f87;
+      --bad-soft: #3a1a1a;
+      --focus: #6d9bff;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
     }
   }
+
   * { box-sizing: border-box; }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "Segoe UI", -apple-system, Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
     display: flex;
     height: 100vh;
     overflow: hidden;
   }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ---------- sidebar ---------- */
   #sidebar {
-    width: 340px;
-    min-width: 260px;
+    width: 360px;
+    min-width: 280px;
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     background: var(--panel);
   }
-  #sidebar header {
-    padding: 16px 16px 8px;
+  .sidebar-header {
+    padding: 18px 16px 12px;
+    border-bottom: 1px solid var(--border);
   }
-  #sidebar h1 {
-    font-size: 16px;
-    margin: 0 0 10px;
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .brand-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: var(--accent-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+  .brand-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 12px; color: var(--muted-2); margin-top: 1px; }
+  .search-wrap { position: relative; }
+  .search-wrap svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 15px; height: 15px; color: var(--muted-2); pointer-events: none;
   }
   #search {
     width: 100%;
-    padding: 8px 10px;
+    padding: 9px 10px 9px 32px;
     border-radius: 8px;
     border: 1px solid var(--border);
-    background: var(--bg);
+    background: var(--panel-2);
     color: var(--text);
-    font-size: 13px;
+    font-size: 13.5px;
   }
+  #search::placeholder { color: var(--muted-2); }
+  #search:focus { border-color: var(--accent); background: var(--panel); }
+
   #note-list {
     flex: 1;
     overflow-y: auto;
-    padding: 0 8px 16px;
+    padding: 10px 10px 16px;
   }
-  .course-group {
-    margin-top: 10px;
+  .tree-children {
+    margin-left: 8px;
+    border-left: 1px solid var(--border);
+    padding-left: 12px;
   }
-  .course-title {
-    font-size: 11px;
+  details { margin-top: 1px; }
+  details > summary.folder-label {
+    font-size: 12px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     color: var(--muted);
-    padding: 6px 8px 4px;
+    padding: 7px 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
+  summary.folder-label::-webkit-details-marker { display: none; }
+  summary.folder-label::before {
+    content: "";
+    width: 0; height: 0;
+    border-left: 4px solid var(--muted-2);
+    border-top: 3.5px solid transparent;
+    border-bottom: 3.5px solid transparent;
+    transition: transform 0.12s ease;
+    flex-shrink: 0;
+  }
+  details[open] > summary.folder-label::before { transform: rotate(90deg); }
+  details[open] > summary.folder-label { color: var(--text); }
+  summary.folder-label:hover { background: var(--panel-2); }
+  summary.folder-label .count { font-weight: 500; color: var(--muted-2); text-transform: none; letter-spacing: 0; }
+
   .note-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     padding: 8px 10px;
-    border-radius: 8px;
+    margin: 1px 0;
+    border-radius: 7px;
     cursor: pointer;
     font-size: 13.5px;
+    color: var(--text);
   }
-  .note-item:hover { background: var(--bg); }
+  .note-item:hover { background: var(--panel-2); }
   .note-item.active { background: var(--accent); color: #fff; }
   .note-item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--badge-text);
+  .audio-badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--good);
+    background: var(--good-soft);
+    padding: 2px 6px;
+    border-radius: 999px;
     flex-shrink: 0;
     opacity: 0;
+    white-space: nowrap;
   }
-  .note-item.has-audio .dot { opacity: 1; }
-  .note-item.active .dot { background: #fff; }
+  .note-item.has-audio .audio-badge { opacity: 1; }
+  .note-item.active .audio-badge { background: rgba(255,255,255,0.22); color: #fff; }
+  .empty-msg { padding: 16px 8px; color: var(--muted-2); font-size: 13px; }
 
+  /* ---------- main ---------- */
   #main {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: var(--bg);
   }
   #detail {
     flex: 1;
     overflow-y: auto;
-    padding: 28px 36px;
+    padding: 32px 40px 60px;
+    max-width: 760px;
   }
   #empty-state {
-    color: var(--muted);
-    margin-top: 60px;
+    color: var(--muted-2);
+    margin-top: 90px;
     text-align: center;
+    font-size: 14px;
   }
-  .path {
-    color: var(--muted);
+  #empty-state .big { font-size: 34px; margin-bottom: 10px; }
+
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    color: var(--muted-2);
     font-size: 12.5px;
-    margin-bottom: 18px;
-    word-break: break-all;
+    margin-bottom: 6px;
   }
-  h2 { margin: 0 0 4px; font-size: 20px; }
+  .breadcrumb .sep { color: var(--border); }
+  h2 { margin: 0 0 20px; font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
   .controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    margin: 18px 0;
-    padding: 14px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    gap: 16px;
+    align-items: flex-end;
+    margin-bottom: 20px;
   }
-  .controls label {
-    font-size: 12px;
-    color: var(--muted);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 160px; }
+  .field label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted-2);
   }
+  .field .value { font-weight: 500; color: var(--text); text-transform: none; letter-spacing: 0; }
   select, input[type=range] {
-    background: var(--bg);
+    background: var(--panel-2);
     color: var(--text);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 8px;
+    border-radius: 7px;
+    padding: 7px 9px;
     font-size: 13px;
   }
+  select { min-width: 200px; }
+  input[type=range] { padding: 0; accent-color: var(--accent); min-width: 140px; }
+
   button {
     background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 9px 18px;
+    padding: 10px 18px;
     font-size: 13.5px;
+    font-weight: 600;
     cursor: pointer;
   }
   button:hover { background: var(--accent-hover); }
   button:disabled { opacity: 0.5; cursor: default; }
+
   #status-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
     font-size: 13px;
     color: var(--muted);
-    margin: 8px 0 18px;
+    margin-bottom: 18px;
+    min-height: 20px;
   }
+  .spinner {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
   progress {
-    width: 100%;
-    height: 8px;
+    flex: 1;
+    max-width: 220px;
+    height: 6px;
     accent-color: var(--accent);
   }
-  #player-block { margin-top: 10px; }
-  audio { width: 100%; margin-bottom: 14px; }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .status-badge.good { background: var(--good-soft); color: var(--good); }
+  .status-badge.bad { background: var(--bad-soft); color: var(--bad); }
+
+  #player-block { margin-top: 4px; }
+  audio { width: 100%; margin-bottom: 16px; }
+  audio::-webkit-media-controls-panel { background: var(--panel-2); }
   #track-list {
     list-style: none;
     padding: 0;
@@ -183,46 +297,72 @@
     overflow: hidden;
   }
   #track-list li {
-    padding: 9px 14px;
+    padding: 10px 14px;
     font-size: 13px;
     border-bottom: 1px solid var(--border);
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
   }
   #track-list li:last-child { border-bottom: none; }
-  #track-list li:hover { background: var(--panel); }
-  #track-list li.playing { background: var(--badge); color: var(--badge-text); font-weight: 600; }
-  .links { margin-top: 14px; font-size: 12.5px; }
-  .links a { color: var(--accent); margin-right: 14px; }
+  #track-list li:hover { background: var(--panel-2); }
+  #track-list li.playing { background: var(--accent-soft); color: var(--accent-soft-text); font-weight: 700; }
+  #track-list .track-num {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-2);
+    font-size: 12px;
+    width: 20px;
+    flex-shrink: 0;
+  }
+  #track-list li.playing .track-num { color: var(--accent-soft-text); }
+
+  .links { margin-top: 16px; display: flex; gap: 18px; font-size: 12.5px; }
+  .links a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .links a:hover { text-decoration: underline; }
+
   .error-box {
-    margin-top: 14px;
-    padding: 12px;
-    border-radius: 8px;
-    background: #3a1f1f;
-    color: #f5b8b8;
+    margin-top: 4px;
+    padding: 13px 14px;
+    border-radius: 9px;
+    background: var(--bad-soft);
+    color: var(--bad);
     font-size: 13px;
+    border: 1px solid var(--bad);
   }
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <header>
-    <h1>📚 PDF Reader Bot</h1>
-    <input id="search" type="text" placeholder="Filter notes...">
-  </header>
-  <div id="note-list"></div>
+  <div class="sidebar-header">
+    <div class="brand">
+      <div class="brand-icon">🎧</div>
+      <div>
+        <div class="brand-title">PDF Reader Bot</div>
+        <div class="brand-sub">Text-to-speech for your notes</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M14 14L18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input id="search" type="text" placeholder="Search notes...">
+    </div>
+  </div>
+  <nav id="note-list" aria-label="Notes"></nav>
 </div>
 
 <div id="main">
   <div id="detail">
-    <div id="empty-state">Select a PDF on the left to generate an audio version.</div>
+    <div id="empty-state">
+      <div class="big">📄</div>
+      Select a PDF on the left to generate an audio version.
+    </div>
   </div>
 </div>
 
 <script>
-const state = { notes: [], selected: null, voices: [], pollTimer: null };
+const state = { notes: [], selected: null, voices: [], pollTimer: null, collapsed: new Set() };
 
 async function loadNotes() {
   const res = await fetch('/api/notes');
@@ -239,40 +379,83 @@ async function loadVoices() {
   }
 }
 
+function buildTree(notes) {
+  const root = { children: new Map(), notes: [] };
+  for (const n of notes) {
+    const segments = n.path.split('/');
+    segments.pop(); // drop filename, note.title already carries it
+    let node = root;
+    for (const seg of segments) {
+      if (!node.children.has(seg)) node.children.set(seg, { children: new Map(), notes: [] });
+      node = node.children.get(seg);
+    }
+    node.notes.push(n);
+  }
+  return root;
+}
+
+function countNotes(node) {
+  let n = node.notes.length;
+  for (const child of node.children.values()) n += countNotes(child);
+  return n;
+}
+
+function nodeMatches(node, f) {
+  if (!f) return true;
+  if (node.notes.some(n => n.title.toLowerCase().includes(f))) return true;
+  for (const child of node.children.values()) if (nodeMatches(child, f)) return true;
+  return false;
+}
+
+function renderNode(node, f, keyPrefix) {
+  const container = document.createElement('div');
+  if (keyPrefix) container.className = 'tree-children';
+
+  const childNames = [...node.children.keys()].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  for (const name of childNames) {
+    const child = node.children.get(name);
+    if (!nodeMatches(child, f)) continue;
+    const key = keyPrefix ? `${keyPrefix}/${name}` : name;
+
+    const details = document.createElement('details');
+    details.open = f ? true : !state.collapsed.has(key);
+    details.addEventListener('toggle', () => {
+      if (details.open) state.collapsed.delete(key); else state.collapsed.add(key);
+    });
+
+    const summary = document.createElement('summary');
+    summary.className = 'folder-label';
+    summary.innerHTML = `${name} <span class="count">(${countNotes(child)})</span>`;
+    details.appendChild(summary);
+    details.appendChild(renderNode(child, f, key));
+    container.appendChild(details);
+  }
+
+  const notes = node.notes
+    .filter(n => !f || n.title.toLowerCase().includes(f))
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+  for (const note of notes) {
+    const item = document.createElement('div');
+    item.className = 'note-item' + (note.has_audio ? ' has-audio' : '') + (state.selected && state.selected.id === note.id ? ' active' : '');
+    item.innerHTML = `<span class="name">${note.title}</span><span class="audio-badge">Ready</span>`;
+    item.onclick = () => selectNote(note);
+    container.appendChild(item);
+  }
+
+  return container;
+}
+
 function renderList(filter = '') {
   const container = document.getElementById('note-list');
   container.innerHTML = '';
   const f = filter.trim().toLowerCase();
 
-  const groups = {};
-  for (const n of state.notes) {
-    if (f && !(n.title.toLowerCase().includes(f) || n.course.toLowerCase().includes(f))) continue;
-    (groups[n.course] ||= []).push(n);
-  }
-
-  const courses = Object.keys(groups).sort();
-  if (courses.length === 0) {
-    container.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:13px;">No matching PDFs.</div>';
+  const tree = buildTree(state.notes);
+  if (!nodeMatches(tree, f)) {
+    container.innerHTML = '<div class="empty-msg">No matching PDFs.</div>';
     return;
   }
-
-  for (const course of courses) {
-    const groupEl = document.createElement('div');
-    groupEl.className = 'course-group';
-    const title = document.createElement('div');
-    title.className = 'course-title';
-    title.textContent = course;
-    groupEl.appendChild(title);
-
-    for (const note of groups[course]) {
-      const item = document.createElement('div');
-      item.className = 'note-item' + (note.has_audio ? ' has-audio' : '') + (state.selected && state.selected.id === note.id ? ' active' : '');
-      item.innerHTML = `<span class="name">${note.title}</span><span class="dot" title="Audio already generated"></span>`;
-      item.onclick = () => selectNote(note);
-      groupEl.appendChild(item);
-    }
-    container.appendChild(groupEl);
-  }
+  container.appendChild(renderNode(tree, f, ''));
 }
 
 function selectNote(note) {
@@ -289,19 +472,29 @@ function voiceOptions() {
   return opts.join('');
 }
 
+function breadcrumbHtml(path) {
+  const parts = path.split('/');
+  return parts.map((p, i) => i === parts.length - 1
+    ? `<span>${p}</span>`
+    : `<span>${p}</span><span class="sep">/</span>`
+  ).join('');
+}
+
 function renderDetail() {
   const note = state.selected;
   const detail = document.getElementById('detail');
   detail.innerHTML = `
+    <div class="breadcrumb">${breadcrumbHtml(note.path)}</div>
     <h2>${note.title}</h2>
-    <div class="path">${note.path}</div>
-    <div class="controls">
-      <label>Voice
+    <div class="card controls">
+      <div class="field">
+        <label>Voice</label>
         <select id="voice-select">${voiceOptions()}</select>
-      </label>
-      <label>Rate <span id="rate-val">0</span>
+      </div>
+      <div class="field">
+        <label>Rate <span class="value" id="rate-val">0</span></label>
         <input id="rate-range" type="range" min="-10" max="10" value="0">
-      </label>
+      </div>
       <button id="generate-btn">Generate audio</button>
     </div>
     <div id="status-line"></div>
@@ -354,15 +547,15 @@ function renderStatus(s) {
 
   if (s.status === 'running') {
     genBtn.disabled = true;
-    statusLine.innerHTML = `Synthesizing... track ${s.done}/${s.total || '?'}` +
+    statusLine.innerHTML = `<span class="spinner"></span> Synthesizing track ${s.done}/${s.total || '?'}` +
       `<progress value="${s.done}" max="${Math.max(s.total, 1)}"></progress>`;
   } else if (s.status === 'error') {
     genBtn.disabled = false;
-    statusLine.textContent = '';
+    statusLine.innerHTML = `<span class="status-badge bad">Failed</span>`;
     playerBlock.innerHTML = `<div class="error-box">${s.error || 'Something went wrong.'}</div>`;
   } else if (s.status === 'done') {
     genBtn.disabled = false;
-    statusLine.textContent = `${s.tracks.length} track(s) ready.`;
+    statusLine.innerHTML = `<span class="status-badge good">Ready</span> ${s.tracks.length} track(s)`;
     renderPlayer(s.tracks);
   } else {
     genBtn.disabled = false;
@@ -389,7 +582,7 @@ function renderPlayer(tracks) {
 
   tracks.forEach((t, i) => {
     const li = document.createElement('li');
-    li.textContent = t;
+    li.innerHTML = `<span class="track-num">${i + 1}</span><span>${t}</span>`;
     li.onclick = () => playTrack(i);
     list.appendChild(li);
   });
