@@ -1,28 +1,57 @@
 # pdf2speech
 
-Turn a PDF into `.wav` audio tracks you can copy to your phone and listen to
-on the commute.
+Turn any PDF in this repo into `.wav` audio tracks you can listen to on the
+commute — either from the command line, or from a browser UI that lists
+every PDF found in the repo and lets you pick one.
 
 Pipeline: `pdftotext` (extract) -> cleanup (de-hyphenate, strip page breaks)
 -> chunk into tracks -> Windows Speech API (SAPI) -> `.wav` files + an
 `.m3u` playlist.
 
-No Julia packages required — only the standard library, plus two things
-your machine already has: `pdftotext.exe` (from MiKTeX) and Windows' built-in
-speech synthesizer.
-
 ## Setup
 
-Julia itself isn't installed yet. Easiest path (Windows):
+Julia is installed (portable juliaup, added to your user PATH — open a new
+terminal if `julia` isn't found yet). Two more things are already on this
+machine and required: `pdftotext.exe` (from MiKTeX) and Windows' built-in
+SAPI speech synthesizer.
+
+For the CLI only, no extra packages are needed. For the web UI, install once:
 
 ```powershell
-choco install julia -y
+julia tools/pdf-reader-bot/install_deps.jl
 ```
 
-or install [juliaup](https://github.com/JuliaLang/juliaup) directly. Then
-open a new terminal so `julia` is on PATH.
+(installs `HTTP.jl` and `JSON3.jl`)
 
-## Usage
+## Web UI
+
+```powershell
+julia tools/pdf-reader-bot/server.jl
+```
+
+Then open <http://127.0.0.1:8787>. It scans the whole repo for `*.pdf`
+files, groups them by course in a sidebar, and for whichever one you pick:
+choose a voice/rate, click **Generate audio**, and it converts in the
+background (progress bar while it runs). Once done you get an in-browser
+player with per-track navigation, a downloadable `.m3u` playlist, and a
+transcript link. A green dot marks notes that already have generated audio
+so you don't regenerate by accident.
+
+Generated audio is cached under `tools/pdf-reader-bot/audio/<note-slug>/` —
+copy that folder to your phone for offline listening.
+
+By default the server only listens on `127.0.0.1` (this PC only). Pass a
+different port with a first argument, or open it to your home network with
+a second argument (no login/auth on this server — only do this on a network
+you trust):
+
+```powershell
+julia tools/pdf-reader-bot/server.jl 8787 0.0.0.0
+```
+
+Then on your phone (same Wi-Fi), browse to `http://<your-pc's-LAN-IP>:8787`.
+
+## CLI Usage
 
 ```powershell
 # List available voices

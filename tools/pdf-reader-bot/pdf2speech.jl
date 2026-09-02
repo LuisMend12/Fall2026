@@ -36,16 +36,16 @@ function extract_text(pdftotext::String, pdf_path::String)
     return read(`$pdftotext -layout $pdf_path -`, String)
 end
 
-function clean_text(raw::String)
+function clean_text(raw::AbstractString)
     text = replace(raw, "\f" => "\n\n")               # page breaks -> paragraph breaks
     text = replace(text, r"-\n(?=[a-z])" => "")         # de-hyphenate words split across lines
     text = replace(text, r"(?<!\n)\n(?!\n)" => " ")     # join wrapped lines within a paragraph
     text = replace(text, r"[ \t]{2,}" => " ")           # collapse repeated spaces
     text = replace(text, r"\n{3,}" => "\n\n")           # collapse excess blank lines
-    return strip(text)
+    return String(strip(text))
 end
 
-function chunk_text(text::String; max_chars::Int=4000)
+function chunk_text(text::AbstractString; max_chars::Int=4000)
     paras = split(text, "\n\n")
     chunks = String[]
     buf = IOBuffer()

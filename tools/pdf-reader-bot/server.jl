@@ -55,7 +55,7 @@ function list_notes()
             push!(notes, (id=slug, path=rel, course=course, title=title, has_audio=has_existing_audio(slug)))
         end
     end
-    sort!(notes, by = n -> (n.course, n.title))
+    sort!(notes, by = n -> (n.course, lowercase(n.title)))
     return notes
 end
 
@@ -201,10 +201,12 @@ end
 
 function main()
     port = length(ARGS) >= 1 ? parse(Int, ARGS[1]) : 8787
+    host = length(ARGS) >= 2 ? ARGS[2] : "127.0.0.1"
     router = build_router()
     println("Repo root:  $REPO_ROOT")
-    println("PDF Reader Bot running at http://127.0.0.1:$port")
-    HTTP.serve(router, "127.0.0.1", port)
+    println("PDF Reader Bot running at http://$host:$port")
+    host != "127.0.0.1" && println("Note: bound to $host — reachable by anyone on your network, with no auth.")
+    HTTP.serve(router, host, port)
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
