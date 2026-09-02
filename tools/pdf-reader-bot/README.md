@@ -35,7 +35,9 @@ choose a voice/rate, click **Generate audio**, and it converts in the
 background (progress bar while it runs). Once done you get an in-browser
 player with per-track navigation, a downloadable `.m3u` playlist, and a
 transcript link. A green dot marks notes that already have generated audio
-so you don't regenerate by accident.
+so you don't regenerate by accident. The PDF itself is shown side-by-side
+in a preview pane (via the browser's built-in PDF viewer) so you can follow
+along or jump to a page while the audio plays.
 
 Generated audio is cached under `tools/pdf-reader-bot/audio/<note-slug>/` —
 copy that folder to your phone for offline listening.
@@ -72,6 +74,7 @@ useful for skimming or re-reading later).
 | `--voice NAME` | SAPI voice, e.g. `Microsoft David Desktop` | system default |
 | `--rate N` | speech rate, -10 (slow) to 10 (fast) | 0 |
 | `--max-chars N` | characters per track before splitting | 4000 |
+| `--workers N` | parallel SAPI worker processes | half the CPU threads, max 4 |
 | `--outdir DIR` | output directory | `audio/<pdf-basename>` |
 | `--list-voices` | print installed voices and exit | — |
 
@@ -84,3 +87,25 @@ useful for skimming or re-reading later).
   SAPI just reads characters literally — this works best on prose-heavy
   PDFs (papers, textbook chapters), less well on slide decks full of
   equations.
+
+## Audio generation speed
+
+Each PDF is split into ~4000-character chunks, one `.wav` track per chunk.
+Two things make this fast:
+
+- **Batching per worker.** Spawning a fresh `powershell.exe` process for
+  every chunk means paying PowerShell startup + `System.Speech` assembly
+  load (a few hundred ms, fixed cost) *per chunk*. Instead, each worker gets
+  one PowerShell process that creates a single `SpeechSynthesizer` and loops
+  over its whole slice of chunks, so that fixed cost is paid once per
+  worker, not once per track.
+- **Parallel workers.** SAPI synthesis-to-file doesn't play audio out loud,
+  so it isn't limited to real-time — it's mostly CPU-bound. Multiple
+  independent `SpeechSynthesizer` processes can run at once (each writing
+  its own `.wav`), so chunks are split across `--workers` processes
+  (default: half your CPU threads, capped at 4) that run concurrently.
+
+For a long PDF this is typically several times faster than the old
+one-process-per-chunk approach. If you want more or fewer workers (e.g. to
+leave CPU headroom for other work), pass `--workers N` on the CLI; the web
+UI always uses the default.

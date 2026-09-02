@@ -16,6 +16,7 @@
 #   --voice NAME       SAPI voice name, e.g. "Microsoft Zira Desktop"
 #   --rate N           speech rate, -10 (slow) to 10 (fast), default 0
 #   --max-chars N       characters per track before splitting, default 4000
+#   --workers N         parallel SAPI worker processes, default: half the CPU threads (max 4)
 #   --list-voices      print installed voices and exit
 #
 # Example:
@@ -73,32 +74,106 @@ function list_voices()
     run(`powershell -NoProfile -Command $ps`)
 end
 
-function synthesize(text::String, out_wav::String; voice::String="", rate::Int=0)
-    text_path = tempname() * ".txt"
-    write(text_path, text)
-    ps_lines = String[
+function default_worker_count(n_chunks::Int)
+    return clamp(Sys.CPU_THREADS ÷ 2, 1, min(4, n_chunks))
+end
+
+function split_into_groups(n_items::Int, n_groups::Int)
+    n_groups = clamp(n_groups, 1, n_items)
+    base, rem = divrem(n_items, n_groups)
+    groups = UnitRange{Int}[]
+    start = 1
+    for g in 1:n_groups
+        sz = base + (g <= rem ? 1 : 0)
+        sz == 0 && continue
+        push!(groups, start:(start + sz - 1))
+        start += sz
+    end
+    return groups
+end
+
+# Builds one PowerShell script that speaks several chunks in a single process
+# (one Add-Type + SpeechSynthesizer for the whole group), instead of paying
+# PowerShell/assembly startup cost per chunk. Appends a line to `progress_path`
+# after each track so the caller can poll fine-grained progress.
+function worker_script(items::Vector{Tuple{String,String}}, progress_path::String; voice::String="", rate::Int=0)
+    lines = String[
         "Add-Type -AssemblyName System.Speech",
         "\$synth = New-Object System.Speech.Synthesis.SpeechSynthesizer",
         "\$synth.Rate = $rate",
     ]
-    isempty(voice) || push!(ps_lines, "\$synth.SelectVoice('$(replace(voice, "'" => "''"))')")
-    push!(ps_lines, "\$synth.SetOutputToWaveFile('$(replace(out_wav, "'" => "''"))')")
-    push!(ps_lines, "\$text = Get-Content -Raw -Encoding UTF8 '$(replace(text_path, "'" => "''"))'")
-    push!(ps_lines, "\$synth.Speak(\$text)")
-    push!(ps_lines, "\$synth.Dispose()")
+    isempty(voice) || push!(lines, "\$synth.SelectVoice('$(replace(voice, "'" => "''"))')")
+    for (text_path, out_wav) in items
+        push!(lines, "\$synth.SetOutputToWaveFile('$(replace(out_wav, "'" => "''"))')")
+        push!(lines, "\$synth.Speak((Get-Content -Raw -Encoding UTF8 '$(replace(text_path, "'" => "''"))'))")
+        push!(lines, "Add-Content -Path '$(replace(progress_path, "'" => "''"))' -Value '1'")
+    end
+    push!(lines, "\$synth.Dispose()")
+    return join(lines, "\n")
+end
 
-    ps_path = tempname() * ".ps1"
-    write(ps_path, join(ps_lines, "\n"))
+# Synthesizes `chunks` to `out_paths` (same length, same order) using up to
+# `workers` SAPI processes running concurrently, each handling a contiguous
+# slice of chunks in a single PowerShell invocation. Two independent wins over
+# spawning one process per chunk: (1) the fixed cost of starting PowerShell
+# and loading System.Speech is paid `workers` times instead of once per
+# chunk, and (2) multiple SpeechSynthesizer processes can render in parallel
+# since each writes to its own wav file. `on_progress(done_count)`, if given,
+# is called as tracks complete (polled, so it may lag slightly behind reality).
+function synthesize_many(chunks::Vector{String}, out_paths::Vector{String};
+                          voice::String="", rate::Int=0,
+                          workers::Int=default_worker_count(length(chunks)),
+                          on_progress=nothing)
+    @assert length(chunks) == length(out_paths)
+    n = length(chunks)
+    n == 0 && return
+
+    tmp_dir = mktempdir()
     try
-        run(`powershell -NoProfile -ExecutionPolicy Bypass -File $ps_path`)
+        groups = split_into_groups(n, workers)
+        procs = Base.Process[]
+        progress_files = String[]
+
+        for (gi, rng) in enumerate(groups)
+            items = Tuple{String,String}[]
+            for i in rng
+                text_path = joinpath(tmp_dir, "chunk_$(i).txt")
+                write(text_path, chunks[i])
+                push!(items, (text_path, out_paths[i]))
+            end
+            progress_path = joinpath(tmp_dir, "progress_$(gi).txt")
+            write(progress_path, "")
+            push!(progress_files, progress_path)
+
+            script = worker_script(items, progress_path; voice=voice, rate=rate)
+            ps_path = joinpath(tmp_dir, "worker_$(gi).ps1")
+            write(ps_path, script)
+            push!(procs, run(`powershell -NoProfile -ExecutionPolicy Bypass -File $ps_path`; wait=false))
+        end
+
+        count_done() = sum(pf -> count(!isempty, split(read(pf, String), "\n")), progress_files)
+
+        watcher = on_progress === nothing ? nothing : @async begin
+            while any(p -> !process_exited(p), procs)
+                on_progress(count_done())
+                sleep(0.3)
+            end
+        end
+
+        foreach(wait, procs)
+        watcher === nothing || wait(watcher)
+        on_progress === nothing || on_progress(count_done())
+
+        for p in procs
+            p.exitcode == 0 || error("Speech synthesis worker failed (exit code $(p.exitcode))")
+        end
     finally
-        rm(ps_path, force=true)
-        rm(text_path, force=true)
+        rm(tmp_dir, force=true, recursive=true)
     end
 end
 
 function parse_args(args)
-    opts = Dict{String,Any}("rate" => 0, "voice" => "", "max_chars" => 4000, "outdir" => "")
+    opts = Dict{String,Any}("rate" => 0, "voice" => "", "max_chars" => 4000, "outdir" => "", "workers" => 0)
     pdf = nothing
     i = 1
     while i <= length(args)
@@ -113,6 +188,8 @@ function parse_args(args)
             i += 1; opts["rate"] = parse(Int, args[i])
         elseif a == "--max-chars"
             i += 1; opts["max_chars"] = parse(Int, args[i])
+        elseif a == "--workers"
+            i += 1; opts["workers"] = parse(Int, args[i])
         elseif pdf === nothing
             pdf = a
         else
@@ -146,17 +223,16 @@ function main()
     write(transcript_path, text)
 
     chunks = chunk_text(text; max_chars=opts["max_chars"])
-    println("Split into $(length(chunks)) track(s). Synthesizing with Windows SAPI...")
+    n = length(chunks)
+    workers = opts["workers"] > 0 ? opts["workers"] : default_worker_count(n)
+    println("Split into $n track(s). Synthesizing with Windows SAPI ($workers worker(s) in parallel)...")
 
-    playlist = IOBuffer()
-    for (idx, chunk) in enumerate(chunks)
-        track_name = "track_$(lpad(idx, 3, '0')).wav"
-        out_wav = joinpath(outdir, track_name)
-        println("  [$idx/$(length(chunks))] -> $track_name")
-        synthesize(chunk, out_wav; voice=opts["voice"], rate=opts["rate"])
-        write(playlist, track_name, "\n")
-    end
-    write(joinpath(outdir, "playlist.m3u"), String(take!(playlist)))
+    track_names = ["track_$(lpad(idx, 3, '0')).wav" for idx in 1:n]
+    out_paths = [joinpath(outdir, name) for name in track_names]
+    synthesize_many(chunks, out_paths; voice=opts["voice"], rate=opts["rate"], workers=workers,
+        on_progress = d -> print("\r  [$d/$n] tracks done"))
+    println()
+    write(joinpath(outdir, "playlist.m3u"), join(track_names, "\n") * "\n")
 
     println("\nDone. Audio tracks + playlist.m3u written to: $outdir")
     println("Copy that folder to your phone and queue playlist.m3u for the commute.")

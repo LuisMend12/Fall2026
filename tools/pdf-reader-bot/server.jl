@@ -85,20 +85,18 @@ function run_job(slug::String, pdf_path::String, voice::String, rate::Int)
         write(joinpath(outdir, "transcript.txt"), text)
 
         chunks = chunk_text(text; max_chars=4000)
+        n = length(chunks)
         lock(JOBS_LOCK) do
-            JOBS[slug][:total] = length(chunks)
+            JOBS[slug][:total] = n
         end
 
-        playlist = IOBuffer()
-        for (idx, chunk) in enumerate(chunks)
-            track_name = "track_$(lpad(idx, 3, '0')).wav"
-            synthesize(chunk, joinpath(outdir, track_name); voice=voice, rate=rate)
-            write(playlist, track_name, "\n")
-            lock(JOBS_LOCK) do
-                JOBS[slug][:done] = idx
-            end
-        end
-        write(joinpath(outdir, "playlist.m3u"), String(take!(playlist)))
+        track_names = ["track_$(lpad(idx, 3, '0')).wav" for idx in 1:n]
+        out_paths = [joinpath(outdir, name) for name in track_names]
+        synthesize_many(chunks, out_paths; voice=voice, rate=rate,
+            on_progress = d -> lock(JOBS_LOCK) do
+                JOBS[slug][:done] = d
+            end)
+        write(joinpath(outdir, "playlist.m3u"), join(track_names, "\n") * "\n")
 
         lock(JOBS_LOCK) do
             JOBS[slug][:status] = "done"
@@ -183,6 +181,19 @@ function handle_audio(req::HTTP.Request)
     return HTTP.Response(200, ["Content-Type" => ctype], read(path))
 end
 
+function handle_pdf(req::HTTP.Request)
+    qp = HTTP.queryparams(HTTP.URI(req.target))
+    rel = get(qp, "path", "")
+    isempty(rel) && return HTTP.Response(400, "missing path")
+
+    full = normpath(joinpath(REPO_ROOT, rel))
+    (startswith(full, REPO_ROOT) && lowercase(splitext(full)[2]) == ".pdf") ||
+        return HTTP.Response(400, "bad request")
+    isfile(full) || return HTTP.Response(404, "not found")
+
+    return HTTP.Response(200, ["Content-Type" => "application/pdf"], read(full))
+end
+
 function handle_index(::HTTP.Request)
     path = joinpath(@__DIR__, "public", "index.html")
     return HTTP.Response(200, ["Content-Type" => "text/html; charset=utf-8"], read(path))
@@ -196,6 +207,7 @@ function build_router()
     HTTP.register!(router, "POST", "/api/convert", handle_convert)
     HTTP.register!(router, "GET", "/api/status", handle_status)
     HTTP.register!(router, "GET", "/audio/{slug}/{file}", handle_audio)
+    HTTP.register!(router, "GET", "/pdf", handle_pdf)
     return router
 end
 
