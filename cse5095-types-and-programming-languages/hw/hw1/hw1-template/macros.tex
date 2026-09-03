@@ -1,0 +1,29 @@
+\newtheorem{task}{Task}
+\newtheorem{lemma}{Lemma}
+\newtheorem{thm}{Theorem}
+  
+
+%% Inference rules
+%Inference rule with a title
+\newcommand{\Rule}[4][]{\ensuremath{\inferrule*[right={(#2)},#1]{#3}{#4}}}
+%Inference rule with no title
+\newcommand{\RuleNoLabel}[3][]{\ensuremath{\inferrule*[#1]{#2}{#3}}}
+
+%% BNF
+\newcommand{\bnfdef}{\mathop{::=}}
+\newcommand{\bnfalt}{\mathbin{|}}
+
+%% XML
+\newcommand{\isxml}[1]{#1~\ensuremath{\mathsf{is~XML}}}
+\newcommand{\xml}[1]{\text{\texttt{#1}}}
+
+%% RB Trees
+\newcommand{\tree}{\ensuremath{T}}
+\newcommand{\leaf}{\ensuremath{\mathsf{Leaf}}}
+\newcommand{\bnode}[2]{\ensuremath{\mathsf{BNode}(#1, #2)}}
+\newcommand{\rnode}[2]{\ensuremath{{\color{red}{\mathsf{RNode}}}(#1, #2)}}
+\newcommand{\bc}{\ensuremath{\mathsf{Black}}}
+\newcommand{\rc}{\ensuremath{{\color{red}{\mathsf{Red}}}}}
+\newcommand{\istree}[2]{~\ensuremath{\mathsf{isTree}~#1~#2}}
+\newcommand{\colr}{\ensuremath{c}}
+\newcommand{\nodes}[1]{\ensuremath{\mathit{Nodes}(#1)}}

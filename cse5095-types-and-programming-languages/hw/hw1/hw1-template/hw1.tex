@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{amsmath, amsthm, verbatim, enumerate, xcolor, mathpartir}
+
+\input{macros}
+
+\title{CSE5095: Types and Programming Languages\\
+  {\large Homework 1: Inference rules, derivations, rule induction}}
+\author{Your name here}
+
+\begin{document}
+\maketitle
+
+\section{Logistics}
+\textbf{Important note: This document DOES NOT have all of the information
+  you need to complete the assignment. It's just a template for typesetting
+  your answers. You MUST read the writeup pdf.}
+
+Great to see you're (at least thinking about) writing up your solution in
+LaTeX though! Thanks! See HuskyCT for resources if you need help.
+Some useful macros are defined in the file \texttt{macros.tex}, and
+this source file gives examples of how to use them.
+
+\section{XML}
+
+\begin{task}\label{concat3}
+Add another inference rule for showing that the concatenation of
+3 XML strings (e.g., $XYZ$) is also an XML string.
+\end{task}
+
+\textbf{Answer:}
+
+\[
+\Rule{Rulename}
+     {conditions}
+     {premises}
+\]
+
+\begin{task}
+  Write a derivation for the conclusion
+  $\isxml{XYZ}$ assuming the premises of the rule you wrote in
+  Task~\ref{concat3}.
+    Make sure to include the names/numbers of the rules you're using.
+\end{task}
+
+\textbf{Answer:}
+
+Typestting Hint: you can typeset a derivation by nesting more
+inference rules(\texttt{\textbackslash Rule}) in the premises of an
+inference rule. The code for this gets messy, so make sure you're using
+indentation or other hints to keep yourself sane.
+If you're already familiar with using LaTeX for math, you may be tempted to
+just use \texttt{\textbackslash frac}, but this gets really difficult to
+read because it makes the nested fractions smaller and smaller (and also
+doesn't let you include the rule names).
+
+
+\section{Red-Black Trees}
+Code for the inference rules and definitions is below so you can have
+examples of how to typeset these.
+
+\[
+\begin{array}{r l l l}
+  Trees & \tree & \bnfdef & \leaf \bnfalt \bnode{\tree}{\tree} \bnfalt
+  \rnode{\tree}{\tree}\\
+  Colors & \colr & \bnfdef & \bc \bnfalt \rc\\
+\end{array}
+\]
+
+{
+  \centering
+  \def \MathparLineskip {\lineskip=0.43cm}
+  \begin{mathpar}
+
+    \Rule{RBT-1}
+         {\strut}
+         {\leaf \istree{\bc}{1}}
+    \and
+    \Rule{RBT-2}
+         {\tree_1 \istree{\colr_1}{n}\\
+           \tree_2 \istree{\colr_2}{n}}
+         {\bnode{\tree_1}{\tree_2} \istree{\bc}{n+1}}
+    \and
+    \Rule{RBT-3}
+         {\tree_1 \istree{\bc}{n}\\
+           \tree_2 \istree{\bc}{n}}
+         {\rnode{\tree_1}{\tree_2} \istree{\rc}{n}}
+  \end{mathpar}
+}
+
+\[
+\begin{array}{l l l}
+  \nodes{\leaf} & = & 1\\
+  \nodes{\bnode{\tree_1}{\tree_2}} & = & 1 + \nodes{\tree_1} + \nodes{\tree_2}\\
+  \nodes{\rnode{\tree_1}{\tree_2}} & = & 1 + \nodes{\tree_1} + \nodes{\tree_2}
+\end{array}
+\]
+
+\begin{task}
+  Prove by rule induction that for any tree~$\tree$,
+  color~$\colr \in \{\rc, \bc\}$ and~$n \geq 1$,
+  if~$\tree \istree{\colr}{n}$, then~$\nodes{\tree} \geq 2^{n-1}$.
+
+  {\em You must} use rule induction, not any other proof technique.
+
+  \textbf{Note:} This, together with one or two other properties of
+  red-black trees, proves that a valid red-black tree is approximately
+  balanced.
+\end{task}
+
+\textbf{Answer:}
+\section{One more wrap-up question}
+
+\begin{task}
+  How long (approximately) did you spend on this homework, in total
+  minutes/hours of
+  actual working time?
+  Your honest feedback will help me with future homeworks.
+\end{task}
+\textbf{Answer:}
+
+\end{document}
