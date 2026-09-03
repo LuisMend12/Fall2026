@@ -1,0 +1,4 @@
+flask
+pymupdf
+pyttsx3
+pywin32; platform_system == "Windows"
