@@ -36,8 +36,11 @@ background (progress bar while it runs). Once done you get an in-browser
 player with per-track navigation, a downloadable `.m3u` playlist, and a
 transcript link. A green dot marks notes that already have generated audio
 so you don't regenerate by accident. The PDF itself is shown side-by-side
-in a preview pane (via the browser's built-in PDF viewer) so you can follow
-along or jump to a page while the audio plays.
+in a preview pane (via the browser's built-in PDF viewer), and it follows
+along automatically: each track remembers which PDF page its text started
+on, so as playback advances from track to track the preview jumps to the
+matching page (shown next to each track in the list, and in the pane
+header). It's a best-effort sync at chunk granularity, not per-sentence.
 
 Generated audio is cached under `tools/pdf-reader-bot/audio/<note-slug>/` —
 copy that folder to your phone for offline listening.

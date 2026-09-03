@@ -352,6 +352,13 @@
     flex-shrink: 0;
   }
   #track-list li.playing .track-num { color: var(--accent-soft-text); }
+  #track-list .track-page {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted-2);
+    flex-shrink: 0;
+  }
+  #track-list li.playing .track-page { color: var(--accent-soft-text); }
 
   .links { margin-top: 16px; display: flex; gap: 18px; font-size: 12.5px; }
   .links a { color: var(--accent); text-decoration: none; font-weight: 600; }
@@ -540,7 +547,7 @@ function renderDetail() {
     </div>
     <div id="pdf-pane">
       <div class="pdf-pane-header">
-        <span>${note.title}.pdf</span>
+        <span id="pdf-page-label">${note.title}.pdf</span>
         <a href="${pdfUrl}" target="_blank">Open in new tab ↗</a>
       </div>
       <iframe src="${pdfUrl}" title="${note.title} PDF preview"></iframe>
@@ -602,7 +609,7 @@ function renderStatus(s) {
   } else if (s.status === 'done') {
     genBtn.disabled = false;
     statusLine.innerHTML = `<span class="status-badge good">Ready</span> ${s.tracks.length} track(s)`;
-    renderPlayer(s.tracks);
+    renderPlayer(s.tracks, s.pages || []);
   } else {
     genBtn.disabled = false;
     statusLine.textContent = 'No audio generated yet.';
@@ -610,10 +617,11 @@ function renderStatus(s) {
   }
 }
 
-function renderPlayer(tracks) {
+function renderPlayer(tracks, pages) {
   const note = state.selected;
   const playerBlock = document.getElementById('player-block');
   const base = `/audio/${note.id}`;
+  const pdfUrl = `/pdf?path=${encodeURIComponent(note.path)}`;
   playerBlock.innerHTML = `
     <audio id="audio-el" controls src="${base}/${tracks[0]}"></audio>
     <ul id="track-list"></ul>
@@ -624,11 +632,16 @@ function renderPlayer(tracks) {
   `;
   const list = document.getElementById('track-list');
   const audioEl = document.getElementById('audio-el');
+  const pdfFrame = document.querySelector('#pdf-pane iframe');
+  const pdfLabel = document.getElementById('pdf-page-label');
   let current = 0;
+  let shownPage = null;
 
   tracks.forEach((t, i) => {
     const li = document.createElement('li');
-    li.innerHTML = `<span class="track-num">${i + 1}</span><span>${t}</span>`;
+    const page = pages[i];
+    li.innerHTML = `<span class="track-num">${i + 1}</span><span>${t}</span>` +
+      (page ? `<span class="track-page">p.${page}</span>` : '');
     li.onclick = () => playTrack(i);
     list.appendChild(li);
   });
@@ -638,6 +651,13 @@ function renderPlayer(tracks) {
     audioEl.src = `${base}/${tracks[i]}`;
     audioEl.play();
     [...list.children].forEach((li, idx) => li.classList.toggle('playing', idx === i));
+
+    const page = pages[i];
+    if (page && page !== shownPage && pdfFrame) {
+      shownPage = page;
+      pdfFrame.src = `${pdfUrl}#page=${page}`;
+      if (pdfLabel) pdfLabel.textContent = `${note.title}.pdf · Page ${page}`;
+    }
   }
   audioEl.onended = () => {
     if (current < tracks.length - 1) playTrack(current + 1);

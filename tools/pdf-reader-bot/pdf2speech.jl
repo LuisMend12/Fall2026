@@ -32,37 +32,60 @@ function find_pdftotext()
     end
 end
 
-function extract_text(pdftotext::String, pdf_path::String)
+function extract_pages(pdftotext::String, pdf_path::String)
     isfile(pdf_path) || error("PDF not found: $pdf_path")
-    return read(`$pdftotext -layout $pdf_path -`, String)
+    raw = read(`$pdftotext -layout $pdf_path -`, String)
+    return split(raw, "\f")   # pdftotext emits a form-feed between pages
 end
 
-function clean_text(raw::AbstractString)
-    text = replace(raw, "\f" => "\n\n")               # page breaks -> paragraph breaks
-    text = replace(text, r"-\n(?=[a-z])" => "")         # de-hyphenate words split across lines
+function clean_page_text(raw::AbstractString)
+    text = replace(raw, r"-\n(?=[a-z])" => "")          # de-hyphenate words split across lines
     text = replace(text, r"(?<!\n)\n(?!\n)" => " ")     # join wrapped lines within a paragraph
     text = replace(text, r"[ \t]{2,}" => " ")           # collapse repeated spaces
     text = replace(text, r"\n{3,}" => "\n\n")           # collapse excess blank lines
     return String(strip(text))
 end
 
-function chunk_text(text::AbstractString; max_chars::Int=4000)
-    paras = split(text, "\n\n")
+# Paragraphs across the whole document, each tagged with its 1-based PDF page
+# number, so playback can later be synced back to a page in the PDF viewer.
+function extract_paragraphs(pdftotext::String, pdf_path::String)
+    pages = extract_pages(pdftotext, pdf_path)
+    paragraphs = Tuple{Int,String}[]
+    for (pnum, page) in enumerate(pages)
+        cleaned = clean_page_text(page)
+        for p in split(cleaned, "\n\n")
+            p = strip(p)
+            isempty(p) || push!(paragraphs, (pnum, p))
+        end
+    end
+    return paragraphs
+end
+
+full_text(paragraphs::Vector{Tuple{Int,String}}) = join((p for (_, p) in paragraphs), "\n\n")
+
+# Groups paragraphs into <=max_chars chunks. Returns (chunks, chunk_pages)
+# where chunk_pages[i] is the PDF page the i-th chunk's text starts on.
+function chunk_paragraphs(paragraphs::Vector{Tuple{Int,String}}; max_chars::Int=4000)
     chunks = String[]
+    chunk_pages = Int[]
     buf = IOBuffer()
     len = 0
-    for p in paras
-        p = strip(p)
-        isempty(p) && continue
+    start_page = 0
+    for (pnum, p) in paragraphs
         if len > 0 && len + length(p) > max_chars
             push!(chunks, String(take!(buf)))
+            push!(chunk_pages, start_page)
             len = 0
         end
+        len == 0 && (start_page = pnum)
         write(buf, p, "\n\n")
         len += length(p)
     end
-    len > 0 && push!(chunks, String(take!(buf)))
-    return chunks
+    if len > 0
+        push!(chunks, String(take!(buf)))
+        push!(chunk_pages, start_page)
+    end
+    return chunks, chunk_pages
 end
 
 function list_voices()
@@ -212,17 +235,16 @@ function main()
 
     pdftotext = find_pdftotext()
     println("Extracting text from $pdf ...")
-    raw = extract_text(pdftotext, pdf)
-    text = clean_text(raw)
-    isempty(text) && error("No extractable text found (the PDF may be scanned images without OCR).")
+    paragraphs = extract_paragraphs(pdftotext, pdf)
+    isempty(paragraphs) && error("No extractable text found (the PDF may be scanned images without OCR).")
 
     outdir = isempty(opts["outdir"]) ? joinpath("audio", splitext(basename(pdf))[1]) : opts["outdir"]
     mkpath(outdir)
 
     transcript_path = joinpath(outdir, "transcript.txt")
-    write(transcript_path, text)
+    write(transcript_path, full_text(paragraphs))
 
-    chunks = chunk_text(text; max_chars=opts["max_chars"])
+    chunks, chunk_pages = chunk_paragraphs(paragraphs; max_chars=opts["max_chars"])
     n = length(chunks)
     workers = opts["workers"] > 0 ? opts["workers"] : default_worker_count(n)
     println("Split into $n track(s). Synthesizing with Windows SAPI ($workers worker(s) in parallel)...")

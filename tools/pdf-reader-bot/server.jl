@@ -41,6 +41,16 @@ end
 
 has_existing_audio(slug::String) = !isempty(existing_tracks(slug))
 
+function existing_pages(slug::String)
+    path = joinpath(AUDIO_ROOT, slug, "pages.json")
+    isfile(path) || return Int[]
+    try
+        return Int.(JSON3.read(read(path, String)))
+    catch
+        return Int[]
+    end
+end
+
 function list_notes()
     notes = NamedTuple[]
     for (root, dirs, files) in walkdir(REPO_ROOT)
@@ -76,15 +86,14 @@ end
 function run_job(slug::String, pdf_path::String, voice::String, rate::Int)
     try
         pdftotext = find_pdftotext()
-        raw = extract_text(pdftotext, pdf_path)
-        text = clean_text(raw)
-        isempty(text) && error("No extractable text found (the PDF may be scanned images without OCR).")
+        paragraphs = extract_paragraphs(pdftotext, pdf_path)
+        isempty(paragraphs) && error("No extractable text found (the PDF may be scanned images without OCR).")
 
         outdir = joinpath(AUDIO_ROOT, slug)
         mkpath(outdir)
-        write(joinpath(outdir, "transcript.txt"), text)
+        write(joinpath(outdir, "transcript.txt"), full_text(paragraphs))
 
-        chunks = chunk_text(text; max_chars=4000)
+        chunks, chunk_pages = chunk_paragraphs(paragraphs; max_chars=4000)
         n = length(chunks)
         lock(JOBS_LOCK) do
             JOBS[slug][:total] = n
@@ -97,6 +106,7 @@ function run_job(slug::String, pdf_path::String, voice::String, rate::Int)
                 JOBS[slug][:done] = d
             end)
         write(joinpath(outdir, "playlist.m3u"), join(track_names, "\n") * "\n")
+        write(joinpath(outdir, "pages.json"), JSON3.write(chunk_pages))
 
         lock(JOBS_LOCK) do
             JOBS[slug][:status] = "done"
@@ -158,11 +168,12 @@ function handle_status(req::HTTP.Request)
 
     if job !== nothing
         tracks = job[:status] == "done" ? existing_tracks(slug) : String[]
-        return json_response((status=job[:status], done=job[:done], total=job[:total], error=job[:error], tracks=tracks))
+        pages = job[:status] == "done" ? existing_pages(slug) : Int[]
+        return json_response((status=job[:status], done=job[:done], total=job[:total], error=job[:error], tracks=tracks, pages=pages))
     elseif has_existing_audio(slug)
-        return json_response((status="done", done=0, total=0, error=nothing, tracks=existing_tracks(slug)))
+        return json_response((status="done", done=0, total=0, error=nothing, tracks=existing_tracks(slug), pages=existing_pages(slug)))
     else
-        return json_response((status="none", done=0, total=0, error=nothing, tracks=String[]))
+        return json_response((status="none", done=0, total=0, error=nothing, tracks=String[], pages=Int[]))
     end
 end
 
