@@ -45,6 +45,22 @@ chunk granularity, not per-sentence.
 Generated audio is cached under `tools/pdf-reader-bot-py/audio/<note-slug>/`
 — copy that folder to your phone for offline listening.
 
+### Progress tracking + quizzes
+
+Each note has a **"Mark as seen"** toggle (also set automatically when you
+listen all the way through a note's tracks), so the sidebar shows a ✓ Seen
+badge next to ones you've already been through, and a running "N / M notes
+seen" count with a progress bar up top. State is stored in
+`tools/pdf-reader-bot-py/progress.json` (per-machine, not committed).
+
+Once a note has generated audio, a **"Take quiz"** button builds a short
+fill-in-the-blank quiz from that chapter's transcript — good for a quick
+retention check after listening. This is done entirely offline with simple
+heuristics (pick a sentence, blank out a keyword, offer it plus three
+decoy keywords pulled from elsewhere in the same chapter) — no external
+API or model, so quality is "spot-check," not something like an LLM-written
+quiz. See `quiz.py` if you want to improve the heuristics later.
+
 By default the server only listens on `127.0.0.1` (this PC only). Pass a
 different port with a first argument, or open it to your home network with
 a second argument (no login/auth on this server — only do this on a network

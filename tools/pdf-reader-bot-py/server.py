@@ -18,15 +18,18 @@ import json
 import re
 import sys
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 
 from flask import Flask, Response, abort, jsonify, request
 
 import pdf2speech as p2s
+import quiz as quizmod
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = (HERE / ".." / "..").resolve()
 AUDIO_ROOT = HERE / "audio"
+PROGRESS_PATH = HERE / "progress.json"
 SKIP_DIRS = {"audio", ".git", "node_modules", "__pycache__", "tools", ".vscode", ".venv"}
 
 AUDIO_ROOT.mkdir(parents=True, exist_ok=True)
@@ -35,6 +38,24 @@ app = Flask(__name__, static_folder=None)
 
 JOBS = {}
 JOBS_LOCK = threading.Lock()
+
+PROGRESS_LOCK = threading.Lock()
+
+
+def _load_progress():
+    if not PROGRESS_PATH.is_file():
+        return {}
+    try:
+        return json.loads(PROGRESS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+PROGRESS = _load_progress()
+
+
+def is_seen(slug: str) -> bool:
+    return bool(PROGRESS.get(slug, {}).get("seen"))
 
 
 def slug_for(rel: str) -> str:
@@ -79,6 +100,7 @@ def list_notes():
             "course": rel_parts[0],
             "title": pdf_path.stem,
             "has_audio": has_existing_audio(slug),
+            "seen": is_seen(slug),
         })
     notes.sort(key=lambda n: (n["course"], n["title"].lower()))
     return notes
@@ -183,6 +205,41 @@ def api_status():
                          "tracks": existing_tracks(slug), "pages": existing_pages(slug)})
     else:
         return jsonify({"status": "none", "done": 0, "total": 0, "error": None, "tracks": [], "pages": []})
+
+
+@app.post("/api/progress")
+def api_progress():
+    body = request.get_json(force=True)
+    slug = body.get("id", "")
+    if not slug:
+        return jsonify({"error": "missing id"}), 400
+    seen = bool(body.get("seen", True))
+
+    with PROGRESS_LOCK:
+        entry = PROGRESS.setdefault(slug, {})
+        entry["seen"] = seen
+        entry["seen_at"] = datetime.now(timezone.utc).isoformat() if seen else None
+        PROGRESS_PATH.write_text(json.dumps(PROGRESS, indent=2), encoding="utf-8")
+
+    return jsonify({"id": slug, "seen": seen})
+
+
+@app.get("/api/quiz")
+def api_quiz():
+    slug = request.args.get("id", "")
+    if not slug:
+        return jsonify({"error": "missing id"}), 400
+
+    transcript_path = AUDIO_ROOT / slug / "transcript.txt"
+    if not transcript_path.is_file():
+        return jsonify({"error": "Generate audio first -- no transcript available yet."}), 404
+
+    text = transcript_path.read_text(encoding="utf-8")
+    questions = quizmod.generate_quiz(text)
+    if not questions:
+        return jsonify({"error": "This chapter's text is too short to build a quiz from."}), 422
+
+    return jsonify({"questions": questions})
 
 
 @app.get("/audio/<slug>/<path:file>")

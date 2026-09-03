@@ -373,6 +373,66 @@
     font-size: 13px;
     border: 1px solid var(--bad);
   }
+
+  /* ---------- seen tracking + quiz ---------- */
+  .progress-summary {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted-2);
+  }
+  .progress-bar-track {
+    margin-top: 5px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+  .badges { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .seen-badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 6px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .note-item.active .seen-badge { background: rgba(255,255,255,0.22); color: #fff; }
+
+  .secondary-row { display: flex; gap: 10px; margin: 4px 0 20px; }
+  .secondary-btn {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .secondary-btn:hover { background: var(--border); }
+  .secondary-btn.active { background: var(--good-soft); color: var(--good); border-color: var(--good); }
+
+  .quiz-card { margin-top: 4px; }
+  .quiz-card h3 { margin: 0 0 14px; font-size: 15px; }
+  .quiz-q { margin-bottom: 16px; }
+  .quiz-q p { margin: 0 0 8px; font-weight: 600; font-size: 13.5px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 6px; }
+  .quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .quiz-opt:hover { background: var(--panel-2); }
+  .quiz-opt.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+  .quiz-opt.incorrect { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  #quiz-result { margin-top: 14px; display: flex; align-items: center; gap: 10px; }
+  .quiz-loading { color: var(--muted-2); font-size: 13px; padding: 10px 0; }
 </style>
 </head>
 <body>
@@ -390,6 +450,7 @@
       <svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M14 14L18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <input id="search" type="text" placeholder="Search notes...">
     </div>
+    <div id="progress-summary" class="progress-summary"></div>
   </div>
   <nav id="note-list" aria-label="Notes"></nav>
 </div>
@@ -479,7 +540,8 @@ function renderNode(node, f, keyPrefix) {
   for (const note of notes) {
     const item = document.createElement('div');
     item.className = 'note-item' + (note.has_audio ? ' has-audio' : '') + (state.selected && state.selected.id === note.id ? ' active' : '');
-    item.innerHTML = `<span class="name">${note.title}</span><span class="audio-badge">Ready</span>`;
+    item.innerHTML = `<span class="name">${note.title}</span>` +
+      `<span class="badges">${note.seen ? '<span class="seen-badge">✓ Seen</span>' : ''}<span class="audio-badge">Ready</span></span>`;
     item.onclick = () => selectNote(note);
     container.appendChild(item);
   }
@@ -488,6 +550,8 @@ function renderNode(node, f, keyPrefix) {
 }
 
 function renderList(filter = '') {
+  updateProgressSummary();
+
   const container = document.getElementById('note-list');
   container.innerHTML = '';
   const f = filter.trim().toLowerCase();
@@ -498,6 +562,16 @@ function renderList(filter = '') {
     return;
   }
   container.appendChild(renderNode(tree, f, ''));
+}
+
+function updateProgressSummary() {
+  const el = document.getElementById('progress-summary');
+  if (!el) return;
+  const total = state.notes.length;
+  const seen = state.notes.filter(n => n.seen).length;
+  const pct = total ? Math.round((seen / total) * 100) : 0;
+  el.innerHTML = `${seen} / ${total} notes seen` +
+    `<div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>`;
 }
 
 function selectNote(note) {
@@ -544,6 +618,11 @@ function renderDetail() {
       </div>
       <div id="status-line"></div>
       <div id="player-block"></div>
+      <div class="secondary-row">
+        <button id="seen-toggle-btn" class="secondary-btn" type="button"></button>
+        <button id="quiz-btn" class="secondary-btn" type="button" disabled>Take quiz</button>
+      </div>
+      <div id="quiz-block"></div>
     </div>
     <div id="pdf-pane">
       <div class="pdf-pane-header">
@@ -557,6 +636,127 @@ function renderDetail() {
     document.getElementById('rate-val').textContent = e.target.value;
   };
   document.getElementById('generate-btn').onclick = startConversion;
+  document.getElementById('seen-toggle-btn').onclick = toggleSeen;
+  document.getElementById('quiz-btn').onclick = startQuiz;
+  updateSeenButton();
+  setQuizEnabled(!!note.has_audio);
+}
+
+function updateSeenButton() {
+  const btn = document.getElementById('seen-toggle-btn');
+  const note = state.selected;
+  if (!btn || !note) return;
+  btn.textContent = note.seen ? '✓ Marked as seen' : 'Mark as seen';
+  btn.classList.toggle('active', !!note.seen);
+}
+
+function setQuizEnabled(enabled) {
+  const btn = document.getElementById('quiz-btn');
+  if (btn) btn.disabled = !enabled;
+}
+
+async function markSeen(seen) {
+  const note = state.selected;
+  if (!note) return;
+  try {
+    await fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: note.id, seen })
+    });
+  } catch (e) { /* best effort -- local badge still updates */ }
+  note.seen = seen;
+  const listed = state.notes.find(n => n.id === note.id);
+  if (listed) listed.seen = seen;
+  updateSeenButton();
+  renderList(document.getElementById('search').value);
+}
+
+function toggleSeen() {
+  const note = state.selected;
+  if (note) markSeen(!note.seen);
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function startQuiz() {
+  const note = state.selected;
+  if (!note) return;
+  const quizBlock = document.getElementById('quiz-block');
+  quizBlock.innerHTML = '<div class="quiz-loading">Building quiz from the transcript…</div>';
+  try {
+    const res = await fetch(`/api/quiz?id=${encodeURIComponent(note.id)}`);
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      quizBlock.innerHTML = `<div class="error-box">${escapeHtml(data.error || 'Could not build a quiz.')}</div>`;
+      return;
+    }
+    renderQuiz(data.questions);
+  } catch (e) {
+    quizBlock.innerHTML = `<div class="error-box">Could not reach the server.</div>`;
+  }
+}
+
+function renderQuiz(questions) {
+  const quizBlock = document.getElementById('quiz-block');
+  if (!questions.length) {
+    quizBlock.innerHTML = `<div class="error-box">This chapter's text is too short to build a quiz from.</div>`;
+    return;
+  }
+  quizBlock.innerHTML = `
+    <div class="card quiz-card">
+      <h3>Quick check — fill in the blank</h3>
+      <form id="quiz-form">
+        ${questions.map((q, i) => `
+          <div class="quiz-q" data-answer="${escapeHtml(q.answer)}">
+            <p>${i + 1}. ${escapeHtml(q.question)}</p>
+            <div class="quiz-opts">
+              ${q.options.map(opt => `
+                <label class="quiz-opt">
+                  <input type="radio" name="q${i}" value="${escapeHtml(opt)}" required>
+                  ${escapeHtml(opt)}
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+        <button type="submit">Check answers</button>
+      </form>
+      <div id="quiz-result"></div>
+    </div>
+  `;
+  document.getElementById('quiz-form').onsubmit = (e) => {
+    e.preventDefault();
+    gradeQuiz(questions.length);
+  };
+}
+
+function gradeQuiz(total) {
+  const qDivs = document.querySelectorAll('.quiz-q');
+  let correct = 0;
+  qDivs.forEach((div) => {
+    const answer = div.dataset.answer;
+    const selected = div.querySelector('input:checked');
+    div.querySelectorAll('.quiz-opt').forEach((label) => {
+      const input = label.querySelector('input');
+      label.classList.remove('correct', 'incorrect');
+      if (input.value === answer) label.classList.add('correct');
+      else if (selected && input.value === selected.value) label.classList.add('incorrect');
+    });
+    if (selected && selected.value === answer) correct++;
+  });
+  const allGood = correct === total;
+  const result = document.getElementById('quiz-result');
+  result.innerHTML = `<span class="status-badge ${allGood ? 'good' : 'bad'}">Score: ${correct}/${total}</span>` +
+    (allGood ? '' : `<button type="button" id="retake-btn" class="secondary-btn">Retake</button>`);
+  const retakeBtn = document.getElementById('retake-btn');
+  if (retakeBtn) retakeBtn.onclick = startQuiz;
 }
 
 async function startConversion() {
@@ -615,6 +815,7 @@ function renderStatus(s) {
     statusLine.textContent = 'No audio generated yet.';
     playerBlock.innerHTML = '';
   }
+  setQuizEnabled(s.status === 'done');
 }
 
 function renderPlayer(tracks, pages) {
@@ -660,7 +861,11 @@ function renderPlayer(tracks, pages) {
     }
   }
   audioEl.onended = () => {
-    if (current < tracks.length - 1) playTrack(current + 1);
+    if (current < tracks.length - 1) {
+      playTrack(current + 1);
+    } else if (!note.seen) {
+      markSeen(true);
+    }
   };
   playTrack(0);
 }

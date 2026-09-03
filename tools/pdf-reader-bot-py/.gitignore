@@ -1,4 +1,5 @@
 audio/
+progress.json
 __pycache__/
 *.pyc
 .venv/
