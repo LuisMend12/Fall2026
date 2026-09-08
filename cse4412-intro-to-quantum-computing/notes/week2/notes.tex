@@ -6,6 +6,7 @@
 \usepackage{algpseudocode}
 \usepackage{booktabs}
 \usepackage{hyperref}
+\usepackage{braket}
 
 \title{CSE 4412: Introduction to Quantum Computing - Week 2 Notes}
 \author{}
@@ -13,5 +14,14 @@
 
 \begin{document}
 \maketitle
+\section*{Postulate 2: measurements}
+This is how we can extract information from a quantum system. We can measure a quantum state $\ket{\psi}$ by applying a measurement operator $M$ to it. The measurement operator is a set of projectors $\{P_i\}$ that correspond to the possible outcomes of the measurement. When we apply the measurement operator to the state, we get a new state that is one of the possible outcomes, and the probability of getting that outcome is given by the Born rule: $P(i) = \bra{\psi} P_i \ket{\psi}$. 
+\vspace{1cm}
+
+where $\ket{+} = \frac{1}{\sqrt{2}}(\ket{0} + \ket{1})$ and $\ket{-} = \frac{1}{\sqrt{2}}(\ket{0} - \ket{1})$. where $\mathbb{P}_i$ is the probability of measuring the state $\ket{\psi}$ in the state $\ket{i}$, and $\bra{\psi} P_i \ket{\psi}$ is the inner product of the state $\ket{\psi}$ with the projector $P_i$ applied to it. Given that thye are bases we can rewrite $\ket{0}$ and $\ket{1}$ in terms of $\ket{+}$ and $\ket{-}$ as follows: 
+\[
+\ket{0} = \frac{1}{\sqrt{2}}(\ket{+} + \ket{-}) \\ {\text{, and }} \\
+\ket{1} = \frac{1}{\sqrt{2}}(\ket{+} - \ket{-})
+\]
 
 \end{document}
