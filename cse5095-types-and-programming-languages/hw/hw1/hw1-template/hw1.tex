@@ -47,6 +47,16 @@ Add another inference rule for showing that the concatenation of
 
 \textbf{Answer:}
 
+\[
+\Rule{RuleName2}
+     {\Rule{RuleNameFromClass}
+           {\isxml{X}\\
+             \isxml{Y}}
+           {\isxml{XY}}\\
+       \isxml{Z}}
+     {\isxml{XYZ}}
+\]
+
 Typestting Hint: you can typeset a derivation by nesting more
 inference rules(\texttt{\textbackslash Rule}) in the premises of an
 inference rule. The code for this gets messy, so make sure you're using
