@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  8 SEP 2026 11:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  10 SEP 2026 11:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -398,13 +398,13 @@ Package rerunfilecheck Info: File `notes.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 10057 strings out of 467871
- 151670 string characters out of 5428423
- 570583 words of memory out of 5000000
+ 10058 strings out of 467871
+ 151680 string characters out of 5428423
+ 572583 words of memory out of 5000000
  38832 multiletter control sequences out of 15000+600000
  634818 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,5n,79p,546b,447s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,5n,79p,546b,449s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Progra
 m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKT
 eX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type
@@ -413,9 +413,9 @@ onts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.
 pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Prog
 ram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiK
 TeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on notes.pdf (1 page, 94534 bytes).
+Output written on notes.pdf (1 page, 96362 bytes).
 PDF statistics:
- 57 PDF objects out of 1000 (max. 8388607)
- 3 named destinations out of 1000 (max. 500000)
+ 58 PDF objects out of 1000 (max. 8388607)
+ 4 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
