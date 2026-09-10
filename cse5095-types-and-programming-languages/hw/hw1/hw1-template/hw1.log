@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  10 SEP 2026 16:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  10 SEP 2026 17:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -178,8 +178,7 @@ erence Rules
 ) (C:\Program Files\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count301
-)
-No file hw1.aux.
+) (hw1.aux)
 \openout1 = `hw1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
@@ -196,6 +195,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -244,16 +244,14 @@ LaTeX Font Info:    ... okay on input line 11.
 \makeMPintoPDFobject=\count307
 \everyMPtoPDFconversion=\toks36
 )
-
-LaTeX Warning: Reference `concat3' on page 1 undefined on input line 42.
-
 LaTeX Font Info:    Trying to load font information for OMS+cmtt on input line 
-49.
-LaTeX Font Info:    No file OMScmtt.fd. on input line 49.
+51.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 51.
+
 
 LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbackslash' on input line 49.
+(Font)              for symbol `textbackslash' on input line 51.
 
 [1
 
@@ -267,18 +265,12 @@ L3 programming layer <2025-12-24>
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
- 3124 strings out of 467871
- 45620 string characters out of 5428423
- 472044 words of memory out of 5000000
- 31997 multiletter control sequences out of 15000+600000
+ 3127 strings out of 467871
+ 45743 string characters out of 5428423
+ 472055 words of memory out of 5000000
+ 31998 multiletter control sequences out of 15000+600000
  635873 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  57i,15n,65p,202b,254s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -295,7 +287,7 @@ c/amsfonts/cm/cmss10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program 
 Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on hw1.pdf (2 pages, 195927 bytes).
+Output written on hw1.pdf (2 pages, 195169 bytes).
 PDF statistics:
  84 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
