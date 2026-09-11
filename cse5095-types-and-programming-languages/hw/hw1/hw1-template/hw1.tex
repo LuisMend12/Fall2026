@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
-\usepackage{amsmath, amsthm, verbatim, enumerate, xcolor, mathpartir}
+\usepackage{amsmath, amssymb, amsthm, verbatim, enumerate, xcolor, mathpartir}
 
 \input{macros}
 
@@ -121,6 +121,39 @@ examples of how to typeset these.
 \end{task}
 
 \textbf{Answer:}
+
+Proof: By rule induction on the derivation of $\tree \istree{\colr}{n}$.
+We have one case for each rule that could have concluded
+$\tree \istree{\colr}{n}$.
+
+\vspace{0.3cm}
+\noindent\textbf{Case RBT-1:} $\tree = \leaf$, $\colr = \bc$, $n = 1$.
+
+% [FILL IN: what is Nodes(Leaf)? does it satisfy Nodes(T) >= 2^(n-1)
+%  when n=1? this case has no premises/IH to use.]
+
+\vspace{0.3cm}
+\noindent\textbf{Case RBT-2:} $\tree = \bnode{\tree_1}{\tree_2}$, $\colr = \bc$,
+$\tree$ derived from $\tree_1 \istree{\colr_1}{m}$ and
+$\tree_2 \istree{\colr_2}{m}$, with $n = m+1$.
+
+% [FILL IN: state the induction hypothesis for T1 and T2 (careful: IH as
+%  stated only applies when m >= 1 -- what happens if m = 0? is the bound
+%  still true in that case?).
+%  Then use Nodes(BNode(T1,T2)) = 1 + Nodes(T1) + Nodes(T2) and the IH
+%  to show Nodes(T) >= 2^(n-1) = 2^m.]
+
+\vspace{0.3cm}
+\noindent\textbf{Case RBT-3:} $\tree = \rnode{\tree_1}{\tree_2}$, $\colr = \rc$,
+$\tree$ derived from $\tree_1 \istree{\bc}{n}$ and
+$\tree_2 \istree{\bc}{n}$.
+
+% [FILL IN: state the IH for T1 and T2 (same n as the conclusion here,
+%  unlike RBT-2). Use Nodes(RNode(T1,T2)) = 1 + Nodes(T1) + Nodes(T2)
+%  and the IH to show Nodes(T) >= 2^(n-1).]
+
+\hfill$\blacksquare$
+
 \section{One more wrap-up question}
 
 \begin{task}
