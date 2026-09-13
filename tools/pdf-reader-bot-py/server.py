@@ -25,6 +25,7 @@ from flask import Flask, Response, abort, jsonify, request
 
 import pdf2speech as p2s
 import quiz as quizmod
+import summarize as summarizemod
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = (HERE / ".." / "..").resolve()
@@ -240,6 +241,31 @@ def api_quiz():
         return jsonify({"error": "This chapter's text is too short to build a quiz from."}), 422
 
     return jsonify({"questions": questions})
+
+
+@app.get("/api/summary")
+def api_summary():
+    rel = request.args.get("path", "")
+    if not rel:
+        return jsonify({"error": "missing path"}), 400
+
+    full = (REPO_ROOT / rel).resolve()
+    if not str(full).startswith(str(REPO_ROOT)) or full.suffix.lower() != ".pdf":
+        return jsonify({"error": "invalid path"}), 400
+    if not full.is_file():
+        return jsonify({"error": "PDF not found"}), 404
+
+    n_sentences = request.args.get("sentences", type=int)
+
+    try:
+        sentences = summarizemod.summarize_pdf(str(full), n_sentences=n_sentences)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 422
+
+    if not sentences:
+        return jsonify({"error": "This PDF's text is too short/sparse to summarize."}), 422
+
+    return jsonify({"sentences": sentences})
 
 
 @app.get("/audio/<slug>/<path:file>")

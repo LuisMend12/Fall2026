@@ -53,6 +53,14 @@ badge next to ones you've already been through, and a running "N / M notes
 seen" count with a progress bar up top. State is stored in
 `tools/pdf-reader-bot-py/progress.json` (per-machine, not committed).
 
+A **"Summarize"** button (no need to generate audio first — it extracts
+text from the PDF directly) builds a short extractive summary: the most
+"important" sentences (scored by word frequency, a classic offline
+heuristic — no external API or model) picked out and shown in their
+original order. Good for a quick skim before deciding whether to read or
+listen to the whole thing. See `summarize.py` if you want to tune the
+scoring later.
+
 Once a note has generated audio, a **"Take quiz"** button builds a short
 fill-in-the-blank quiz from that chapter's transcript — good for a quick
 retention check after listening. This is done entirely offline with simple
@@ -80,6 +88,9 @@ python pdf2speech.py --list-voices
 
 # Convert a PDF
 python pdf2speech.py "..\..\cse5830-bayesian-ml\notes\week1\intro.pdf" --rate 1
+
+# Summarize a PDF (prints to stdout; --out also writes it to a file)
+python summarize.py "..\..\cse5830-bayesian-ml\notes\week1\intro.pdf" --sentences 5
 ```
 
 Output goes to `audio/<pdf-name>/` by default: `track_001.wav`,
