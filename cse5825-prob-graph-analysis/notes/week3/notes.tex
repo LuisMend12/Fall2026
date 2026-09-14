@@ -16,6 +16,95 @@
 
 \section{Introduction}
 
+\section{Joint and Conditional Probability}
+
+\subsection{Joint probability}
+
+For random variables $X$ and $Y$, the \emph{joint probability} $P(X, Y)$
+assigns a probability to every combination of outcomes of $X$ and $Y$
+simultaneously. For discrete variables it is a table summing to 1:
+
+\[
+\sum_{x} \sum_{y} P(X = x, Y = y) = 1.
+\]
+
+The joint distribution over all variables in a model is the most information
+one can have: any other quantity (marginal, conditional) can be derived from
+it by summation or division. This is also why representing it directly (as a
+table) is intractable for many variables — a graphical model exists precisely
+to represent the joint compactly using structure (independence).
+
+\subsection{Marginal probability}
+
+The \emph{marginal} probability of $X$ is obtained by summing (or integrating,
+for continuous variables) the joint over the other variable(s):
+
+\[
+P(X = x) = \sum_{y} P(X = x, Y = y).
+\]
+
+This is often called \emph{summing out} or \emph{marginalizing out} $Y$.
+
+\subsection{Conditional probability}
+
+The \emph{conditional probability} of $Y$ given $X$ is the probability of $Y$
+restricted to the world where $X = x$ is known, renormalized to sum to 1:
+
+\[
+P(Y = y \mid X = x) = \frac{P(X = x, Y = y)}{P(X = x)}, \qquad \text{provided } P(X=x) > 0.
+\]
+
+Rearranging gives the \textbf{chain rule (product rule)}:
+
+\[
+P(X, Y) = P(Y \mid X)\, P(X) = P(X \mid Y)\, P(Y).
+\]
+
+For $n$ variables, repeated application gives the general chain rule:
+
+\[
+P(X_1, \dots, X_n) = P(X_1) \, P(X_2 \mid X_1) \, P(X_3 \mid X_1, X_2) \cdots P(X_n \mid X_1, \dots, X_{n-1}),
+\]
+
+which holds for \emph{any} ordering of the variables. This is exactly the
+factorization a Bayesian network exploits: it fixes an ordering (a topological
+order of the DAG) and assumes each $X_i$ only needs its parents, not all
+predecessors, i.e. $P(X_i \mid X_1, \dots, X_{i-1}) = P(X_i \mid \text{Parents}(X_i))$.
+
+\subsection{Bayes' rule}
+
+Equating the two chain-rule expressions for $P(X,Y)$ gives \textbf{Bayes' rule}:
+
+\[
+P(X \mid Y) = \frac{P(Y \mid X)\, P(X)}{P(Y)} .
+\]
+
+This lets us "invert" a conditional: given how likely evidence $Y$ is under
+each hypothesis $X$ (the likelihood $P(Y \mid X)$) and a prior $P(X)$, we can
+compute the posterior $P(X \mid Y)$.
+
+\subsection{Independence}
+
+$X$ and $Y$ are \emph{independent}, written $X \perp Y$, if knowing one tells
+you nothing about the other:
+
+\[
+P(X, Y) = P(X)\, P(Y) \quad \Longleftrightarrow \quad P(X \mid Y) = P(X).
+\]
+
+More generally, $X$ and $Y$ are \emph{conditionally independent} given $Z$,
+written $X \perp Y \mid Z$, if
+
+\[
+P(X, Y \mid Z) = P(X \mid Z)\, P(Y \mid Z) \quad \Longleftrightarrow \quad P(X \mid Y, Z) = P(X \mid Z).
+\]
+
+Conditional independence is the key assumption graphical models encode
+structurally (via d-separation in a Bayesian network, or separation in a
+Markov network): it is what turns the full joint chain rule above into a
+compact product over local factors, such as the noisy-OR and linear Gaussian
+CPDs discussed next.
+
 \section{The Noisy-OR Model}
 
 \subsection{Motivation}
@@ -151,4 +240,5 @@ E[Y \mid X_1=5, X_2=7] = 50 + 4(5) + 2(7) = 84,
     targets continuous ones.
 \end{itemize}
 
+By discretizing our random variables, we can use the noisy-or model however we can lose information. By discretizing our random variables, we can use the linear Gaussian model however we can lose information.
 \end{document}
