@@ -1,0 +1,208 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\title{MAT 3150 --- Homework 1 Solutions\\
+\large Reading Notes: The Techniques Behind Each Proof}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+These notes walk through \emph{why} each solution is structured the way
+it is, not just what it says. The four problems showcase three proof
+techniques you will use constantly in analysis: \textbf{double
+inclusion} (for set equalities), \textbf{induction} (for statements
+indexed by $n$), and \textbf{contradiction} (for negative statements
+like ``$x$ is irrational'').
+
+\section*{Problem 1: Proving a Set Equality by Double Inclusion}
+
+\subsection*{The general strategy}
+To prove two sets are equal, $S = T$, the standard method (used almost
+every time you don't have a slicker algebraic identity available) is
+\emph{double inclusion}:
+\[
+  S = T \iff S \subset T \ \text{ and } \ T \subset S.
+\]
+Each inclusion is proved separately, and each inclusion is proved by
+\textbf{element chasing}: to show $S \subset T$, you say ``let $x$ be an
+arbitrary element of $S$,'' then use only the definition of $S$ to
+deduce, step by step, that $x$ must also satisfy the definition of $T$.
+The word ``arbitrary'' is doing real work here: because you never used
+any special property of $x$ beyond ``$x \in S$,'' the argument applies
+to \emph{every} element of $S$, which is exactly what $S\subset T$
+means.
+
+\subsection*{Applying it to $A\setminus(B\cap C) = (A\setminus B)\cup(A\setminus C)$}
+Recall $x \in A\setminus B$ means $x \in A$ and $x \notin B$.
+
+\textbf{Direction 1, $A\setminus(B\cap C) \subset (A\setminus B)\cup(A\setminus C)$.}
+Start from $x \in A\setminus (B\cap C)$, i.e.\ $x\in A$ and
+$x \notin B\cap C$. The second fact only tells you $x$ fails to be in
+\emph{at least one} of $B$, $C$ --- it doesn't tell you which. This is
+exactly why the proof splits into cases:
+\begin{itemize}
+  \item \emph{Case $x\notin B$:} immediately $x \in A\setminus B$, so
+        certainly $x$ is in the union.
+  \item \emph{Case $x \in B$:} since $x \notin B\cap C$ but $x\in B$, the
+        only way to fail membership in $B\cap C$ is $x\notin C$. So
+        $x \in A\setminus C$, again landing in the union.
+\end{itemize}
+Every case lands in $(A\setminus B)\cup(A\setminus C)$, so the
+inclusion holds. Note the logical skeleton: ``not ($P$ and $Q$)''
+becomes ``not $P$, or not $Q$'' (this is De Morgan's law for logical
+statements, mirrored by De Morgan's law for sets:
+$\complement(B\cap C) = \complement B \cup \complement C$). The
+case split \emph{is} that law, spelled out by hand instead of quoted
+as a theorem.
+
+\textbf{Direction 2, the reverse inclusion.} This direction starts from
+an element of a \emph{union}, which is itself automatically a case
+split: $x \in (A\setminus B)\cup(A\setminus C)$ means $x\in A\setminus B$
+\emph{or} $x \in A\setminus C$, so the proof again splits into two
+cases and handles each (using $B\cap C \subset B$, resp.\ $B \cap C
+\subset C$, to conclude $x \notin B\cap C$ in either case).
+
+\textbf{Takeaway.} Whenever the defining condition of a set involves
+``and''/``or''/``not,'' expect the proof to case-split along exactly
+that logical structure. This pattern (not this specific identity)
+is what you should walk away able to reproduce.
+
+\section*{Problems 2 \& 3: Proof by Induction}
+
+\subsection*{The general strategy}
+To prove a statement $P(n)$ for all $n \ge n_0$:
+\begin{enumerate}
+  \item \textbf{Base case.} Verify $P(n_0)$ directly (here $n_0=2$ in
+        Problem 2, $n_0=1$ in Problem 3).
+  \item \textbf{Inductive step.} Assume $P(n)$ is true (this assumption
+        is called the \emph{inductive hypothesis}) and use it to prove
+        $P(n+1)$.
+\end{enumerate}
+If both steps succeed, $P$ holds for every $n\ge n_0$: the base case
+gives you $P(n_0)$, the inductive step turns that into $P(n_0+1)$, then
+$P(n_0+1)$ into $P(n_0+2)$, and so on --- like a chain of dominoes,
+each one knocking over the next.
+
+\textbf{The mechanical trick you'll use every time:} to figure out
+exactly what $P(n+1)$ says, take the statement $P(n)$ and substitute
+$n+1$ for every occurrence of $n$. Both solutions do this explicitly
+(equations (2) and (4) in the two problems) before doing any algebra ---
+do this first, so you know exactly what target you're proving toward.
+
+\subsection*{Problem 2: a telescoping/product identity}
+The inductive hypothesis (1) gives you a formula for the product up to
+the $\frac{1}{n^2}$ term. The product up to the $\frac{1}{(n+1)^2}$
+term (the LHS of (2)) is \emph{literally} the LHS of (1) with one extra
+factor tacked on:
+\[
+  \underbrace{\left(1-\tfrac14\right)\cdots\left(1-\tfrac1{n^2}\right)}_{\text{this is exactly the LHS of (1)}}\left(1-\tfrac1{(n+1)^2}\right).
+\]
+This is the key move in almost every induction proof involving a
+sum or product that grows by one term at a time: \emph{isolate the
+first $n$ terms so the inductive hypothesis applies directly to them},
+then deal with the one new term separately. Once you substitute (1)
+in for those first $n$ terms, the problem stops being about induction
+at all and becomes pure algebra: simplify
+$\frac{n+1}{2n}\left(1-\frac1{(n+1)^2}\right)$ down to
+$\frac{n+2}{2(n+1)}$, which is exactly the target from (2). The
+algebra hinges on a difference-of-squares factorization,
+$1 - \frac{1}{(n+1)^2} = \frac{(n+1)^2-1}{(n+1)^2} = \frac{n(n+2)}{(n+1)^2}$
+--- recognizing $(n+1)^2 - 1 = n(n+2)$ (this is $a^2-b^2=(a-b)(a+b)$
+with $a=n+1,\,b=1$) is the one nontrivial algebraic step; everything
+else is cancellation.
+
+\subsection*{Problem 3: a telescoping sum, via a shift-and-subtract trick}
+The left side of the $n+1$ statement (equation (4)) is the sum
+$(2n+3)+(2n+5)+\cdots+(4n+1)+(4n+3)$. Notice this sum \emph{almost}
+matches the $n$-statement's sum $(2n+1)+(2n+3)+\cdots+(4n-1)$, except
+it's missing the first term $(2n+1)$ and has two new terms
+$(4n+1),(4n+3)$ tacked on the end. The solution's trick is to add and
+subtract to fix this mismatch:
+\[
+  (2n+3)+\cdots+(4n-1)+(4n+1)+(4n+3)
+  = \big[(2n+1)+(2n+3)+\cdots+(4n-1)\big] + (4n+1)+(4n+3) - (2n+1).
+\]
+The bracketed term is now \emph{exactly} the LHS of the inductive
+hypothesis (3), so it can be replaced by $3n^2$. What remains is
+arithmetic: $3n^2 + (4n+1)+(4n+3)-(2n+1) = 3n^2+6n+3 = 3(n+1)^2$,
+matching the target. \textbf{This ``add and subtract the mismatched
+boundary terms'' trick is the general technique for induction on sums
+where the index range shifts (not just grows by appending one term)}
+--- keep an eye out for it whenever the sum's starting point also moves
+with $n$.
+
+\section*{Problem 4: Proof by Contradiction, and Closure Properties}
+
+\subsection*{The setup}
+The key fact used repeatedly is a \emph{closure property}: the
+rational numbers $\mathbb{Q}$ are closed under addition, subtraction,
+multiplication, and division (by nonzero rationals) --- i.e.\
+combining two rationals with $+,-,\times,\div$ always gives another
+rational. This is really the whole engine of the proof; everything
+else is bookkeeping.
+
+\subsection*{The contradiction pattern}
+To show $x+y$ is irrational (given $x$ rational, $y$ irrational), the
+solution does \emph{not} attack $x+y$ directly. Instead:
+\begin{enumerate}
+  \item \textbf{Assume the opposite:} suppose $z = x+y$ \emph{is}
+        rational.
+  \item \textbf{Derive a consequence:} then $y = z - x$ is a difference
+        of two rationals ($z$ by assumption, $x$ given), hence
+        rational by closure.
+  \item \textbf{Contradict a given fact:} but $y$ was given to be
+        irrational. ``$y$ is rational'' and ``$y$ is irrational''
+        can't both be true --- contradiction.
+  \item \textbf{Conclude:} the assumption in step 1 must be false, so
+        $z=x+y$ is irrational.
+\end{enumerate}
+The same four-step pattern repeats verbatim for $xy$, using division
+($y = w/x$, valid since $x\ne 0$) instead of subtraction. \textbf{This
+is the template for essentially every irrationality proof you'll see:}
+assume the rational-looking quantity is rational, algebraically solve
+for the known-irrational piece, and show that forces it to be rational
+too.
+
+\subsection*{Why $x \ne 0$ matters}
+The solution needs to divide by $x$ to isolate $y = w/x$. If $x$ were
+allowed to be $0$, then $xy = 0$ regardless of $y$, so $xy$ would be
+rational (namely $0$) even though $y$ is irrational --- the claim
+would be false. This is a good example of noticing \emph{why} a
+hypothesis is stated the way it is, rather than treating it as
+boilerplate: every hypothesis in a theorem is usually load-bearing.
+
+\subsection*{The final question: is the sum of two irrationals always irrational?}
+This is a ``true or false'' question, and to disprove a universal
+claim (``always''), a single \textbf{counterexample} suffices --- you
+don't need any general argument. $\sqrt2$ and $-\sqrt2$ are each
+irrational, but their sum is $0$, which is rational. \textbf{General
+principle:} to show a ``for all'' statement is false, exhibit one
+instance where it fails; to show an ``there exists'' statement is
+true, same idea. This is the opposite of the induction/contradiction
+techniques above, which prove statements true for \emph{all} $n$ or
+derive a \emph{general} fact --- recognizing which kind of claim you're
+faced with (universal vs.\ existential) tells you which kind of proof
+to reach for.
+
+\section*{Summary: matching technique to claim shape}
+\begin{itemize}
+  \item \textbf{Set equality} $S=T$ $\Rightarrow$ double inclusion,
+        each direction by element-chasing following the logical
+        structure (and/or/not) of the set definitions.
+  \item \textbf{``For all $n \ge n_0$''} statement $\Rightarrow$
+        induction: base case, then assume $P(n)$ and prove $P(n+1)$ by
+        isolating the part of $P(n+1)$ that matches $P(n)$ exactly and
+        substituting.
+  \item \textbf{``$X$ is irrational / impossible / not-$P$''}
+        statement $\Rightarrow$ contradiction: assume $P$, derive
+        something that violates a known fact.
+  \item \textbf{``Is it always true?'' (implicitly, a for-all claim)}
+        $\Rightarrow$ if you suspect it's false, look for a single
+        counterexample rather than trying to prove a general theorem.
+\end{itemize}
+
+\end{document}
