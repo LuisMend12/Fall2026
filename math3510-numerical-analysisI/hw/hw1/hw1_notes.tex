@@ -1,0 +1,185 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\lstset{
+  language=Matlab,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{purple},
+  showstringspaces=false,
+  frame=single,
+  breaklines=true,
+  columns=fullflexible,
+}
+
+\title{MAT 3510 --- Homework 1 Study Notes\\
+\large Sample Variance \& Polynomial Addition}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+These are notes on the \emph{math} behind the two problems, plus MATLAB
+mechanics that trip people up. They are meant to help you write the
+functions yourself, not to be handed in.
+
+\section*{Problem 1: Sample Variance}
+
+\subsection*{The formula}
+\[
+  s^2 = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar x)^2,
+  \qquad
+  \bar x = \frac{1}{n}\sum_{i=1}^n x_i .
+\]
+
+\subsection*{What each piece means}
+\begin{itemize}
+  \item $\bar x$ is the sample mean: the average of your $n$ data points.
+  \item $x_i - \bar x$ is the \emph{deviation} of point $i$ from the average.
+        Some deviations are positive, some negative, and they sum to zero
+        by definition of the mean.
+  \item Squaring, $(x_i-\bar x)^2$, makes every term non-negative (so
+        positive and negative deviations don't cancel) and penalizes large
+        deviations more heavily than small ones.
+  \item Summing the squared deviations gives the total spread in the data.
+  \item Dividing by $n-1$ (rather than $n$) rescales that total into an
+        average-ish quantity.
+\end{itemize}
+
+\subsection*{Why $n-1$ and not $n$? (Bessel's correction)}
+If you knew the true population mean $\mu$, then
+$\frac{1}{n}\sum (x_i-\mu)^2$ would be the natural, unbiased estimate of
+the population variance. But we don't know $\mu$ --- we only have
+$\bar x$, which is computed \emph{from the same sample}. It is a fact
+that
+\[
+  \bar x = \arg\min_c \sum_{i=1}^n (x_i - c)^2,
+\]
+i.e.\ $\bar x$ is exactly the value of $c$ that minimizes the sum of
+squared deviations. So $\sum (x_i - \bar x)^2 \le \sum (x_i - \mu)^2$
+always, which means using $\bar x$ in place of $\mu$ systematically
+\emph{understates} the true spread. Dividing by $n-1$ instead of $n$
+exactly corrects this bias on average. This is also why MATLAB's
+built-in \texttt{var} divides by $n-1$ by default --- so your
+\texttt{samplevar} should agree with it.
+
+\subsection*{MATLAB mechanics: \texttt{.\string^2} vs \texttt{\string^2}}
+This is the most common bug on this problem. In MATLAB, \texttt{\string^}
+is \emph{matrix power} --- it only makes sense for square matrices (or
+scalars). If \texttt{x} is a vector and you write \texttt{x\string^2},
+MATLAB will error (or, for a scalar, just square it, which is why the bug
+is easy to miss when testing on a single number).
+
+What you actually want is \emph{elementwise} squaring: put a dot before
+the operator, \texttt{x.\string^2}. The dot family
+(\texttt{.\string^}, \texttt{.*}, \texttt{./}) means ``do this operation
+entry-by-entry,'' as opposed to the matrix versions of those operations.
+
+\begin{lstlisting}
+x = [2 4 4 4 5 5 7 9];
+x.^2      % correct: squares each entry -> [4 16 16 16 25 25 49 81]
+x^2       % ERROR for a non-square, non-scalar x
+\end{lstlisting}
+
+\subsection*{Recipe for \texttt{samplevar(x)}}
+\begin{enumerate}
+  \item \texttt{n = length(x)}
+  \item \texttt{xbar = mean(x)}
+  \item \texttt{deviations = x - xbar} \quad(MATLAB broadcasts the scalar
+        \texttt{xbar} against every entry of \texttt{x} automatically)
+  \item \texttt{squared = deviations.\string^2}
+  \item \texttt{s2 = sum(squared) / (n - 1)}
+\end{enumerate}
+Check your work: \texttt{samplevar(x)} should equal MATLAB's built-in
+\texttt{var(x)} on the same vector, for any \texttt{x}.
+
+\section*{Problem 2: Adding Polynomials}
+
+\subsection*{How a polynomial becomes a vector}
+A polynomial like $3x^2 + 5x - 2$ is represented by its coefficients,
+listed from the \emph{highest} degree down to the constant term:
+\[
+  3x^2 + 5x - 2 \quad \longleftrightarrow \quad [\,3,\ 5,\ -2\,].
+\]
+The key subtlety: the degree that a coefficient represents depends on
+\emph{where it sits relative to the end of the vector}, not on a fixed
+index. In a length-3 vector, position 1 is the $x^2$ coefficient; in a
+length-4 vector, position 1 is the $x^3$ coefficient. The \emph{last}
+entry is always the constant term ($x^0$), regardless of length.
+
+\subsection*{Why you can't just add the vectors directly}
+Adding two polynomials means adding the coefficients of matching
+degrees:
+\[
+  (a_2x^2+a_1x+a_0) + (b_3x^3+b_2x^2+b_1x+b_0)
+  = b_3x^3 + (a_2+b_2)x^2 + (a_1+b_1)x + (a_0+b_0).
+\]
+If $p=[a_2,a_1,a_0]$ has length 3 and $q=[b_3,b_2,b_1,b_0]$ has length 4,
+then \texttt{p + q} in MATLAB either errors (lengths differ) or, if you
+tried to force it, would misalign degree-2 terms in $p$ with degree-3
+terms in $q$. You must first align them \emph{by degree}.
+
+\subsection*{The trick: pad with leading zeros}
+Treat the shorter polynomial as though it has zero coefficients for the
+missing high-degree terms. Concretely, $x^2+2x+3$ is really
+$0\cdot x^3 + 1\cdot x^2 + 2\cdot x + 3$, so as a length-4 vector it is
+$[0,1,2,3]$. Once both vectors are padded on the \textbf{left} (the
+high-degree end) to the same length, position $k$ in one vector lines
+up with the same degree as position $k$ in the other, and ordinary
+elementwise addition is correct.
+
+\begin{center}
+\begin{tabular}{r c c c c}
+  $p = x^2+2x+3$      &   & 1 & 2 & 3 \\
+  padded to length 4  & 0 & 1 & 2 & 3 \\
+  $q = 5x^3+x+2$       & 5 & 0 & 1 & 2 \\
+  \hline
+  $p+q$               & 5 & 1 & 3 & 5 \\
+\end{tabular}
+\end{center}
+so $p+q = 5x^3+x^2+3x+5$.
+
+\emph{Common mistake:} padding on the right instead of the left. That
+would shift every existing coefficient down by one degree instead of
+inserting zero coefficients for the missing high-degree terms --- the
+result would be a completely different (wrong) polynomial.
+
+\subsection*{Recipe for \texttt{polyadd(p, q)}}
+\begin{enumerate}
+  \item \texttt{np = length(p)}, \texttt{nq = length(q)}
+  \item \texttt{n = max(np, nq)} \quad (the target length --- the
+        higher-degree input doesn't need padding)
+  \item Pad the shorter one on the left:
+        \texttt{pp = [zeros(1, n-np), p]},
+        \texttt{qq = [zeros(1, n-nq), q]}
+  \item \texttt{r = pp + qq}
+\end{enumerate}
+Check your work by hand on an example with $p$ and $q$ of different
+lengths, e.g.\ $p=[1,2,3]$, $q=[5,0,1,2]$ should give $[5,1,3,5]$.
+
+\section*{General MATLAB tips for this homework}
+\begin{itemize}
+  \item \textbf{File name = function name.} For MATLAB to recognize
+        \texttt{samplevar} as a callable function, it must live in a
+        file named exactly \texttt{samplevar.m} (same for
+        \texttt{polyadd.m}). A file like \texttt{hw1.m} containing
+        \texttt{function s2 = samplevar(x)} will confuse MATLAB about
+        what the callable name is.
+  \item \textbf{Test against a known answer.} For Problem 1, compare
+        against the built-in \texttt{var}. For Problem 2, pick small
+        examples you can add by hand.
+  \item \textbf{Vector vs.\ scalar operators.} Whenever you're doing
+        an operation ``to every entry of a list'' (square, multiply,
+        divide), reach for the dot operators \texttt{.\string^},
+        \texttt{.*}, \texttt{./} rather than their plain counterparts,
+        unless you specifically mean linear algebra (matrix
+        multiplication, matrix powers).
+\end{itemize}
+
+\end{document}
