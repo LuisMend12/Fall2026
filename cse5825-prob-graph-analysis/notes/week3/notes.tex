@@ -83,4 +83,72 @@ P(Y=0 \mid X_1=1, X_2=0, X_3=1) = q_1 q_3 = 0.4 \times 0.7 = 0.28,
     variables).
 \end{itemize}
 
+\section{The Linear Gaussian Model}
+
+\subsection{Motivation}
+
+Noisy-OR gives a compact CPD for a binary effect with binary causes. When
+variables are instead continuous, a CPT is not even an option (there are
+infinitely many parent configurations), so we need a parametric form for
+$P(Y \mid X_1, \dots, X_k)$. The linear Gaussian model is the standard compact
+CPD for continuous variables in a Bayesian network.
+
+\subsection{Setup}
+
+Let $Y$ be a continuous child with continuous parents $X_1, \dots, X_k$. The
+linear Gaussian model assumes $Y$ is a noisy linear combination of its parents:
+
+\[
+Y = \beta_0 + \sum_{i=1}^{k} \beta_i X_i + \varepsilon, \qquad
+\varepsilon \sim \mathcal{N}(0, \sigma^2),
+\]
+
+so that
+
+\[
+P(Y \mid X_1, \dots, X_k) = \mathcal{N}\!\Big(\beta_0 + \sum_{i=1}^k \beta_i X_i,\ \sigma^2\Big).
+\]
+
+Only $k+2$ parameters are needed: the weights $\beta_0, \dots, \beta_k$ and the
+noise variance $\sigma^2$, instead of a distribution for every parent value.
+
+\subsection{Key property: joint Gaussian}
+
+If every variable in the network is linear Gaussian (each node's CPD has this
+form given its parents), then the joint distribution over all variables is a
+multivariate Gaussian, and every marginal and every conditional (given evidence)
+is Gaussian as well. This is what makes exact inference in Gaussian Bayesian
+networks tractable in closed form (via the mean vector and covariance matrix),
+analogous to how tabular CPDs make exact inference tractable for discrete
+networks.
+
+\subsection{Example}
+
+Let $Y$ = ``exam score'' depend linearly on $X_1$ = hours studied and
+$X_2$ = hours slept, with $\beta_0 = 50, \beta_1 = 4, \beta_2 = 2, \sigma^2 = 25$.
+For a student with $X_1 = 5, X_2 = 7$:
+
+\[
+E[Y \mid X_1=5, X_2=7] = 50 + 4(5) + 2(7) = 84,
+\qquad Y \mid X_1=5, X_2=7 \sim \mathcal{N}(84, 25).
+\]
+
+\subsection{Properties}
+
+\begin{itemize}
+  \item \textbf{Linear in the mean}: the conditional mean is an affine function
+    of the parents; the variance $\sigma^2$ does not depend on the parents'
+    values (homoscedastic noise).
+  \item \textbf{Closed under the network}: linear Gaussian CPDs throughout a
+    network give a jointly Gaussian distribution, so inference reduces to
+    linear algebra rather than integration.
+  \item \textbf{Conditional linear Gaussian (CLG)}: a common extension mixes
+    discrete and continuous parents, using a discrete parent to select among
+    different sets of $(\beta, \sigma^2)$ parameters (a different linear model
+    per discrete configuration).
+  \item \textbf{Contrast with noisy-OR}: both are $O(k)$-parameter compact CPDs,
+    but noisy-OR targets binary cause/effect variables while linear Gaussian
+    targets continuous ones.
+\end{itemize}
+
 \end{document}
