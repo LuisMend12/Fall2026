@@ -16,4 +16,71 @@
 
 \section{Introduction}
 
+\section{The Noisy-OR Model}
+
+\subsection{Motivation}
+
+In a Bayesian network, a node $Y$ with $k$ binary parents $X_1, \dots, X_k$ needs a
+conditional probability table (CPT) specifying $P(Y \mid X_1, \dots, X_k)$ for all
+$2^k$ parent configurations. This grows exponentially in the number of parents,
+which is both hard to elicit from experts and expensive to store.
+
+The noisy-OR model is a canonical example of a \emph{compact} (parametric) CPT: it
+assumes each parent $X_i$ independently has some chance of \emph{causing} $Y=1$,
+and $Y$ is on if \emph{any} of the causes succeed. This reduces the number of
+parameters from $O(2^k)$ to $O(k)$.
+
+\subsection{Setup}
+
+Each parent $X_i$ is a binary cause of the binary effect $Y$. Introduce independent
+``inhibitor'' variables: even when $X_i = 1$, the cause is inhibited (fails to
+trigger $Y$) with probability $q_i$. Equivalently, $X_i$ succeeds in causing $Y$
+with probability $1 - q_i$, independently of the other causes.
+
+$Y = 0$ iff every active parent's cause is inhibited. So
+
+\[
+P(Y = 0 \mid X_1, \dots, X_k) = \prod_{i : X_i = 1} q_i,
+\qquad
+P(Y = 1 \mid X_1, \dots, X_k) = 1 - \prod_{i : X_i = 1} q_i .
+\]
+
+Only $k$ parameters $q_1, \dots, q_k$ are needed, one per parent.
+
+\subsection{Leak probability}
+
+In practice $Y$ can sometimes be true even when all listed parents are 0 (an
+unmodeled or background cause). This is handled with a \emph{leak} parameter
+$q_0 \in (0,1]$, treated as an always-active virtual parent:
+
+\[
+P(Y = 0 \mid X_1, \dots, X_k) = q_0 \prod_{i : X_i = 1} q_i .
+\]
+
+\subsection{Example}
+
+Suppose $Y$ = ``fever'' has parents $X_1$ = flu, $X_2$ = malaria, $X_3$ = cold,
+with inhibition probabilities $q_1 = 0.4$, $q_2 = 0.1$, $q_3 = 0.7$ (so flu causes
+fever with probability $0.6$, malaria with $0.9$, cold with $0.3$). If a patient
+has flu and a cold but not malaria ($X_1=1, X_2=0, X_3=1$):
+
+\[
+P(Y=0 \mid X_1=1, X_2=0, X_3=1) = q_1 q_3 = 0.4 \times 0.7 = 0.28,
+\qquad P(Y=1 \mid \cdot) = 0.72 .
+\]
+
+\subsection{Properties}
+
+\begin{itemize}
+  \item \textbf{Monotonic}: adding an active cause can only increase $P(Y=1)$,
+    since it multiplies another factor $q_i \in (0,1]$ into $P(Y=0)$.
+  \item \textbf{Symmetric in the causes}: the causes contribute independently;
+    order doesn't matter, only which subset is active.
+  \item \textbf{Special case}: if every $q_i \to 0$, this reduces to the
+    deterministic logical OR of the parents.
+  \item \textbf{Generalizations}: noisy-AND (dual model, symmetric using De
+    Morgan's law) and noisy-MAX (extension to multi-valued, non-binary
+    variables).
+\end{itemize}
+
 \end{document}
