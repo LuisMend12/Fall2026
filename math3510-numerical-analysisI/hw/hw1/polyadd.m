@@ -6,8 +6,8 @@ function r = polyadd(p, q)
     % Returns r, the coefficient vector of p + q.
 
     % TODO 1: find the length of p and q
-    np = 0;
-    nq = 0;
+    np = length(p);
+    nq = length(q);
 
     % TODO 2: figure out how many leading zeros each vector needs so
     %   that both vectors line up by DEGREE (not by index) before adding.
