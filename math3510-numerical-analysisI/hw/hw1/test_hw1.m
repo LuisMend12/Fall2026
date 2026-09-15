@@ -29,9 +29,28 @@ for k = 1:numel(test_cases)
 end
 
 %% Problem 2: polyadd
-p = [1 2 3];      % x^2 + 2x + 3
-q = [5 0 1 2];     % 5x^3 + 0x^2 + x + 2
+poly_cases = {
+    % {p, q, expected}
+    {[1 2 3],      [5 0 1 2],   [5 1 3 5]};     % original example, q longer
+    {[1 2],        [3 4],       [4 6]};          % equal length
+    {[1 0 -1],     [2],         [1 0 1]};        % p longer than q
+    {[3],          [1 2 3],     [1 2 6]};        % q longer than p
+    {[1 2],        [-1 3],      [0 5]};          % leading zero in result (not stripped)
+    {[0 0],        [0 0],       [0 0]};          % all zeros
+    {[5],          [3],         [8]};            % both scalars
+    {[1.5 2.5],    [0.5 -0.5],  [2 2]};          % decimals
+};
 
-% TODO: call polyadd(p, q) and check it by hand
-% Expected: 5x^3 + 1x^2 + 3x + 5  ->  [5 1 3 5]
-% r = polyadd(p, q)
+for k = 1:numel(poly_cases)
+    p = poly_cases{k}{1};
+    q = poly_cases{k}{2};
+    expected = poly_cases{k}{3};
+    r = polyadd(p, q);
+    if isequal(r, expected)
+        status = 'PASS';
+    else
+        status = 'FAIL';
+    end
+    fprintf('Poly case %d: polyadd = [%s], expected = [%s] -> %s\n', ...
+        k, num2str(r), num2str(expected), status);
+end
