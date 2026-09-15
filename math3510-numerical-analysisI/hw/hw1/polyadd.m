@@ -13,10 +13,13 @@ function r = polyadd(p, q)
     %   that both vectors line up by DEGREE (not by index) before adding.
     %   Hint: the shorter vector is the lower-degree polynomial, so you
     %   pad zeros on the LEFT (the high-degree end) of the shorter one.
+    max_len = max(np, nq);
+    pp = [zeros(1, max_len - np), p];
+    qq = [zeros(1, max_len - nq), q];
 
     % TODO 3: build padded versions pp and qq of p and q that are the
     %   same length
 
     % TODO 4: add them elementwise to get r
-    r = [];
+    r = pp + qq;
 end
