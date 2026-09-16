@@ -1,0 +1,25 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{braket}
+
+\title{CSE 5830: Bayesian Machine Learning - Week 3 Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\section*{Dirichlet distribution}
+The categorical distribution is the vector generalization of the bernoulli, and we use beta distribution as the conjugate prior for the bernoulli. The dirichlet distribution is the conjugate prior for the categorical distribution.
+\section{Maximum likelihood estimate}
+classical way to estiamting unknown parameters is to use maximum likelihood estimation. The MLE is the value of the parameter that maximizes the likelihood function. For example, for a bernoulli distribution, the MLE of the parameter $p$ is given by:
+\begin{equation}
+    \hat{p} = \frac{1}{N} \sum_{i=1}^{N} x_i
+\end{equation}
+
+\end{document}
