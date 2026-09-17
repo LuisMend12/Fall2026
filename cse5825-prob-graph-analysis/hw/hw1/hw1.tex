@@ -286,7 +286,7 @@ $p(y\mid z) = \frac{p(y,z)}{p(z)} = \frac{p(y)\sum_{x}\sum_{w} p(z\mid w)\,p(w\m
 % collider (x->w<-y) and is a descendant of neither observed variable,
 % so observing only z (a descendant of w) does not, in general, block it.
 % TODO
-$x \perp y \mid z = \frac{p(x,z)p(y,z)}{p(z)^2} $
+$x \perp y \mid z = p(x|y,z) = p(x|z) = \frac{p(x,z)}{p(z)} = \frac{p(x)\sum_{y}\sum_{w} p(z\mid w)\,p(w\mid x,y)\,p(y)}{\sum_w p(z\mid w)\sum_{x'}\sum_y p(w\mid x',y)\,p(x')\,p(y)}$
 
 \section*{Problem 6 (15 points)}
 
