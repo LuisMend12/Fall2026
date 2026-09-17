@@ -220,11 +220,18 @@ For this question I used the following factorization of the joint distribution, 
 % should be noticeably different (smoking raises l and b, which both feed
 % into d), and p(d) should land between them, closer to whichever s-value
 % is more probable a priori (here s is 50/50, so roughly the midpoint).
-$p(d) = $ % TODO
+% joint_prob_toy(tr, tr) = 0.54
+% joint_prob_toy(fa, tr) = 0.08000000000000002
+% p(Y): {'tr': 0.6200000000000001, 'fa': 0.38000000000000006}
+% p(d): {'tr': 0.1078318992, 'fa': 0.8921681008000002}
+% p(d | s=tr): {'tr': 0.11134032, 'fa': 0.88865968}
+% p(d | s=fa): {'tr': 0.1043234784, 'fa': 0.8956765216}
 
-$p(d \mid s = \mathrm{tr}) = $ % TODO
+$p(d) = 0.1078318992$ % TODO
 
-$p(d \mid s = \mathrm{fa}) = $ % TODO
+$p(d \mid s = \mathrm{tr}) = 0.11134032$ % TODO
+
+$p(d \mid s = \mathrm{fa}) = 0.1043234784$ % TODO
 
 \section*{Problem 5 (15 points)}
 
@@ -233,7 +240,11 @@ Consider $p(x,y,w,z) = p(z\mid w)\,p(w\mid x,y)\,p(x)\,p(y)$.
 \subsection*{(a) Network diagram}
 % Clue: one arrow per conditioning variable in each factor: p(x) and p(y)
 % have no parents; p(w|x,y) means x->w and y->w; p(z|w) means w->z.
-% TODO: tikz network diagram
+% Diagram generated with draw_problem5_network.py (networkx + matplotlib) --
+% rerun that script if you need to regenerate/tweak problem5_network.png.
+\begin{center}
+\includegraphics[width=0.5\textwidth]{problem5_network.png}
+\end{center}
 
 \subsection*{(b) $p(x\mid z)$}
 % Clue: p(x|z) = p(x,z)/p(z). Get p(x,z) by summing the full joint over
@@ -242,12 +253,13 @@ Consider $p(x,y,w,z) = p(z\mid w)\,p(w\mid x,y)\,p(x)\,p(y)$.
 % since it doesn't depend on y or w, then simplify what's left. p(z) is
 % the same sum but additionally summed over x.
 % TODO
+$p(x\mid z) = \frac{p(x,z)}{p(z)}$
 
 \subsection*{(c) $p(y\mid z)$}
 % Clue: exactly the same approach as (b) but sum out x and w instead
 % (by symmetry of the factorization in x and y).
 % TODO
-
+$p(y\mid z) = \frac{p(y,z)}{p(z)}$
 \subsection*{(d) Condition for $x \perp y \mid z$}
 % Clue: x perp y | z means p(x|y,z) = p(x|z), equivalently (by Bayes,
 % Problem 1's identity) p(y|x,z) = p(y|z). Compare your formulas from
@@ -259,6 +271,7 @@ Consider $p(x,y,w,z) = p(z\mid w)\,p(w\mid x,y)\,p(x)\,p(y)$.
 % collider (x->w<-y) and is a descendant of neither observed variable,
 % so observing only z (a descendant of w) does not, in general, block it.
 % TODO
+$x \perp y \mid z = \frac{p(x,z)p(y,z)}{p(z)^2}$
 
 \section*{Problem 6 (15 points)}
 
@@ -273,6 +286,8 @@ Graph: $A \to C$, $A \to E$, $B \to C$, $B \to D$, $C \to E$.
 % on it; (B,... ) etc. Also don't forget (C,D)? there is no D on your
 % path unless it goes through B. List every pair and every path.
 % TODO
+The independent pairs with no observations is:
+- (A, B): The only path is through the collider C (A->C<-B), which is unobserved, so A and B are independent.
 
 \subsection*{(b) Independent pairs given $E$}
 % Clue: E is a descendant of the collider at C (C->E), so observing E
@@ -282,12 +297,14 @@ Graph: $A \to C$, $A \to E$, $B \to C$, $B \to D$, $C \to E$.
 % is observed, while chains/forks with C on them are unaffected by
 % observing E (E is not on those direct edges).
 % TODO
+There are no independent pairs given E, since observing E unblocks the collider at C, making A and B dependent.
 
 \subsection*{(c) Decomposition of $P(A,B,C,E)$}
 % Clue: use the chain rule along the graph structure -- each variable's
 % factor is P(var | its parents in the graph), restricted to the
 % variables actually asked for here (A, B, C, E; D is not included).
 % TODO
+$P(A,B,C,E) = P(A)P(B)P(C \mid A,B)P(E \mid C)$
 
 \subsection*{(d) Parameters for CPD of $E$ ($A,B,D$ binary; $C,E$ three values)}
 % Clue: this is just the r*(k-1) formula from Problem 3's notes applied
@@ -295,5 +312,5 @@ Graph: $A \to C$, $A \to E$, $B \to C$, $B \to D$, $C \to E$.
 % ONLY (check the graph for exactly which variables point into E; D does
 % not, since D hangs off B, not E).
 % TODO
-
+The parameters for CPD of E is $r*(k-1) = 2*2*(3-1) = 8$.
 \end{document}
