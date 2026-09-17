@@ -5,6 +5,8 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
 \usepackage{hyperref}
 
 \title{CSE 5825: Probabilistic Graph Analysis \\ Homework 1}
@@ -13,5 +15,218 @@
 
 \begin{document}
 \maketitle
+
+\section*{Problem 1 (10 points)}
+
+Prove
+\[
+  p(x,y\mid z) = p(x\mid z)\,p(y\mid x,z)
+\]
+and also
+\[
+  p(x\mid y,z) = \frac{p(y\mid x,z)\,p(x\mid z)}{p(y\mid z)}.
+\]
+
+% Clue: both identities follow from the product rule p(u,v)=p(u|v)p(v)
+% applied *inside* the world where z is already given -- i.e. treat
+% p(.|z) as an ordinary distribution and apply product rule to x,y within it.
+% For the second identity: you now have two expressions for p(x,y|z)
+% (one from expanding on x first, one from expanding on y first) --
+% set them equal and solve for p(x|y,z).
+% TODO: proof here
+
+\section*{Problem 2 (15 points)}
+
+A college has three departments, A, B, and C, with female percentages
+35\%, 20\%, and 55\% respectively. A department is chosen at random,
+then a student is chosen at random from that department.
+
+\subsection*{(a) $P(\text{female})$}
+% Clue: law of total probability -- each department is chosen with
+% probability 1/3 (chosen "at random" among 3 depts), so
+% P(female) = sum_dept P(female | dept) * P(dept).
+% TODO
+
+\subsection*{(b) $P(\text{Dept}=B \mid \text{female})$}
+% Clue: Bayes' rule, P(B|female) = P(female|B)P(B) / P(female).
+% The denominator is exactly what you computed in part (a) -- reuse it.
+% TODO
+
+\subsection*{(c) $P(\text{Dept}=A \mid \text{male})$}
+% Clue: same idea as (b) but with "male". P(male|dept) = 1 - P(female|dept),
+% and you need a fresh total-probability denominator P(male) (sum over depts).
+% TODO
+
+\section*{Problem 3 (20 points)}
+
+Consider $P(A,B,C,D)$ where $A,B$ are binary and $C,D$ have 3 values each.
+
+\subsection*{(a) Parameters for the full joint}
+% Clue: full joint table has (product of each variable's #values) entries,
+% but they must sum to 1, so free parameters = that product, minus 1.
+% TODO
+
+\subsection*{(b) Parameters assuming $P(A,B,C,D) = P(A)P(B\mid A)P(C\mid B)P(D\mid B)$}
+% Clue: cost of a CPT P(X|Parents) is r*(k-1), where k = #values of X and
+% r = product of #values of each parent (r=1 if no parents). Sum this cost
+% over all 4 factors P(A), P(B|A), P(C|B), P(D|B) using the given factorization
+% -- note C's parent is B (not A), and D's parent is also B.
+% TODO
+
+\subsection*{(c) Network diagram and independence questions}
+
+% Clue: draw arrows exactly matching the factorization above: A->B, A->C? --
+% careful, re-read which variable is whose parent in the given factorization
+% (P(B|A), P(C|B), P(D|B) means A->B, B->C, B->D).
+% TODO: tikz network diagram
+
+Is $A \perp B$? Is $A \perp B \mid C$?
+% Clue: A->B is a direct edge, so trace the only path between A and B.
+% For "A perp B | C": is the path A->B blocked by conditioning on C?
+% (C is not even on the direct edge A->B -- does observing it change anything
+% about that edge?) Also check if there's any other path between A and B
+% through C that a collider/fork rule would apply to.
+% TODO
+
+\section*{Problem 4 (30 points)}
+
+Chest Clinic belief network. Variables: $x$ = positive X-ray, $d$ = dyspnea,
+$e$ = either tuberculosis or lung cancer, $t$ = tuberculosis, $l$ = lung
+cancer, $b$ = bronchitis, $a$ = visited Asia, $s$ = smoker.
+
+\subsection*{(a) Conditional independence statements (true/false)}
+% Clue: for each item, enumerate every undirected path between the two
+% named variables in the graph (a-t-e-x-d, s-l-e, s-b-d) and apply the
+% chain/fork/collider blocking rules from your notes to each path, given
+% the observed set. All paths blocked => independent (true); one open
+% path => not independent (false).
+% Item 3 vs. 4 is the key contrast: e is a collider (t->e<-l), and its
+% descendant x isn't involved, but d IS a descendant of e (through e->d)
+% -- so observing shortness of breath (d) can "unblock" a collider that
+% observing lung cancer alone does not. Trace t-e-d-b-s and a-t-e-d-b-s
+% paths carefully for items 3 and 4.
+\begin{enumerate}
+  \item tuberculosis $\perp$ smoking $\mid$ shortness of breath \quad % TODO
+  \item lung cancer $\perp$ bronchitis $\mid$ smoking \quad % TODO
+  \item visit to Asia $\perp$ smoking $\mid$ lung cancer \quad % TODO
+  \item visit to Asia $\perp$ smoking $\mid$ lung cancer, shortness of breath \quad % TODO
+\end{enumerate}
+
+\subsection*{(b) $p(d)$, $p(d\mid s=\mathrm{tr})$, $p(d\mid s=\mathrm{fa})$}
+
+Computed via code (see \texttt{chest\_clinic\_skeleton.ipynb}, submitted
+alongside this file). Factorization used:
+\[
+  p(a,t,s,l,b,e,x,d) = p(a)\,p(t\mid a)\,p(s)\,p(l\mid s)\,p(b\mid s)\,p(e\mid t,l)\,p(x\mid e)\,p(d\mid e,b).
+\]
+
+Skeleton of the computation (fill in CPT values and complete the marked
+steps in the notebook, then transcribe the final numbers here):
+
+\begin{algorithm}
+\caption{Marginal and conditional queries on the Chest Clinic network}
+\begin{algorithmic}[1]
+\Procedure{JointProb}{$a,t,s,l,b,e,x,d$}
+  \State \Return $p(a)\cdot p(t\mid a)\cdot p(s)\cdot p(l\mid s)\cdot p(b\mid s)\cdot p(e\mid t,l)\cdot p(x\mid e)\cdot p(d\mid e,b)$
+\EndProcedure
+\Procedure{MarginalD}{}
+  \State $p_d[\mathrm{tr}] \gets 0$, \quad $p_d[\mathrm{fa}] \gets 0$
+  \For{each assignment of $a,t,s,l,b,e,x,d$}
+    \State $p_d[d] \gets p_d[d] + \Call{JointProb}{a,t,s,l,b,e,x,d}$
+  \EndFor
+  \State \Return $p_d$
+\EndProcedure
+\Procedure{ConditionalDGivenS}{$s^\ast$}
+  \State $u[\mathrm{tr}] \gets 0$, \quad $u[\mathrm{fa}] \gets 0$
+  \For{each assignment of $a,t,s,l,b,e,x,d$ with $s = s^\ast$}
+    \State $u[d] \gets u[d] + \Call{JointProb}{a,t,s,l,b,e,x,d}$
+  \EndFor
+  \State \Return $u$ normalized so $u[\mathrm{tr}] + u[\mathrm{fa}] = 1$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+% Clue: run the notebook after filling in the CPT values from the
+% assignment's table (including the deterministic rule for p(e|t,l)) and
+% completing the TODOs in JointProb/MarginalD/ConditionalDGivenS, then
+% copy the printed numbers below. Sanity check: p(d|s=tr) and p(d|s=fa)
+% should be noticeably different (smoking raises l and b, which both feed
+% into d), and p(d) should land between them, closer to whichever s-value
+% is more probable a priori (here s is 50/50, so roughly the midpoint).
+$p(d) = $ % TODO
+
+$p(d \mid s = \mathrm{tr}) = $ % TODO
+
+$p(d \mid s = \mathrm{fa}) = $ % TODO
+
+\section*{Problem 5 (15 points)}
+
+Consider $p(x,y,w,z) = p(z\mid w)\,p(w\mid x,y)\,p(x)\,p(y)$.
+
+\subsection*{(a) Network diagram}
+% Clue: one arrow per conditioning variable in each factor: p(x) and p(y)
+% have no parents; p(w|x,y) means x->w and y->w; p(z|w) means w->z.
+% TODO: tikz network diagram
+
+\subsection*{(b) $p(x\mid z)$}
+% Clue: p(x|z) = p(x,z)/p(z). Get p(x,z) by summing the full joint over
+% the variables NOT appearing in it (here, y and w):
+% p(x,z) = sum_{y,w} p(z|w)p(w|x,y)p(x)p(y). Push p(x) outside the sum
+% since it doesn't depend on y or w, then simplify what's left. p(z) is
+% the same sum but additionally summed over x.
+% TODO
+
+\subsection*{(c) $p(y\mid z)$}
+% Clue: exactly the same approach as (b) but sum out x and w instead
+% (by symmetry of the factorization in x and y).
+% TODO
+
+\subsection*{(d) Condition for $x \perp y \mid z$}
+% Clue: x perp y | z means p(x|y,z) = p(x|z), equivalently (by Bayes,
+% Problem 1's identity) p(y|x,z) = p(y|z). Compare your formulas from
+% (b) and (c) -- since w is summed out (not observed) and both x and y
+% feed into it, ask whether the sum over w can be factored so that the
+% x-dependence and y-dependence separate. State the condition on
+% p(w|x,y) under which that separation happens, and note that in
+% general (with an unrestricted p(w|x,y)) this does NOT hold -- w is a
+% collider (x->w<-y) and is a descendant of neither observed variable,
+% so observing only z (a descendant of w) does not, in general, block it.
+% TODO
+
+\section*{Problem 6 (15 points)}
+
+Graph: $A \to C$, $A \to E$, $B \to C$, $B \to D$, $C \to E$.
+
+\subsection*{(a) Independent pairs, no observations}
+% Clue: with nothing observed, a chain/fork is automatically NOT blocked
+% (only observing the middle node blocks it), while a collider IS blocked
+% by default (only observing it, or a descendant, unblocks it). Check
+% every pair: (A,B) -- only path is through the collider C (A->C<-B),
+% unobserved; (A,D) -- path through B and C, note the collider at C sits
+% on it; (B,... ) etc. Also don't forget (C,D)? there is no D on your
+% path unless it goes through B. List every pair and every path.
+% TODO
+
+\subsection*{(b) Independent pairs given $E$}
+% Clue: E is a descendant of the collider at C (C->E), so observing E
+% partially unblocks that collider -- this changes which pairs were
+% independent in (a). Redo the path analysis for every pair (not
+% involving E) with C's collider now "active" because its descendant E
+% is observed, while chains/forks with C on them are unaffected by
+% observing E (E is not on those direct edges).
+% TODO
+
+\subsection*{(c) Decomposition of $P(A,B,C,E)$}
+% Clue: use the chain rule along the graph structure -- each variable's
+% factor is P(var | its parents in the graph), restricted to the
+% variables actually asked for here (A, B, C, E; D is not included).
+% TODO
+
+\subsection*{(d) Parameters for CPD of $E$ ($A,B,D$ binary; $C,E$ three values)}
+% Clue: this is just the r*(k-1) formula from Problem 3's notes applied
+% to E alone -- k = #values of E, r = product of #values of E's parents
+% ONLY (check the graph for exactly which variables point into E; D does
+% not, since D hangs off B, not E).
+% TODO
 
 \end{document}
