@@ -1,0 +1,109 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\newtheorem*{claim}{Claim}
+
+\title{MAT 3150 --- Homework 2}
+\author{}
+\date{Due September 17}
+
+\begin{document}
+\maketitle
+
+% ============================================================
+\section*{Problem 1 (10 points)}
+Prove that if $x$ and $y$ are arbitrary real numbers such that $x<y$,
+there exists at least one irrational number $z$ satisfying $x<z<y$.
+
+\begin{proof}
+% Strategy: use the density of Q in R together with the fact that
+% (rational) + (irrational)*(something small) can be made irrational.
+% One standard route:
+%   1. By density of Q, find a rational r with x < r < y (or work with
+%      x/sqrt2 < ... < y/sqrt2 type shifts -- pick whichever route your
+%      class used for density of Q first).
+%   2. Use r and sqrt2 to cook up an irrational z strictly between x and y,
+%      e.g. z = r + (y-r)/sqrt2 -- adjust so the inequalities actually hold,
+%      and justify why z is irrational (contradiction: if z were rational,
+%      what would that force?).
+%   3. Check both inequalities x < z and z < y carefully.
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 2 (10 points)}
+Find the supremum and the infimum of the sets
+\[
+  S_1 = \left\{ \frac{1}{n} : n \in \mathbb{N} \right\}
+  \qquad \text{and} \qquad
+  S_2 = \left\{ \frac{(-1)^n}{n} : n \in \mathbb{N} \right\}.
+\]
+
+\subsection*{$S_1$}
+% Claim: sup S_1 = ___, inf S_1 = ___.
+% For sup: identify the largest element explicitly (is it attained?).
+% For inf: show 0 is a lower bound, then show it's the GREATEST lower
+%   bound using the Archimedean property (for any eps > 0, find n with
+%   1/n < eps).
+
+\subsection*{$S_2$}
+% Claim: sup S_2 = ___, inf S_2 = ___.
+% Split into even n (term is positive, (1/n)) and odd n (term is
+%   negative, -1/n). Identify which parity gives the candidate sup/inf,
+%   then verify with an epsilon argument as above.
+
+% ============================================================
+\section*{Problem 3 (10 points)}
+If $T,S$ are nonempty sets so that $s \le t$ for all $s\in S$ and $t\in T$,
+prove that $\sup S$ and $\inf T$ exist, and prove the inequality
+$\sup S \le \inf T$.
+
+\begin{proof}
+% Step 1 (existence of sup S): show S is nonempty and bounded above.
+%   - Nonempty: given.
+%   - Bounded above: any fixed t_0 in T is an upper bound for S (why?).
+%   By the completeness axiom, sup S exists.
+
+% Step 2 (existence of inf T): symmetric argument -- show T is nonempty
+%   and bounded below (any fixed s_0 in S works as a lower bound), so
+%   inf T exists by completeness.
+
+% Step 3 (sup S <= inf T): Fix an arbitrary t in T. Since s <= t for
+%   every s in S, t is an upper bound for S, so sup S <= t (least upper
+%   bound property). This holds for EVERY t in T, so sup S is a lower
+%   bound for T, hence sup S <= inf T (since inf T is the greatest lower
+%   bound).
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 4 (10 points)}
+For $A$ and $B$ nonempty bounded subsets of real numbers, let $A+B$ be
+the set of all sums $a+b$, where $a\in A$ and $b\in B$. Prove that
+\[
+  \sup(A+B) = \sup A + \sup B.
+\]
+
+\begin{proof}
+% Let alpha = sup A, beta = sup B. Show alpha + beta is an upper bound
+% for A+B, and that it's the LEAST upper bound -- two inclusions, much
+% like Problem 3.
+
+\textbf{Step 1: $\alpha+\beta$ is an upper bound for $A+B$.}
+% For arbitrary a in A, b in B: a <= alpha, b <= beta, so a+b <= alpha+beta.
+% Hence alpha+beta is an upper bound for A+B, so sup(A+B) <= alpha+beta.
+
+\textbf{Step 2: $\alpha+\beta$ is the least upper bound.}
+% Let eps > 0 be arbitrary. Since alpha = sup A, there exists a in A with
+%   a > alpha - eps/2. Since beta = sup B, there exists b in B with
+%   b > beta - eps/2. Then a+b in A+B and a+b > alpha+beta - eps.
+% This shows no number smaller than alpha+beta can be an upper bound for
+%   A+B, so sup(A+B) >= alpha+beta.
+
+% Combine Steps 1 and 2 to conclude sup(A+B) = alpha+beta = sup A + sup B.
+
+\end{proof}
+
+\end{document}
