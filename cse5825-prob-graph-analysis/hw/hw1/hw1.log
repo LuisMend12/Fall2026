@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  16 SEP 2026 21:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  16 SEP 2026 21:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -611,8 +611,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 (C:\Program Files\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count344
-)
-No file hw1.aux.
+) (hw1.aux)
 \openout1 = `hw1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
@@ -633,6 +632,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 16.
 LaTeX Font Info:    ... okay on input line 16.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 16.
 LaTeX Font Info:    ... okay on input line 16.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -689,13 +689,14 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package hyperref Info: Link coloring OFF on input line 16.
+ (hw1.out)
+(hw1.out)
 \@outlinefile=\write4
 \openout4 = `hw1.out'.
 
 LaTeX Font Info:    Trying to load font information for U+msa on input line 18.
 
-
-(C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd
+ (C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 18.
@@ -713,21 +714,14 @@ put line 127.
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
-
-
-Package rerunfilecheck Warning: File `hw1.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `hw1.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
+Package rerunfilecheck Info: File `hw1.out' has not changed.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 21736 strings out of 467871
- 398675 string characters out of 5428423
- 800560 words of memory out of 5000000
- 50236 multiletter control sequences out of 15000+600000
+ 21744 strings out of 467871
+ 398949 string characters out of 5428423
+ 800603 words of memory out of 5000000
+ 50238 multiletter control sequences out of 15000+600000
  637424 words of font info for 76 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,6n,107p,433b,537s stack positions out of 10000i,1000n,20000p,200000b,200000s
