@@ -222,16 +222,15 @@ For this question I used the following factorization of the joint distribution, 
 % is more probable a priori (here s is 50/50, so roughly the midpoint).
 % joint_prob_toy(tr, tr) = 0.54
 % joint_prob_toy(fa, tr) = 0.08000000000000002
-% p(Y): {'tr': 0.6200000000000001, 'fa': 0.38000000000000006}
-% p(d): {'tr': 0.1078318992, 'fa': 0.8921681008000002}
-% p(d | s=tr): {'tr': 0.11134032, 'fa': 0.88865968}
-% p(d | s=fa): {'tr': 0.1043234784, 'fa': 0.8956765216}
+% p(d): {'tr': 0.4359706, 'fa': 0.5640293999999999}
+% p(d | s=tr): {'tr': 0.552808, 'fa': 0.44719200000000003}
+% p(d | s=fa): {'tr': 0.31913319999999995, 'fa': 0.6808668}
 
-$p(d) = 0.1078318992$ % TODO
+$p(d) = 0.4359706$ % TODO
 
-$p(d \mid s = \mathrm{tr}) = 0.11134032$ % TODO
+$p(d \mid s = \mathrm{tr}) = 0.552808$ % TODO
 
-$p(d \mid s = \mathrm{fa}) = 0.1043234784$ % TODO
+$p(d \mid s = \mathrm{fa}) = 0.31913319999999995$ % TODO
 
 \section*{Problem 5 (15 points)}
 
@@ -252,14 +251,30 @@ Consider $p(x,y,w,z) = p(z\mid w)\,p(w\mid x,y)\,p(x)\,p(y)$.
 % p(x,z) = sum_{y,w} p(z|w)p(w|x,y)p(x)p(y). Push p(x) outside the sum
 % since it doesn't depend on y or w, then simplify what's left. p(z) is
 % the same sum but additionally summed over x.
+%
+% Worked mini-example of the SAME pulling-out-a-constant move: if you had
+% sum_y sum_w 5 * f(y,w) for some function f, since 5 doesn't depend on y
+% or w at all, you can factor it all the way out front:
+%   sum_y sum_w 5*f(y,w) = 5 * sum_y sum_w f(y,w).
+% p(x) plays the exact same role as that "5" once x is fixed -- it doesn't
+% depend on y or w, so it can move outside both sum signs, while p(z|w),
+% p(w|x,y), p(y) all genuinely depend on y and/or w and must stay inside:
+%   p(x,z) = sum_y sum_w p(z|w) p(w|x,y) p(x) p(y)
+%          = p(x) * sum_y sum_w p(z|w) p(w|x,y) p(y)      <- p(x) pulled out
+% That's as far as this particular simplification goes (nothing else can be
+% pulled out, since p(z|w), p(w|x,y), p(y) all depend on y and/or w). Use
+% this same expression (divided by p(z)) as your answer for p(x|z), and get
+% p(z) itself the same way but ALSO summing out x (since z's formula must
+% not depend on x).
 % TODO
-$p(x\mid z) = \frac{p(x,z)}{p(z)}$
+$p(x\mid z) = \frac{p(x,z)}{p(z)} = \frac{p(x)\sum_{y}\sum_{w} p(z\mid w)\,p(w\mid x,y)\,p(y)}{\sum_w p(z\mid w)\sum_{x'}\sum_y p(w\mid x',y)\,p(x')\,p(y)}$
 
 \subsection*{(c) $p(y\mid z)$}
 % Clue: exactly the same approach as (b) but sum out x and w instead
 % (by symmetry of the factorization in x and y).
 % TODO
-$p(y\mid z) = \frac{p(y,z)}{p(z)}$
+$p(y\mid z) = \frac{p(y,z)}{p(z)} = \frac{p(y)\sum_{x}\sum_{w} p(z\mid w)\,p(w\mid x,y)\,p(x)}{\sum_w p(z\mid w)\sum_{y'}\sum_x p(w\mid x,y')\,p(x)\,p(y')}$
+
 \subsection*{(d) Condition for $x \perp y \mid z$}
 % Clue: x perp y | z means p(x|y,z) = p(x|z), equivalently (by Bayes,
 % Problem 1's identity) p(y|x,z) = p(y|z). Compare your formulas from
@@ -271,7 +286,7 @@ $p(y\mid z) = \frac{p(y,z)}{p(z)}$
 % collider (x->w<-y) and is a descendant of neither observed variable,
 % so observing only z (a descendant of w) does not, in general, block it.
 % TODO
-$x \perp y \mid z = \frac{p(x,z)p(y,z)}{p(z)^2}$
+$x \perp y \mid z = \frac{p(x,z)p(y,z)}{p(z)^2} $
 
 \section*{Problem 6 (15 points)}
 
@@ -286,8 +301,11 @@ Graph: $A \to C$, $A \to E$, $B \to C$, $B \to D$, $C \to E$.
 % on it; (B,... ) etc. Also don't forget (C,D)? there is no D on your
 % path unless it goes through B. List every pair and every path.
 % TODO
-The independent pairs with no observations is:
-- (A, B): The only path is through the collider C (A->C<-B), which is unobserved, so A and B are independent.
+The independent pairs with no observations are:
+\begin{itemize}
+\item $(A, B)$: The only paths ($A\to C \leftarrow B$ and through $E$) pass through the collider $C$, which is unobserved, so $A$ and $B$ are independent.
+\item $(A, D)$: Every path from $A$ to $D$ also passes through the same collider $C$ (then $B \to D$), which is unobserved, so $A$ and $D$ are independent.
+\end{itemize}
 
 \subsection*{(b) Independent pairs given $E$}
 % Clue: E is a descendant of the collider at C (C->E), so observing E
@@ -297,14 +315,14 @@ The independent pairs with no observations is:
 % is observed, while chains/forks with C on them are unaffected by
 % observing E (E is not on those direct edges).
 % TODO
-There are no independent pairs given E, since observing E unblocks the collider at C, making A and B dependent.
+There are no independent pairs given E, since observing E (a descendant of the collider at C) unblocks that collider, making both $(A,B)$ and $(A,D)$ dependent.
 
 \subsection*{(c) Decomposition of $P(A,B,C,E)$}
 % Clue: use the chain rule along the graph structure -- each variable's
 % factor is P(var | its parents in the graph), restricted to the
 % variables actually asked for here (A, B, C, E; D is not included).
 % TODO
-$P(A,B,C,E) = P(A)P(B)P(C \mid A,B)P(E \mid C)$
+$P(A,B,C,E) = P(A)P(B)P(C \mid A,B)P(E \mid A,C)$
 
 \subsection*{(d) Parameters for CPD of $E$ ($A,B,D$ binary; $C,E$ three values)}
 % Clue: this is just the r*(k-1) formula from Problem 3's notes applied
@@ -312,5 +330,6 @@ $P(A,B,C,E) = P(A)P(B)P(C \mid A,B)P(E \mid C)$
 % ONLY (check the graph for exactly which variables point into E; D does
 % not, since D hangs off B, not E).
 % TODO
-The parameters for CPD of E is $r*(k-1) = 2*2*(3-1) = 8$.
+E's parents are $A$ (binary, 2 values) and $C$ (3 values), so $r = 2 \times 3 = 6$ and $k = 3$ (E's own values).
+The parameters for CPD of E is $r*(k-1) = 6*(3-1) = 12$.
 \end{document}
