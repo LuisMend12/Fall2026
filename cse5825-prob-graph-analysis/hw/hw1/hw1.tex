@@ -7,6 +7,7 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{graphicx}
 \usepackage{hyperref}
 
 \title{CSE 5825: Probabilistic Graph Analysis \\ Homework 1}
@@ -131,17 +132,11 @@ Total parameters $= 1 + 2 + 4 + 4 = 11$.
 % (P(B|A), P(C|B), P(D|B) means A->B, B->C, B->D).
 % So the shape is: A points into B, and B points into BOTH C and D (B is a
 % hub in the middle; C and D are "siblings" that both depend only on B).
-% A minimal tikz version (uncomment and fill in / adjust positions):
-% \begin{tikzpicture}[node distance=1.4cm, ->, >={Stealth[length=2mm]}]
-%   \node (A) {$A$};
-%   \node[right=of A] (B) {$B$};
-%   \node[above right=of B] (C) {$C$};
-%   \node[below right=of B] (D) {$D$};
-%   \draw (A) -- (B);
-%   \draw (B) -- (C);
-%   \draw (B) -- (D);
-% \end{tikzpicture}
-% TODO: tikz network diagram
+% Diagram generated with draw_problem3_network.py (networkx + matplotlib) --
+% rerun that script if you need to regenerate/tweak problem3_network.png.
+\begin{center}
+\includegraphics[width=0.5\textwidth]{problem3_network.png}
+\end{center}
 
 Is $A \perp B$? Is $A \perp B \mid C$?
 % Clue: A->B is a direct edge, so trace the only path between A and B.
@@ -160,6 +155,8 @@ Is $A \perp B$? Is $A \perp B \mid C$?
 % at all, does conditioning on C change your answer from the unconditional
 % case?
 % TODO
+A is not independent of B, since there is a direct edge A$\to$B.
+A is not independent of B given C, since conditioning on C does not block the direct edge A$\to$B.
 
 \section*{Problem 4 (30 points)}
 
@@ -179,22 +176,19 @@ cancer, $b$ = bronchitis, $a$ = visited Asia, $s$ = smoker.
 % observing lung cancer alone does not. Trace t-e-d-b-s and a-t-e-d-b-s
 % paths carefully for items 3 and 4.
 \begin{enumerate}
-  \item tuberculosis $\perp$ smoking $\mid$ shortness of breath \quad % TODO
-  \item lung cancer $\perp$ bronchitis $\mid$ smoking \quad % TODO
-  \item visit to Asia $\perp$ smoking $\mid$ lung cancer \quad % TODO
-  \item visit to Asia $\perp$ smoking $\mid$ lung cancer, shortness of breath \quad % TODO
+  \item tuberculosis $\perp$ smoking $\mid$ shortness of breath \quad No, there is an open path t-e-l-s.
+  \item lung cancer $\perp$ bronchitis $\mid$ smoking \quad No, there is an open path l-e-d-b.
+  \item visit to Asia $\perp$ smoking $\mid$ lung cancer \quad No, there is an open path a-t-e-d-b-s.
+  \item visit to Asia $\perp$ smoking $\mid$ lung cancer, shortness of breath \quad Yes, all paths between a and s are blocked given l and d.
 \end{enumerate}
 
 \subsection*{(b) $p(d)$, $p(d\mid s=\mathrm{tr})$, $p(d\mid s=\mathrm{fa})$}
 
-Computed via code (see \texttt{chest\_clinic\_skeleton.ipynb}, submitted
-alongside this file). Factorization used:
+For this question I used the following factorization of the joint distribution, which is consistent with the network structure:
 \[
   p(a,t,s,l,b,e,x,d) = p(a)\,p(t\mid a)\,p(s)\,p(l\mid s)\,p(b\mid s)\,p(e\mid t,l)\,p(x\mid e)\,p(d\mid e,b).
 \]
 
-Skeleton of the computation (fill in CPT values and complete the marked
-steps in the notebook, then transcribe the final numbers here):
 
 \begin{algorithm}
 \caption{Marginal and conditional queries on the Chest Clinic network}
