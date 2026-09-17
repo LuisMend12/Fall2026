@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  17 SEP 2026 11:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  17 SEP 2026 11:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -707,7 +707,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {C:/Users/Luis Mendez/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-<problem3_network.png, id=25, 281.853pt x 209.583pt>
+<problem3_network.png, id=29, 281.853pt x 209.583pt>
 File: problem3_network.png Graphic file (type png)
 <use problem3_network.png>
 Package pdftex.def Info: problem3_network.png  used on input line 138.
@@ -717,7 +717,7 @@ Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
 put line 194.
 
 [3]
-<problem5_network.png, id=55, 281.853pt x 209.583pt>
+<problem5_network.png, id=59, 281.853pt x 209.583pt>
 File: problem5_network.png Graphic file (type png)
 <use problem5_network.png>
 Package pdftex.def Info: problem5_network.png  used on input line 245.
@@ -727,37 +727,49 @@ Package pdftex.def Info: problem5_network.png  used on input line 245.
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
-Package rerunfilecheck Info: File `hw1.out' has not changed.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+
+
+Package rerunfilecheck Warning: File `hw1.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `hw1.out':
+(rerunfilecheck)             Before: 0A920D2945A8E9FF1C8AF988DF52E7ED;180
+(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 21761 strings out of 467871
- 399383 string characters out of 5428423
- 802603 words of memory out of 5000000
- 50253 multiletter control sequences out of 15000+600000
+ 21765 strings out of 467871
+ 399416 string characters out of 5428423
+ 802616 words of memory out of 5000000
+ 50255 multiletter control sequences out of 15000+600000
  637597 words of font info for 76 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  102i,6n,107p,433b,451s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\Luis Mendez\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
-0\tcrm1095.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pf
-b><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Progra
-m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files/MiK
-TeX/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><C:/Program Files/MiKTeX/font
-s/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmmi6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb>
-<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program F
-iles/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/f
-onts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C
-:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Fi
-les/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type1/pub
-lic/amsfonts/symbols/msam10.pfb>
-Output written on hw1.pdf (5 pages, 272902 bytes).
+
+pdfTeX warning (dest): name{section.1} has been referenced but does not exist, 
+replaced by a fixed one
+
+ <C:\Users\Luis Mendez\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\
+tcrm1095.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
+<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program 
+Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files/MiKTe
+X/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/type
+1/public/amsfonts/cmextra/cmex8.pfb><C:/Program Files/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><
+C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Fi
+les/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmr6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C
+:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program File
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fon
+ts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/s
+ymbols/msam10.pfb>
+Output written on hw1.pdf (5 pages, 283995 bytes).
 PDF statistics:
- 163 PDF objects out of 1000 (max. 8388607)
- 33 named destinations out of 1000 (max. 500000)
- 23 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 174 PDF objects out of 1000 (max. 8388607)
+ 35 named destinations out of 1000 (max. 500000)
+ 31 words of extra memory for PDF output out of 10000 (max. 10000000)
 

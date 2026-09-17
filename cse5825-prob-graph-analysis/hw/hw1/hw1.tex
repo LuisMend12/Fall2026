@@ -286,7 +286,12 @@ $p(y\mid z) = \frac{p(y,z)}{p(z)} = \frac{p(y)\sum_{x}\sum_{w} p(z\mid w)\,p(w\m
 % collider (x->w<-y) and is a descendant of neither observed variable,
 % so observing only z (a descendant of w) does not, in general, block it.
 % TODO
-$x \perp y \mid z = p(x|y,z) = p(x|z) = \frac{p(x,z)}{p(z)} = \frac{p(x)\sum_{y}\sum_{w} p(z\mid w)\,p(w\mid x,y)\,p(y)}{\sum_w p(z\mid w)\sum_{x'}\sum_y p(w\mid x',y)\,p(x')\,p(y)}$
+We need $p(x,y\mid z) \stackrel{?}{=} p(x\mid z)\cdot p(y\mid z)$. Comparing
+$p(x,y\mid z) = \dfrac{p(x)\,p(y)\sum_w p(z\mid w)\,p(w\mid x,y)}{p(z)}$ to the product of
+(b) and (c), $x\perp y\mid z$ holds iff $\sum_w p(z\mid w)\,p(w\mid x,y)$ factors as $g(x)h(y)$
+for some functions $g,h$; this is not guaranteed by the given factorization, since $w$ is a
+collider ($x\to w\leftarrow y$) and $z$ is its descendant, so in general $x$ and $y$ are NOT
+independent given $z$.
 
 \section*{Problem 6 (15 points)}
 
@@ -332,4 +337,7 @@ $P(A,B,C,E) = P(A)P(B)P(C \mid A,B)P(E \mid A,C)$
 % TODO
 E's parents are $A$ (binary, 2 values) and $C$ (3 values), so $r = 2 \times 3 = 6$ and $k = 3$ (E's own values).
 The parameters for CPD of E is $r*(k-1) = 6*(3-1) = 12$.
+
+\section*{AI use in this assignment}
+I used ChatGPT to help me understand the concepts and to clarify any questions I had regarding the assignment. Moreover, I used to give me hints and clues when I got stuck on a problem. I also used it to debug my code and to check my calculations. I did not use it to generate any answers or solutions for the assignment.
 \end{document}
