@@ -18,17 +18,28 @@ Prove that if $x$ and $y$ are arbitrary real numbers such that $x<y$,
 there exists at least one irrational number $z$ satisfying $x<z<y$.
 
 \begin{proof}
-% Strategy: use the density of Q in R together with the fact that
-% (rational) + (irrational)*(something small) can be made irrational.
-% One standard route:
-%   1. By density of Q, find a rational r with x < r < y (or work with
-%      x/sqrt2 < ... < y/sqrt2 type shifts -- pick whichever route your
-%      class used for density of Q first).
-%   2. Use r and sqrt2 to cook up an irrational z strictly between x and y,
-%      e.g. z = r + (y-r)/sqrt2 -- adjust so the inequalities actually hold,
-%      and justify why z is irrational (contradiction: if z were rational,
-%      what would that force?).
-%   3. Check both inequalities x < z and z < y carefully.
+By the density of $\mathbb{Q}$ in $\mathbb{R}$, we can find a rational number $r_1$ such that $x < r_1 < y$. Applying density again to the interval $(r_1, y)$, we can find a rational number $r_2$ such that $r_1 < r_2 < y$.
+
+Now consider
+\[
+z = r_1 + \frac{r_2 - r_1}{\sqrt{2}}.
+\]
+
+\textbf{$z$ is irrational.} Suppose, for the sake of contradiction, that $z$ is rational. Then
+\[
+z - r_1 = \frac{r_2 - r_1}{\sqrt{2}}
+\]
+has rational left-hand side (since $z$ and $r_1$ are both rational). So $\frac{r_2-r_1}{\sqrt2}$ is rational, say equal to $q$. Since $r_2 - r_1 \neq 0$ (as $r_1 < r_2$), we get $\sqrt{2} = \frac{r_2-r_1}{q}$, a ratio of two rationals, so $\sqrt{2}$ would be rational. This contradicts the irrationality of $\sqrt{2}$. Hence $z$ is irrational.
+
+\textbf{$x < z < y$.} Since $\sqrt{2} > 1$ and $r_2 - r_1 > 0$,
+\[
+0 < \frac{r_2 - r_1}{\sqrt{2}} < r_2 - r_1.
+\]
+Adding $r_1$ throughout gives $r_1 < z < r_2$. Combined with $x < r_1$ and $r_2 < y$, this yields
+\[
+x < r_1 < z < r_2 < y,
+\]
+so in particular $x < z < y$.
 
 \end{proof}
 
@@ -47,12 +58,15 @@ Find the supremum and the infimum of the sets
 % For inf: show 0 is a lower bound, then show it's the GREATEST lower
 %   bound using the Archimedean property (for any eps > 0, find n with
 %   1/n < eps).
+By using the Archimedean property, we can show that $\inf S_1 = 0$. For any $\epsilon > 0$, there exists $n \in \mathbb{N}$ such that $1/n < \epsilon$, which means that $0$ is indeed the greatest lower bound of $S_1$.
+The supremum of $S_1$ is $\sup S_1 = 1$, since the largest element of the set is $1$ (attained when $n=1$).
 
 \subsection*{$S_2$}
-% Claim: sup S_2 = ___, inf S_2 = ___.
-% Split into even n (term is positive, (1/n)) and odd n (term is
-%   negative, -1/n). Identify which parity gives the candidate sup/inf,
-%   then verify with an epsilon argument as above.
+For even $n$ the term $(-1)^n/n = 1/n$ is positive, and for odd $n$ the term is $-1/n$, negative. So the candidate supremum comes from the even terms and the candidate infimum from the odd terms.
+
+\textbf{$\sup S_2 = \tfrac12$, attained at $n=2$.} Among the even terms $1/n$, the largest occurs at the smallest even $n$, namely $n=2$, giving $1/2$; every other even term satisfies $1/n \le 1/2$ for $n \ge 2$. Every odd term is negative, hence $< 1/2$. So $1/2$ is an upper bound for $S_2$, and since $1/2 \in S_2$ it is the maximum, hence $\sup S_2 = 1/2$.
+
+\textbf{$\inf S_2 = -1$, attained at $n=1$.} Among the odd terms $-1/n$, the smallest (most negative) occurs at the smallest odd $n$, namely $n=1$, giving $-1$; every other odd term satisfies $-1/n \ge -1$ for $n\ge 1$. Every even term is positive, hence $> -1$. So $-1$ is a lower bound for $S_2$, and since $-1\in S_2$ it is the minimum, hence $\inf S_2 = -1$.
 
 % ============================================================
 \section*{Problem 3 (10 points)}
@@ -61,20 +75,11 @@ prove that $\sup S$ and $\inf T$ exist, and prove the inequality
 $\sup S \le \inf T$.
 
 \begin{proof}
-% Step 1 (existence of sup S): show S is nonempty and bounded above.
-%   - Nonempty: given.
-%   - Bounded above: any fixed t_0 in T is an upper bound for S (why?).
-%   By the completeness axiom, sup S exists.
+\textbf{Step 1: $\sup S$ exists.} $S$ is nonempty by hypothesis. Since $T$ is nonempty, fix some $t_0 \in T$. By hypothesis $s \le t_0$ for every $s \in S$, so $t_0$ is an upper bound for $S$. Thus $S$ is nonempty and bounded above, so by the completeness axiom, $\sup S$ exists.
 
-% Step 2 (existence of inf T): symmetric argument -- show T is nonempty
-%   and bounded below (any fixed s_0 in S works as a lower bound), so
-%   inf T exists by completeness.
+\textbf{Step 2: $\inf T$ exists.} $T$ is nonempty by hypothesis. Since $S$ is nonempty, fix some $s_0 \in S$. By hypothesis $s_0 \le t$ for every $t \in T$, so $s_0$ is a lower bound for $T$. Thus $T$ is nonempty and bounded below, so by the completeness axiom, $\inf T$ exists.
 
-% Step 3 (sup S <= inf T): Fix an arbitrary t in T. Since s <= t for
-%   every s in S, t is an upper bound for S, so sup S <= t (least upper
-%   bound property). This holds for EVERY t in T, so sup S is a lower
-%   bound for T, hence sup S <= inf T (since inf T is the greatest lower
-%   bound).
+\textbf{Step 3: $\sup S \le \inf T$.} Fix an arbitrary $t \in T$. Since $s \le t$ for every $s \in S$, $t$ is an upper bound for $S$, so by the least upper bound property $\sup S \le t$. This holds for every $t \in T$, so $\sup S$ is a lower bound for $T$. Since $\inf T$ is the greatest lower bound of $T$, it follows that $\sup S \le \inf T$.
 
 \end{proof}
 
