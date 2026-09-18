@@ -92,22 +92,23 @@ the set of all sums $a+b$, where $a\in A$ and $b\in B$. Prove that
 \]
 
 \begin{proof}
-% Let alpha = sup A, beta = sup B. Show alpha + beta is an upper bound
-% for A+B, and that it's the LEAST upper bound -- two inclusions, much
-% like Problem 3.
+Let $\alpha = \sup A$ and $\beta = \sup B$; these exist by the completeness axiom since $A$ and $B$ are nonempty and bounded above.
 
-\textbf{Step 1: $\alpha+\beta$ is an upper bound for $A+B$.}
-% For arbitrary a in A, b in B: a <= alpha, b <= beta, so a+b <= alpha+beta.
-% Hence alpha+beta is an upper bound for A+B, so sup(A+B) <= alpha+beta.
+\textbf{Step 1: $\alpha+\beta$ is an upper bound for $A+B$.} Let $a\in A$ and $b\in B$ be arbitrary. Since $\alpha=\sup A$, $a\le\alpha$; since $\beta=\sup B$, $b\le\beta$. Adding, $a+b \le \alpha+\beta$. As $a,b$ were arbitrary, every element of $A+B$ is $\le \alpha+\beta$, so $\alpha+\beta$ is an upper bound for $A+B$. In particular, $A+B$ is nonempty and bounded above, so $\sup(A+B)$ exists and
+\[
+\sup(A+B) \le \alpha+\beta.
+\]
 
-\textbf{Step 2: $\alpha+\beta$ is the least upper bound.}
-% Let eps > 0 be arbitrary. Since alpha = sup A, there exists a in A with
-%   a > alpha - eps/2. Since beta = sup B, there exists b in B with
-%   b > beta - eps/2. Then a+b in A+B and a+b > alpha+beta - eps.
-% This shows no number smaller than alpha+beta can be an upper bound for
-%   A+B, so sup(A+B) >= alpha+beta.
+\textbf{Step 2: $\alpha+\beta$ is the least upper bound.} Let $\varepsilon>0$ be arbitrary. Since $\alpha=\sup A$, $\alpha-\varepsilon/2$ is not an upper bound for $A$, so there exists $a\in A$ with $a > \alpha-\varepsilon/2$. Similarly, since $\beta=\sup B$, there exists $b\in B$ with $b>\beta-\varepsilon/2$. Then $a+b\in A+B$ and
+\[
+a+b > \left(\alpha-\frac{\varepsilon}{2}\right)+\left(\beta-\frac{\varepsilon}{2}\right) = \alpha+\beta-\varepsilon.
+\]
+Thus for every $\varepsilon>0$ there is an element of $A+B$ exceeding $\alpha+\beta-\varepsilon$, so no number strictly less than $\alpha+\beta$ can be an upper bound for $A+B$. Hence
+\[
+\sup(A+B) \ge \alpha+\beta.
+\]
 
-% Combine Steps 1 and 2 to conclude sup(A+B) = alpha+beta = sup A + sup B.
+Combining Steps 1 and 2, $\sup(A+B) = \alpha+\beta = \sup A + \sup B$.
 
 \end{proof}
 
