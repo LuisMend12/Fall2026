@@ -1,0 +1,73 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{braket}
+
+\title{CSE 4412: Introduction to Quantum Computing \\ Homework 1 --- Chapter 2 Exercises}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Exercise 2.2}
+\textbf{Statement.} Let $\ket{+} = \frac{1}{\sqrt{2}}(\ket{0} + \ket{1})$ and $\ket{-} = \frac{1}{\sqrt{2}}(\ket{0} - \ket{1})$. Compute $\braket{+|+}$, $\braket{+|-}$, and $\braket{-|-}$. What can you say about these two vectors? You may use the fact that $\ket{0}$ and $\ket{1}$ are orthonormal.
+
+\textbf{Hint.} Expand each bracket using bilinearity of the inner product (distribute over the $\pm$ sums), then substitute $\braket{0|0}=\braket{1|1}=1$ and $\braket{0|1}=\braket{1|0}=0$. Once you have all three numbers, think about what ``normalized'' and ``orthogonal'' mean (Definitions in Section 2.1.2) and what it implies when two normalized, mutually orthogonal vectors span the whole space.
+
+\textbf{Your answer:}
+
+\vspace{4cm}
+
+\section*{Exercise 2.4}
+\textbf{Statement.} Consider the following three questions:
+\begin{enumerate}
+    \item Consider the $\ket{+}$ state. What is the probability of observing $\ket{1}$ after a measurement?
+    \item Consider $\ket{-} = \frac{1}{\sqrt{2}}(\ket{0} - \ket{1})$. What is the probability of observing $\ket{1}$ after measuring that state?
+    \item Consider the state $\ket{1}$. What is the probability of observing $\ket{1}$ after measurement?
+\end{enumerate}
+
+\textbf{Hint.} For a state $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$, the rule from the chapter is $\Pr(\ket{1}) = |\beta|^2$, where $\beta$ is whatever is multiplying $\ket{1}$ once the state is written in the $\{\ket{0},\ket{1}\}$ basis. Identify $\beta$ in each of the three given states (watch the sign in $\ket{-}$ — remember you square the \emph{magnitude}).
+
+\textbf{Your answer:}
+
+\vspace{4cm}
+
+\section*{Exercise 2.5}
+\textbf{Statement.} Imagine you are given a qubit $\ket{\psi}$ but not told anything about it (i.e., you do not know its probability amplitudes). If you perform a measurement on the state and the outcome is ``0,'' what does this tell you about the state? Can you learn the original probability amplitudes? What if you are given as many copies of $\ket{\psi}$ as you want -- what can be said then?
+
+\textbf{Hint.} Separate the question into two parts. (a) Single measurement: think about \emph{state collapse} — what do you know about the state right after the measurement, versus what you knew about it beforehand? Can one classical bit of outcome data pin down two continuous amplitudes $\alpha,\beta$? (b) Many copies: if you measured each copy and tallied the fraction of ``0'' vs. ``1'' outcomes, what would that fraction converge to as the number of copies grows (law of large numbers)? Does that let you recover $\alpha$ and $\beta$ exactly, or only something about their magnitudes? Also recall the no-cloning theorem (mentioned in the text, Section 2.5.4) — why can't you manufacture the extra copies yourself?
+
+\textbf{Your answer:}
+
+\vspace{4cm}
+
+\section*{Exercise 2.6}
+\textbf{Statement.} Let $p \in [0,1]$ be a real number and consider the state
+\[
+\ket{\psi} = \sqrt{p}\,\ket{0} + \sqrt{1-p}\,\ket{1}.
+\]
+Answer the following: (1) probability of observing $\ket{0}$ for a given $p$; (2) probability of observing $\ket{-}$ for a given $p$; (3)--(4) graph both probability distributions as functions of $p$.
+
+\textbf{Hint.} For (1), same rule as Exercise 2.4, just applied to $\ket{0}$ instead of $\ket{1}$. For (2), you can't just read off a coefficient because $\ket{-}$ isn't one of the two basis vectors $\ket{\psi}$ is written in terms of — instead use the inner-product rule $\Pr(\ket{-}) = |\braket{-|\psi}|^2$ from Section 2.3.1 (Equation 2.36), and expand $\braket{-|\psi}$ using linearity and the known values of $\braket{0|0},\braket{0|1},\braket{1|0},\braket{1|1}$. For (3)-(4), once you have closed-form expressions in terms of $p$, you can plot them with pgfplots (\texttt{\textbackslash usepackage\{pgfplots\}}) or by hand on $[0,1]$ — try a few sample points ($p=0,\tfrac12,1$) first to sanity-check the shape before you commit to plotting code.
+
+\textbf{Your answer:}
+
+\vspace{6cm}
+
+\section*{Exercise 2.8}
+\textbf{Statement.} Let $\ket{\psi}$ be some $d$-dimensional state and let $\mathcal{B} = \{\ket{b_0}, \dots, \ket{b_{d-1}}\}$ be any orthonormal basis. Show that $\ket{\psi}$ may be written as
+\[
+\ket{\psi} = \sum_{j=0}^{d-1} \braket{b_j|\psi}\,\ket{b_j}.
+\]
+
+\textbf{Hint.} This is essentially asking you to re-derive the \emph{completeness relation} argument from Section 2.1.3 (Equation 2.22-2.23). Start from the fact that $\sum_j \ket{b_j}\bra{b_j} = I$ for any orthonormal basis, apply both sides to $\ket{\psi}$, and note that $\ket{b_j}\bra{b_j}\ket{\psi}$ can be regrouped as a scalar $\braket{b_j|\psi}$ times the vector $\ket{b_j}$.
+
+\textbf{Your answer:}
+
+\vspace{4cm}
+
+\end{document}

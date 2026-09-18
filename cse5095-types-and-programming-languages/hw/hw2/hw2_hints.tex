@@ -1,0 +1,180 @@
+\documentclass{article}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm, verbatim, enumerate, xcolor, mathpartir}
+
+\input{macros}
+
+% Local shorthand for this homework's judgments/constructs
+\newcommand{\eval}[1]{#1\ \mathsf{val}}
+\newcommand{\step}[2]{#1 \mapsto #2}
+\newcommand{\IF}[3]{\mathsf{if}\ #1\ \mathsf{then}\ #2\ \mathsf{else}\ #3}
+\newcommand{\TRUE}{\mathsf{true}}
+\newcommand{\FALSE}{\mathsf{false}}
+\newcommand{\INT}{\mathsf{int}}
+\newcommand{\STRING}{\mathsf{string}}
+\newcommand{\BOOL}{\mathsf{bool}}
+\newcommand{\NZ}{\mathsf{nz}}
+\newcommand{\MZ}{\mathsf{mz}}
+
+\title{CSE5095: Types and Programming Languages\\
+  {\large Homework 2: Type Safety}}
+\author{}
+
+\begin{document}
+\maketitle
+
+\section{Booleans}
+
+\begin{task}
+Write the inference rules for the dynamic semantics of Booleans and the if-else construct. You should have 2 new rules for the judgment $\eval{e}$ and 3 new rules for the judgment $\step{e}{e'}$.
+\end{task}
+
+\textbf{Hint.} The 2 value rules are the easy part: what are the only two Boolean literals, and by analogy with ValNum/ValString, what should their $\mathsf{val}$ rules look like (no premises)? For the 3 step rules on $\IF{e_1}{e_2}{e_3}$: think about what has to happen \emph{first} — the condition $e_1$ needs to be evaluated down to a value before you know which branch to take, so one rule should let you step $e_1$ while leaving the rest of the if-expression alone (compare to StepSearchAddLeft). The other 2 rules fire only once $e_1$ is already exactly $\TRUE$ or exactly $\FALSE$ — what should the whole if-expression step to in each case? (The assignment's hint says exactly one of your three rules is a search rule — the other two should have no premises.)
+
+\textbf{Your answer:}
+
+\vspace{5cm}
+
+\begin{task}
+Evaluate $\IF{\overline{1}+\overline{2}=\overline{4}}{\text{``Fake news''}}{\text{``True fact''}}$ fully, showing each step.
+\end{task}
+
+\textbf{Hint.} Work from the inside out. First the addition inside the condition needs to reduce (StepAdd) — but it's nested inside an equality test, which is itself nested inside your if-condition, so you'll need the appropriate search rules to ``reach in'' at each level (StepSearchEqLeft, then your if-search rule from Task 1). Once the condition becomes a closed numeral comparison, figure out whether StepEq or StepNotEq applies. Once the condition is fully a Boolean literal, one of your two ``actual'' if-step rules from Task 1 fires and picks a branch — that branch, if it's already a string literal, is a value and you're done.
+
+\textbf{Your answer:}
+
+\vspace{6cm}
+
+We also have the extended typing rules for equality testing and Booleans (given in the assignment):
+\[
+\Rule{TypeEq}
+     {e_1:\INT \\ e_2:\INT}
+     {e_1=e_2:\BOOL}
+\qquad
+\Rule{TypeTrue}
+     {\strut}
+     {\TRUE:\BOOL}
+\qquad
+\Rule{TypeFalse}
+     {\strut}
+     {\FALSE:\BOOL}
+\]
+\[
+\Rule{TypeIf}
+     {e_1:\BOOL \\ e_2:\tau \\ e_3:\tau}
+     {\IF{e_1}{e_2}{e_3}:\tau}
+\]
+
+\begin{task}
+Give a derivation using the extended typing rules for
+$\IF{\overline{1}+\overline{2}=\overline{4}}{\text{``Fake news''}}{\text{``True fact''}}:\STRING$.
+\end{task}
+
+\textbf{Hint.} Build the tree bottom-up, the same way the class notes built the derivation for $\overline{0}+((\overline{1}+\overline{2})+\overline{3}):\INT$. Type the two numerals under the addition (TypeNum), combine with TypeAdd, then bring in $\overline{4}$ and combine with TypeEq to get the condition typed $\BOOL$. Separately, type each string branch with TypeString. Finally combine all three pieces with TypeIf — remember both branches must be assigned the \emph{same} $\tau$ (here, $\STRING$) for TypeIf to apply. Abbreviate rule names (e.g.\ TN, TA, TEq, TS, TIf) so the tree fits on the page; \texttt{\textbackslash small} or \texttt{\textbackslash scriptsize} around the whole derivation can help too.
+
+\textbf{Your answer:}
+
+\vspace{7cm}
+
+\begin{task}
+Prove the cases of the Preservation theorem for the new rules you added in Task 1.
+\end{task}
+
+\textbf{Hint.} Recall \textbf{Theorem (Preservation).} If $e:\tau$ and $\step{e}{e'}$, then $e':\tau$. You're doing induction on the derivation of $\step{e}{e'}$, with one case per rule from Task 1. For the two non-search rules (where the if-expression steps directly to a branch), use \emph{inversion} on TypeIf to read off what you already know about that branch's type — no induction hypothesis needed there. For the search-rule case, you'll need to apply your induction hypothesis to the sub-step of the condition, then re-apply TypeIf to reassemble the result. This should closely mirror the class's proof of the StepSearchAddLeft case for the original Preservation theorem.
+
+\textbf{Your answer:}
+
+\vspace{6cm}
+
+\begin{task}
+State (you do not have to prove it) the new case of the Canonical Forms lemma for Booleans.
+\end{task}
+
+\textbf{Hint.} Look at the existing Canonical Forms statement for $\INT$ and $\STRING$ (``if $e\ \mathsf{val}$ and $e:\tau$, then $e$ looks like \ldots''). What are the \emph{only} two values that could possibly have type $\BOOL$, given the value rules from Task 1?
+
+\textbf{Your answer:}
+
+\vspace{2.5cm}
+
+\begin{task}
+Prove the cases of the Progress theorem for the new rules TypeTrue, TypeFalse and TypeIf. You may (and should) use the new case of Canonical Forms from Task 5.
+\end{task}
+
+\textbf{Hint.} Recall \textbf{Theorem (Progress).} If $e:\tau$, then $\eval{e}$ or there exists $e'$ with $\step{e}{e'}$. Induction is on the derivation of $e:\tau$. TypeTrue/TypeFalse should be one-line cases (compare to the TypeNum/TypeString cases in the notes). For TypeIf, apply the induction hypothesis to the sub-derivation of the \emph{condition}'s typing judgment to get two branches (condition is a value, or condition steps); in the ``condition is a value'' branch, use your Task 5 Canonical Forms lemma to pin down exactly which of the two Boolean literals it must be, and then pick the corresponding rule from Task 1.
+
+\textbf{Your answer:}
+
+\vspace{7cm}
+
+\section{Division by zero}
+
+\begin{task}
+Fill in the blanks in the typing rules for $\mathsf{EZ}$.
+\end{task}
+
+\textbf{Hint.} For each operation, ask: \emph{can} the result be zero, given what you know (or don't know) about the operands? For $+$ and $-$: if both operands are only known to be ``maybe zero,'' can the sum/difference still come out to zero? (Try small examples, and remember integers can be negative.) For $*$: the two given rules already show the multiplication case is split depending on whether both factors are known-nonzero or not — think about \emph{why} two nonzero integers multiplied together can never be zero. For $/$: what does the operational rule StepDiv require of the second operand in order to not get stuck? That tells you the required type of $e_2$ in TypeDiv. Then ask: even when $e_1$ and $e_2$ are both guaranteed nonzero, can integer division still produce a zero result? (Think about truncating division, e.g. small numerator, larger denominator.) That tells you the result type.
+
+\[
+\Rule{TypeNum}{\strut}{\overline{n}:\MZ}
+\qquad
+\Rule{TypeNumNZ}{n\neq 0}{\overline{n}:\NZ}
+\]
+\[
+\Rule{TypeAdd}{e_1:\MZ \\ e_2:\MZ}{e_1+e_2: ?}
+\qquad
+\Rule{TypeSub}{e_1:\MZ \\ e_2:\MZ}{e_1-e_2: ?}
+\]
+\[
+\Rule{TypeMulNZ}{e_1:\NZ \\ e_2:\NZ}{e_1*e_2:\NZ}
+\qquad
+\Rule{TypeMulMZ}{e_1:\MZ \\ e_2:\MZ}{e_1*e_2:\MZ}
+\]
+\[
+\Rule{TypeDiv}{e_1:\MZ \\ e_2: ?}{e_1/e_2: ?}
+\]
+
+\textbf{Your answer:}
+
+\vspace{2cm}
+
+\begin{task}
+Prove the Progress and Preservation theorems for $\mathsf{EZ}$ (cases TypeNum, TypeNumNZ, TypeDiv for Progress; StepAdd, StepSub, StepDiv for Preservation).
+\end{task}
+
+\textbf{Hint.} These should closely mirror the class's proofs of Progress and Preservation for the $\mathsf{E}$ language (TypeAdd/StepAdd cases), just swapping in your Task 7 rules and the EZ Canonical Forms lemma (given in the assignment) in place of the int/string versions. For the Progress/TypeDiv case in particular: apply your induction hypothesis to \emph{both} $e_1$ and $e_2$ (nested, the way the class's TypeAdd case does), use Canonical Forms to turn ``value'' into ``some numeral,'' and remember that StepDiv has a side condition ($n_2 \neq 0$) that your typing hypothesis on $e_2$ should give you for free. For Preservation, each case is short: invert on the relevant typing rule to pin down $\tau$, then use TypeNum to retype the result.
+
+\textbf{Your answer:}
+
+\vspace{8cm}
+
+\begin{task}[Bonus]
+Prove the StepMul case for Preservation. \textbf{Hint (from the assignment):} if you do inversion on the typing rules, there will actually be two rules you need to consider in your inversion, and thus two cases.
+\end{task}
+
+\textbf{Hint.} A product $e_1 * e_2$ could have been typed by \emph{either} TypeMulNZ or TypeMulMZ — inversion on the typing derivation doesn't hand you a unique rule the way it did for StepAdd, so you'll genuinely need two sub-cases. In the TypeMulNZ sub-case, invert once more (on TypeNumNZ) to learn both numerals are nonzero, then think about why a product of two nonzero integers can't be zero. In the TypeMulMZ sub-case, there's much less to check.
+
+\textbf{Your answer:}
+
+\vspace{5cm}
+
+\begin{task}
+Give a syntactically valid expression in $\mathsf{EZ}$ that does not perform a division by zero, but is still not well-typed by the above typing rules. Informally suggest a change, addition, refinement, etc., to the type system that could make your expression well-typed (but would still rule out expressions that divide by zero).
+\end{task}
+
+\textbf{Hint.} Look for a gap between what's \emph{true at runtime} and what the type system can \emph{prove}. In particular, notice that TypeAdd and TypeSub (as you filled them in for Task 7) only ever conclude $\MZ$ — there's no rule that lets a sum or difference be typed $\NZ$, no matter what its operands are. Now think of a division whose divisor is written as a sum or difference of two numerals that you, doing the arithmetic yourself, know is nonzero. For the refinement part: you don't need to design a whole new system, just gesture at what extra information the type system would need to track (e.g., sign, or a way to reason about specific known numeral values) to let that particular divisor be typed $\NZ$, while thinking about why your fix wouldn't accidentally let an actual division-by-zero back in.
+
+\textbf{Your answer:}
+
+\vspace{6cm}
+
+\section{One more wrap-up question}
+
+\begin{task}
+How long (approximately) did you spend on this homework, in total minutes/hours of actual working time? Your honest feedback will help me with future homeworks.
+\end{task}
+
+\textbf{Your answer:}
+
+\vspace{2cm}
+
+\end{document}
