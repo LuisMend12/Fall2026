@@ -31,6 +31,22 @@ Write the inference rules for the dynamic semantics of Booleans and the if-else 
 
 \textbf{Hint.} The 2 value rules are the easy part: what are the only two Boolean literals, and by analogy with ValNum/ValString, what should their $\mathsf{val}$ rules look like (no premises)? For the 3 step rules on $\IF{e_1}{e_2}{e_3}$: think about what has to happen \emph{first} — the condition $e_1$ needs to be evaluated down to a value before you know which branch to take, so one rule should let you step $e_1$ while leaving the rest of the if-expression alone (compare to StepSearchAddLeft). The other 2 rules fire only once $e_1$ is already exactly $\TRUE$ or exactly $\FALSE$ — what should the whole if-expression step to in each case? (The assignment's hint says exactly one of your three rules is a search rule — the other two should have no premises.)
 
+\textbf{Extra clue.} Here are the shapes of the 5 rules with the interesting parts blanked out — you just need to fill in the $\underline{\hspace{1.5cm}}$'s:
+\[
+\Rule{ValTrue}{\strut}{\underline{\hspace{1.5cm}}\ \mathsf{val}}
+\qquad
+\Rule{ValFalse}{\strut}{\underline{\hspace{1.5cm}}\ \mathsf{val}}
+\]
+\[
+\Rule{StepIfTrue}{\strut}{\IF{\TRUE}{e_2}{e_3} \mapsto \underline{\hspace{1.5cm}}}
+\qquad
+\Rule{StepIfFalse}{\strut}{\IF{\FALSE}{e_2}{e_3} \mapsto \underline{\hspace{1.5cm}}}
+\]
+\[
+\Rule{StepSearchIf}{e_1 \mapsto e_1'}{\IF{e_1}{e_2}{e_3} \mapsto \underline{\hspace{4cm}}}
+\]
+(For StepSearchIf: only the condition changes — the two branches $e_2,e_3$ should reappear on the right-hand side exactly as they were on the left.)
+
 \textbf{Your answer:}
 
 \vspace{5cm}
@@ -40,6 +56,17 @@ Evaluate $\IF{\overline{1}+\overline{2}=\overline{4}}{\text{``Fake news''}}{\tex
 \end{task}
 
 \textbf{Hint.} Work from the inside out. First the addition inside the condition needs to reduce (StepAdd) — but it's nested inside an equality test, which is itself nested inside your if-condition, so you'll need the appropriate search rules to ``reach in'' at each level (StepSearchEqLeft, then your if-search rule from Task 1). Once the condition becomes a closed numeral comparison, figure out whether StepEq or StepNotEq applies. Once the condition is fully a Boolean literal, one of your two ``actual'' if-step rules from Task 1 fires and picks a branch — that branch, if it's already a string literal, is a value and you're done.
+
+\textbf{Extra clue.} There are exactly 3 steps. Here's the skeleton with the intermediate expressions and rule names blanked out:
+\[
+\begin{array}{r l l}
+  & \IF{\overline{1}+\overline{2}=\overline{4}}{\text{``Fake news''}}{\text{``True fact''}} & \\
+  \mapsto & \underline{\hspace{6cm}} & \text{(which rule(s)?)} \\
+  \mapsto & \underline{\hspace{6cm}} & \text{(which rule(s)?)} \\
+  \mapsto & \underline{\hspace{6cm}} & \text{(which rule?)}
+\end{array}
+\]
+Ask yourself at each line: is $\overline{1}+\overline{2}$ equal to $\overline{4}$ or not? That tells you whether StepEq or StepNotEq fires on the second step, which then tells you which of your two Task-1 branch rules fires on the third.
 
 \textbf{Your answer:}
 
@@ -72,6 +99,18 @@ $\IF{\overline{1}+\overline{2}=\overline{4}}{\text{``Fake news''}}{\text{``True 
 
 \textbf{Hint.} Build the tree bottom-up, the same way the class notes built the derivation for $\overline{0}+((\overline{1}+\overline{2})+\overline{3}):\INT$. Type the two numerals under the addition (TypeNum), combine with TypeAdd, then bring in $\overline{4}$ and combine with TypeEq to get the condition typed $\BOOL$. Separately, type each string branch with TypeString. Finally combine all three pieces with TypeIf — remember both branches must be assigned the \emph{same} $\tau$ (here, $\STRING$) for TypeIf to apply. Abbreviate rule names (e.g.\ TN, TA, TEq, TS, TIf) so the tree fits on the page; \texttt{\textbackslash small} or \texttt{\textbackslash scriptsize} around the whole derivation can help too.
 
+\textbf{Extra clue.} Here is the shape of the tree with only the leaves' rule names filled in — you fill in every conclusion (the ``$\ldots:\tau$'' under each rule) and the two internal rule names:
+\[
+\Rule{?}
+     {\Rule{?}
+           {\Rule{TN}{\strut}{\overline{1}: \underline{\hspace{1cm}}}\\
+             \Rule{TN}{\strut}{\overline{2}: \underline{\hspace{1cm}}}}
+           {\underline{\hspace{2.5cm}}}\\
+       \Rule{TN}{\strut}{\overline{4}: \underline{\hspace{1cm}}}}
+     {\underline{\hspace{3cm}}}
+\]
+which then becomes the \emph{first} premise of the final TypeIf step (the other two premises are the two TypeString leaves for the branches).
+
 \textbf{Your answer:}
 
 \vspace{7cm}
@@ -81,6 +120,13 @@ Prove the cases of the Preservation theorem for the new rules you added in Task 
 \end{task}
 
 \textbf{Hint.} Recall \textbf{Theorem (Preservation).} If $e:\tau$ and $\step{e}{e'}$, then $e':\tau$. You're doing induction on the derivation of $\step{e}{e'}$, with one case per rule from Task 1. For the two non-search rules (where the if-expression steps directly to a branch), use \emph{inversion} on TypeIf to read off what you already know about that branch's type — no induction hypothesis needed there. For the search-rule case, you'll need to apply your induction hypothesis to the sub-step of the condition, then re-apply TypeIf to reassemble the result. This should closely mirror the class's proof of the StepSearchAddLeft case for the original Preservation theorem.
+
+\textbf{Extra clue.} Fill in the blanks in this proof skeleton (compare directly against the class's StepAdd and StepSearchAddLeft cases in the lecture notes):
+\begin{itemize}
+\item \textbf{Case StepIfTrue.} Then $e = \underline{\hspace{4cm}}$ and $e' = \underline{\hspace{2cm}}$. By inversion on \underline{\hspace{1.5cm}}, we get $\underline{\hspace{1cm}}:\tau$ and $\underline{\hspace{1cm}}:\tau$. In particular, $e' : \tau$.
+\item \textbf{Case StepIfFalse.} (Symmetric to the above — which branch do you keep this time?)
+\item \textbf{Case StepSearchIf.} Then $e = \underline{\hspace{3cm}}$, $e' = \underline{\hspace{3cm}}$, with $e_1 \mapsto e_1'$. By inversion on TypeIf: $e_1 : \underline{\hspace{1cm}}$, $e_2:\tau$, $e_3:\tau$. By the induction hypothesis applied to $e_1 \mapsto e_1'$, conclude $e_1' : \underline{\hspace{1cm}}$. By \underline{\hspace{1.5cm}} again (this time with $e_1'$ in place of $e_1$), $e' : \tau$.
+\end{itemize}
 
 \textbf{Your answer:}
 
@@ -92,6 +138,8 @@ State (you do not have to prove it) the new case of the Canonical Forms lemma fo
 
 \textbf{Hint.} Look at the existing Canonical Forms statement for $\INT$ and $\STRING$ (``if $e\ \mathsf{val}$ and $e:\tau$, then $e$ looks like \ldots''). What are the \emph{only} two values that could possibly have type $\BOOL$, given the value rules from Task 1?
 
+\textbf{Extra clue.} Complete the sentence: ``If $\eval{e}$ and $e:\BOOL$, then $e = \underline{\hspace{2cm}}$ or $e = \underline{\hspace{2cm}}$.'' (One quick way to convince yourself this is right: which value rule from Task 1 would you use to justify each disjunct?)
+
 \textbf{Your answer:}
 
 \vspace{2.5cm}
@@ -101,6 +149,17 @@ Prove the cases of the Progress theorem for the new rules TypeTrue, TypeFalse an
 \end{task}
 
 \textbf{Hint.} Recall \textbf{Theorem (Progress).} If $e:\tau$, then $\eval{e}$ or there exists $e'$ with $\step{e}{e'}$. Induction is on the derivation of $e:\tau$. TypeTrue/TypeFalse should be one-line cases (compare to the TypeNum/TypeString cases in the notes). For TypeIf, apply the induction hypothesis to the sub-derivation of the \emph{condition}'s typing judgment to get two branches (condition is a value, or condition steps); in the ``condition is a value'' branch, use your Task 5 Canonical Forms lemma to pin down exactly which of the two Boolean literals it must be, and then pick the corresponding rule from Task 1.
+
+\textbf{Extra clue.} Fill in the blanks (this should look almost identical in structure to the class's TypeAdd case, just one level instead of two nested inductions):
+\begin{itemize}
+\item \textbf{Case TypeTrue.} Then $e = \underline{\hspace{1.5cm}}$. By \underline{\hspace{1.5cm}}, $\eval{e}$.
+\item \textbf{Case TypeFalse.} (Same idea, other literal, other rule.)
+\item \textbf{Case TypeIf.} Then $e = \IF{e_1}{e_2}{e_3}$ with $e_1:\underline{\hspace{1cm}}$, $e_2:\tau$, $e_3:\tau$. By the induction hypothesis on $e_1:\underline{\hspace{1cm}}$: either $\eval{e_1}$ or $e_1 \mapsto e_1'$.
+\begin{itemize}
+\item If $\eval{e_1}$: by \underline{\hspace{2.5cm}} (Task 5), $e_1 = \TRUE$ or $e_1 = \FALSE$. In the first case, use rule \underline{\hspace{1.5cm}} to show $e \mapsto \underline{\hspace{1cm}}$; in the second, use rule \underline{\hspace{1.5cm}} to show $e \mapsto \underline{\hspace{1cm}}$.
+\item If $e_1 \mapsto e_1'$: use rule \underline{\hspace{2cm}} to show $e \mapsto \underline{\hspace{3cm}}$.
+\end{itemize}
+\end{itemize}
 
 \textbf{Your answer:}
 
@@ -133,6 +192,14 @@ Fill in the blanks in the typing rules for $\mathsf{EZ}$.
 \Rule{TypeDiv}{e_1:\MZ \\ e_2: ?}{e_1/e_2: ?}
 \]
 
+\textbf{Extra clue.} Work through these small numeric checks by hand — each one tells you directly whether a given blank must be $\MZ$ or can safely be $\NZ$:
+\begin{itemize}
+\item Is there a choice of nonzero-or-zero integers $n_1, n_2$ with $n_1 + n_2 = 0$? (Try $n_1 = 3$.) What does that tell you about the blank in TypeAdd?
+\item Is there a choice of $n_1, n_2$ with $n_1 - n_2 = 0$? What does that tell you about the blank in TypeSub?
+\item Look back at the operational rule StepDiv: what side condition does it place on the second operand $n_2$? That's exactly the type you need for $e_2$ in TypeDiv (first blank).
+\item Using integer (truncating) division, is $\overline{1}/\overline{2}$ equal to $\overline{0}$? If both operands of $/$ could be nonzero and the result can \emph{still} be zero, what must the result type (second blank in TypeDiv) be?
+\end{itemize}
+
 \textbf{Your answer:}
 
 \vspace{2cm}
@@ -142,6 +209,25 @@ Prove the Progress and Preservation theorems for $\mathsf{EZ}$ (cases TypeNum, T
 \end{task}
 
 \textbf{Hint.} These should closely mirror the class's proofs of Progress and Preservation for the $\mathsf{E}$ language (TypeAdd/StepAdd cases), just swapping in your Task 7 rules and the EZ Canonical Forms lemma (given in the assignment) in place of the int/string versions. For the Progress/TypeDiv case in particular: apply your induction hypothesis to \emph{both} $e_1$ and $e_2$ (nested, the way the class's TypeAdd case does), use Canonical Forms to turn ``value'' into ``some numeral,'' and remember that StepDiv has a side condition ($n_2 \neq 0$) that your typing hypothesis on $e_2$ should give you for free. For Preservation, each case is short: invert on the relevant typing rule to pin down $\tau$, then use TypeNum to retype the result.
+
+\textbf{Extra clue.} \emph{Progress}, fill in the blanks (case TypeDiv only — TypeNum/TypeNumNZ are one-liners like TypeTrue above):
+\begin{itemize}
+\item \textbf{Case TypeDiv.} Then $e = e_1/e_2$, $\tau = \underline{\hspace{1cm}}$, with $e_1:\MZ$ and $e_2:\underline{\hspace{1cm}}$. By IH on $e_1$: $\eval{e_1}$ or $e_1 \mapsto e_1'$.
+\begin{itemize}
+\item If $\eval{e_1}$: by Canonical Forms, $e_1 = \overline{n_1}$. By IH on $e_2$: $\eval{e_2}$ or $e_2 \mapsto e_2'$.
+  \begin{itemize}
+  \item If $\eval{e_2}$: by Canonical Forms (the $\NZ$ case!), $e_2 = \overline{n_2}$ with $\underline{\hspace{2cm}}$. So by rule \underline{\hspace{2cm}}, $e \mapsto \underline{\hspace{2cm}}$.
+  \item If $e_2 \mapsto e_2'$: by rule \underline{\hspace{2.5cm}}, $e \mapsto \underline{\hspace{2cm}}$.
+  \end{itemize}
+\item If $e_1 \mapsto e_1'$: by rule \underline{\hspace{2.5cm}}, $e \mapsto \underline{\hspace{2cm}}$.
+\end{itemize}
+\end{itemize}
+\emph{Preservation}, fill in the blanks (all three cases follow the same 2-line pattern):
+\begin{itemize}
+\item \textbf{Case StepAdd.} $e = \overline{n_1}+\overline{n_2}$, $e' = \overline{n_1+n_2}$. By inversion on \underline{\hspace{1.5cm}}, $\tau = \underline{\hspace{1cm}}$. By \underline{\hspace{1.5cm}}, $e' : \tau$.
+\item \textbf{Case StepSub.} (Same pattern, different typing rule to invert on.)
+\item \textbf{Case StepDiv.} (Same pattern again — which rule do you invert on this time?)
+\end{itemize}
 
 \textbf{Your answer:}
 
@@ -153,6 +239,15 @@ Prove the StepMul case for Preservation. \textbf{Hint (from the assignment):} if
 
 \textbf{Hint.} A product $e_1 * e_2$ could have been typed by \emph{either} TypeMulNZ or TypeMulMZ — inversion on the typing derivation doesn't hand you a unique rule the way it did for StepAdd, so you'll genuinely need two sub-cases. In the TypeMulNZ sub-case, invert once more (on TypeNumNZ) to learn both numerals are nonzero, then think about why a product of two nonzero integers can't be zero. In the TypeMulMZ sub-case, there's much less to check.
 
+\textbf{Extra clue.} Fill in the blanks:
+\begin{itemize}
+\item \textbf{Case StepMul.} $e = \overline{n_1}*\overline{n_2}$, $e' = \overline{n_1n_2}$. Inversion on the derivation of $e:\tau$ gives two sub-cases.
+\begin{itemize}
+\item \textbf{Via TypeMulNZ.} $\tau = \underline{\hspace{1cm}}$, and $\overline{n_1}:\NZ$, $\overline{n_2}:\NZ$. Inverting \emph{again} on \underline{\hspace{1.5cm}}, we learn $n_1 \neq \underline{\hspace{0.7cm}}$ and $n_2 \neq \underline{\hspace{0.7cm}}$. A fact from basic arithmetic you're allowed to use without proof: the product of two nonzero integers is $\underline{\hspace{2cm}}$. So by rule \underline{\hspace{1.5cm}}, $e' : \underline{\hspace{1cm}} = \tau$.
+\item \textbf{Via TypeMulMZ.} $\tau = \underline{\hspace{1cm}}$ (no constraint on $n_1,n_2$). By rule \underline{\hspace{1.5cm}}, $e' : \underline{\hspace{1cm}} = \tau$.
+\end{itemize}
+\end{itemize}
+
 \textbf{Your answer:}
 
 \vspace{5cm}
@@ -162,6 +257,8 @@ Give a syntactically valid expression in $\mathsf{EZ}$ that does not perform a d
 \end{task}
 
 \textbf{Hint.} Look for a gap between what's \emph{true at runtime} and what the type system can \emph{prove}. In particular, notice that TypeAdd and TypeSub (as you filled them in for Task 7) only ever conclude $\MZ$ — there's no rule that lets a sum or difference be typed $\NZ$, no matter what its operands are. Now think of a division whose divisor is written as a sum or difference of two numerals that you, doing the arithmetic yourself, know is nonzero. For the refinement part: you don't need to design a whole new system, just gesture at what extra information the type system would need to track (e.g., sign, or a way to reason about specific known numeral values) to let that particular divisor be typed $\NZ$, while thinking about why your fix wouldn't accidentally let an actual division-by-zero back in.
+
+\textbf{Extra clue.} Concretely: pick any two small numerals $n_2, n_3$ whose sum (or difference) you can verify by hand is nonzero, and any numeral $n_1$ at all, and consider the expression $\overline{n_1}/(\overline{n_2}+\overline{n_3})$ (or with $-$ instead of $+$). Walk through why TypeDiv can never accept this: what type does TypeAdd force on $\overline{n_2}+\overline{n_3}$, and how does that compare to what TypeDiv requires of its second argument? For the refinement, it can help to ask: what's the \emph{smallest} piece of information beyond ``maybe zero'' you could attach to a numeral (or an expression) that would let you conclude a sum is nonzero — and would every numeral automatically have that information, or only some?
 
 \textbf{Your answer:}
 
