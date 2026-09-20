@@ -20,7 +20,19 @@
 
 \textbf{Your answer:}
 
-\vspace{4cm}
+Expand each inner product using bilinearity, then substitute $\braket{0|0}=\braket{1|1}=1$ and $\braket{0|1}=\braket{1|0}=0$.
+\[
+\braket{+|+} = \frac{1}{\sqrt2}\cdot\frac{1}{\sqrt2}\big(\braket{0|0}+\braket{0|1}+\braket{1|0}+\braket{1|1}\big) = \frac12(1+0+0+1) = 1
+\]
+\[
+\braket{+|-} = \frac{1}{\sqrt2}\cdot\frac{1}{\sqrt2}\big(\braket{0|0}-\braket{0|1}+\braket{1|0}-\braket{1|1}\big) = \frac12(1-0+0-1) = 0
+\]
+\[
+\braket{-|-} = \frac{1}{\sqrt2}\cdot\frac{1}{\sqrt2}\big(\braket{0|0}-\braket{0|1}-\braket{1|0}+\braket{1|1}\big) = \frac12(1-0-0+1) = 1
+\]
+Since $\braket{+|+}=\braket{-|-}=1$, both $\ket{+}$ and $\ket{-}$ are normalized (unit vectors), and since $\braket{+|-}=0$, they are orthogonal to each other. Two normalized, mutually orthogonal vectors in a 2-dimensional space form an orthonormal basis, so $\{\ket{+},\ket{-}\}$ is an alternative orthonormal basis for the qubit state space (alongside $\{\ket{0},\ket{1}\}$).
+
+\vspace{1cm}
 
 \section*{Exercise 2.4}
 \textbf{Statement.} Consider the following three questions:
