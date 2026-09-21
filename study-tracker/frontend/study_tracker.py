@@ -216,7 +216,13 @@ class StudyLedgerApp:
 
         ttk.Separator(f).pack(fill="x", pady=10)
 
-        ttk.Label(f, text=f"Today's goal: {DAILY_GOAL_HOURS:g}h", style="Header.TLabel").pack()
+        goal_head_row = ttk.Frame(f)
+        goal_head_row.pack()
+        ttk.Label(goal_head_row, text=f"Today's goal: {DAILY_GOAL_HOURS:g}h", style="Header.TLabel").pack(side="left")
+        ttk.Label(goal_head_row, text="   \U0001F525", font=("Segoe UI", 12)).pack(side="left")
+        self.streak_var = tk.StringVar(value="0 day streak")
+        ttk.Label(goal_head_row, textvariable=self.streak_var, style="Header.TLabel").pack(side="left")
+
         self.progress = ttk.Progressbar(f, maximum=DAILY_GOAL_HOURS * 60, length=400)
         self.progress.pack(pady=8)
         self.progress_label_var = tk.StringVar()
@@ -399,17 +405,22 @@ class StudyLedgerApp:
         self.stat_vars["today"].set(fmt_hours_minutes(sum_range(today_str(), today_str())))
         self.stat_vars["week"].set(fmt_hours_minutes(sum_range(days_ago_str(6), today_str())))
         self.stat_vars["all"].set(fmt_hours_minutes(sum_range("0000-01-01", "9999-12-31")))
-        self.stat_vars["streak"].set(self._compute_streak_label(rows))
+        streak = self._compute_streak(rows)
+        self.stat_vars["streak"].set(f"{streak}d")
+        self.streak_var.set(f"{streak} day streak" if streak != 1 else "1 day streak")
         self._refresh_progress()
 
-    def _compute_streak_label(self, rows):
+    def _compute_streak(self, rows):
+        # A streak stays alive until the day actually ends: if today has no
+        # session yet, count backward from yesterday instead of zeroing out.
         dates = {r["date"] for r in rows}
+        today = datetime.date.today()
+        cursor = today if today.isoformat() in dates else today - datetime.timedelta(days=1)
         streak = 0
-        cursor = datetime.date.today()
         while cursor.isoformat() in dates:
             streak += 1
             cursor -= datetime.timedelta(days=1)
-        return f"{streak}d"
+        return streak
 
     # ---------- goal pacing / roast ----------
     def _expected_minutes_now(self):
