@@ -61,13 +61,21 @@ original order. Good for a quick skim before deciding whether to read or
 listen to the whole thing. See `summarize.py` if you want to tune the
 scoring later.
 
-Once a note has generated audio, a **"Take quiz"** button builds a short
-fill-in-the-blank quiz from that chapter's transcript — good for a quick
-retention check after listening. This is done entirely offline with simple
-heuristics (pick a sentence, blank out a keyword, offer it plus three
-decoy keywords pulled from elsewhere in the same chapter) — no external
-API or model, so quality is "spot-check," not something like an LLM-written
-quiz. See `quiz.py` if you want to improve the heuristics later.
+A **"Take quiz"** button (no need to generate audio first — same as
+Summarize, it extracts text from the PDF directly) builds a short
+fill-in-the-blank quiz from that note's or homework's text — good for a
+quick retention check on notes *and* HW alike. This is done entirely
+offline with simple heuristics (pick a sentence, blank out a keyword,
+offer it plus three decoy keywords pulled from elsewhere in the same
+document) — no external API or model, so quality is "spot-check," not
+something like an LLM-written quiz. See `quiz.py` if you want to improve
+the heuristics later.
+
+Each question also has a **"🤷 I don't know — show me"** option alongside
+the real choices. Picking it (or just missing the question) reveals the
+sentence the question was pulled from, with its neighbors for a bit more
+context — an offline stand-in for "explain the answer," since there's no
+model here to actually reason about it.
 
 By default the server only listens on `127.0.0.1` (this PC only). Pass a
 different port with a first argument, or open it to your home network with

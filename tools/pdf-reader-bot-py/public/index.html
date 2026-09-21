@@ -431,6 +431,22 @@
   .quiz-opt:hover { background: var(--panel-2); }
   .quiz-opt.correct { border-color: var(--good); background: var(--good-soft); color: var(--good); }
   .quiz-opt.incorrect { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .quiz-opt-idk { color: var(--muted-2); font-style: italic; }
+  .quiz-explain {
+    display: none;
+    margin-top: 8px;
+    padding: 9px 11px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .quiz-explain.shown { display: block; }
+  .quiz-explain strong { color: var(--text); }
+  .quiz-explain .ctx-dim { color: var(--muted-2); }
+  .quiz-explain .ctx-main { color: var(--text); font-weight: 600; }
   #quiz-result { margin-top: 14px; display: flex; align-items: center; gap: 10px; }
   .quiz-loading { color: var(--muted-2); font-size: 13px; padding: 10px 0; }
 
@@ -659,11 +675,6 @@ function updateSeenButton() {
   btn.classList.toggle('active', !!note.seen);
 }
 
-function setQuizEnabled(enabled) {
-  const btn = document.getElementById('quiz-btn');
-  if (btn) btn.disabled = !enabled;
-}
-
 async function markSeen(seen) {
   const note = state.selected;
   if (!note) return;
@@ -726,9 +737,9 @@ async function startQuiz() {
   const note = state.selected;
   if (!note) return;
   const quizBlock = document.getElementById('quiz-block');
-  quizBlock.innerHTML = '<div class="quiz-loading">Building quiz from the transcript…</div>';
+  quizBlock.innerHTML = '<div class="quiz-loading">Building quiz from the PDF text…</div>';
   try {
-    const res = await fetch(`/api/quiz?id=${encodeURIComponent(note.id)}`);
+    const res = await fetch(`/api/quiz?path=${encodeURIComponent(note.path)}`);
     const data = await res.json();
     if (!res.ok || data.error) {
       quizBlock.innerHTML = `<div class="error-box">${escapeHtml(data.error || 'Could not build a quiz.')}</div>`;
@@ -740,10 +751,18 @@ async function startQuiz() {
   }
 }
 
+function contextHtml(q) {
+  const parts = [];
+  if (q.context_before) parts.push(`<span class="ctx-dim">${escapeHtml(q.context_before)}</span>`);
+  parts.push(`<span class="ctx-main">${escapeHtml(q.context)}</span>`);
+  if (q.context_after) parts.push(`<span class="ctx-dim">${escapeHtml(q.context_after)}</span>`);
+  return parts.join(' ');
+}
+
 function renderQuiz(questions) {
   const quizBlock = document.getElementById('quiz-block');
   if (!questions.length) {
-    quizBlock.innerHTML = `<div class="error-box">This chapter's text is too short to build a quiz from.</div>`;
+    quizBlock.innerHTML = `<div class="error-box">This document's text is too short to build a quiz from.</div>`;
     return;
   }
   quizBlock.innerHTML = `
@@ -760,6 +779,13 @@ function renderQuiz(questions) {
                   ${escapeHtml(opt)}
                 </label>
               `).join('')}
+              <label class="quiz-opt quiz-opt-idk">
+                <input type="radio" name="q${i}" value="__idk__">
+                🤷 I don't know — show me
+              </label>
+            </div>
+            <div class="quiz-explain">
+              <strong>From the text:</strong> ${contextHtml(q)}
             </div>
           </div>
         `).join('')}
@@ -784,9 +810,14 @@ function gradeQuiz(total) {
       const input = label.querySelector('input');
       label.classList.remove('correct', 'incorrect');
       if (input.value === answer) label.classList.add('correct');
-      else if (selected && input.value === selected.value) label.classList.add('incorrect');
+      else if (selected && input.value === selected.value && input.value !== '__idk__') {
+        label.classList.add('incorrect');
+      }
     });
-    if (selected && selected.value === answer) correct++;
+    const isCorrect = !!(selected && selected.value === answer);
+    if (isCorrect) correct++;
+    const explain = div.querySelector('.quiz-explain');
+    if (explain) explain.classList.toggle('shown', !isCorrect);
   });
   const allGood = correct === total;
   const result = document.getElementById('quiz-result');
@@ -852,7 +883,6 @@ function renderStatus(s) {
     statusLine.textContent = 'No audio generated yet.';
     playerBlock.innerHTML = '';
   }
-  setQuizEnabled(s.status === 'done');
 }
 
 function renderPlayer(tracks, pages) {
