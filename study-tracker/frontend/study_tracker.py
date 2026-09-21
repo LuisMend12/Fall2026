@@ -41,21 +41,38 @@ DAY_START_HOUR = 8     # the study day is assumed to run 8am-11pm for pacing
 DAY_END_HOUR = 23
 CHECKIN_HOUR = 21      # end-of-day roast/praise popup
 
-ROASTS = [
-    "That's it? My grandma studies more than that, and she's retired.",
-    "At this pace you'll hit 8 hours sometime around finals week. Next year.",
-    "Your notes miss you. They filed a missing person report.",
-    "The couch called. It says thanks for the loyalty.",
-    "You've spent longer deciding what to watch than you have studying today.",
-    "Bold strategy, cramming everything into the five minutes before class.",
-    "Even your browser history is embarrassed for you right now.",
-    "Future you is going to have some very pointed questions about today.",
+GOGGINS_QUOTES = [
+    "Stay hard!",
+    "Don't stop when you're tired. Stop when you're done.",
+    "The most important conversations you'll ever have are the ones you'll have with yourself.",
+    "You are in danger of living a life so comfortable and soft, that you will die without ever "
+    "realizing your true potential.",
+    "We are all in a fight against our comfort zone. It's how you handle that fight that will "
+    "determine how great you become.",
+    "Motivation is crap. Motivation comes and goes. When you're driven, whatever's in front of "
+    "you will get destroyed.",
+    "It's so much better when you have callused hands and a calloused mind and heart.",
+    "Suffering is the true test of life.",
+    "No one is going to come help you. No one is coming to save you.",
+    "You have to build calluses on your brain just like how you build calluses on your hands.",
+    "When you think you're done, you're only actually 40 percent into what your body's capable "
+    "of doing.",
+    "Am I doing enough to become the best version of myself?",
+    "Embrace the suck.",
 ]
+
+
+def goggins_quote():
+    return f"“{random.choice(GOGGINS_QUOTES)}”\n— David Goggins"
+
+
+ROASTS = GOGGINS_QUOTES  # kept for the pacing logic below; formatted via goggins_quote()
 PRAISES = [
     "8 hours down. That's actual discipline, not just vibes.",
     "Look at you, showing up for yourself today.",
     "Goal met. Go touch grass, you earned it.",
     "That's the kind of day that shows up on the transcript.",
+    "Stay hard. Now go again tomorrow.\n— David Goggins",
 ]
 NUDGES = [
     "Behind pace, but there's still time to fix that.",
@@ -205,8 +222,9 @@ class StudyLedgerApp:
         self.progress_label_var = tk.StringVar()
         ttk.Label(f, textvariable=self.progress_label_var).pack()
 
-        self.roast_var = tk.StringVar()
+        self.roast_var = tk.StringVar(value=goggins_quote())
         ttk.Label(f, textvariable=self.roast_var, style="Roast.TLabel").pack(pady=(10, 4), padx=10)
+        ttk.Button(f, text="Hit me with another quote", command=self.new_goggins_quote).pack(pady=(0, 8))
 
     def _render_timer_buttons(self):
         for b in (self.start_btn, self.pause_btn, self.resume_btn, self.stop_btn, self.discard_btn):
@@ -420,8 +438,12 @@ class StudyLedgerApp:
         bucket = datetime.datetime.now().minute // 15
         if bucket != self._last_roast_bucket:
             self._last_roast_bucket = bucket
-            self._current_roast = random.choice(ROASTS)
+            self._current_roast = goggins_quote()
         return self._current_roast
+
+    def new_goggins_quote(self):
+        self._current_roast = goggins_quote()
+        self.roast_var.set(self._current_roast)
 
     def _schedule_progress_check(self):
         self._maybe_checkin_popup()
@@ -439,7 +461,7 @@ class StudyLedgerApp:
                 short_by = fmt_hours_minutes(DAILY_GOAL_HOURS * 60 - total)
                 messagebox.showwarning(
                     "Study Ledger",
-                    f"{random.choice(ROASTS)}\n\nYou're {short_by} short of today's {DAILY_GOAL_HOURS:g}h goal.",
+                    f"{goggins_quote()}\n\nYou're {short_by} short of today's {DAILY_GOAL_HOURS:g}h goal.",
                 )
 
 
