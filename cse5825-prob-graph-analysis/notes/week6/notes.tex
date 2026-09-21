@@ -125,14 +125,65 @@ single-node bias potentials $\phi_i(x_i) = u_i x_i$:
 P(\xi) = \frac{1}{Z}\exp\Big(-\sum_{i<j} w_{i,j} x_i x_j - \sum_i u_i x_i\Big).
 \]
 
-\subsubsection{Example: (Restricted) Boltzmann machine}
+\subsubsection{Example: Boltzmann machine}
 
-Visible units $\mathbf{v}$ and hidden units $\mathbf{h}$ with energy
-$E(\mathbf{v},\mathbf{h}) = -\mathbf{v}^\top W \mathbf{h} - \mathbf{b}^\top
-\mathbf{h} - \mathbf{c}^\top \mathbf{v}$ and
-$P(\mathbf{v},\mathbf{h}) = \frac{1}{Z}\exp(-E(\mathbf{v},\mathbf{h}))$; in
-the \emph{restricted} version there are no visible-visible or
-hidden-hidden edges, only a bipartite visible-hidden structure.
+A (general) \emph{Boltzmann machine} is a fully-connected, pairwise MN
+(Ising-like) over binary units $\mathbf{s} \in \{0,1\}^n$, split into
+\emph{visible} units $\mathbf{v}$ (which carry the data) and \emph{hidden}
+units $\mathbf{h}$ (which carry latent structure). Every pair of units --
+visible-visible, hidden-hidden, and visible-hidden -- may be connected. Its
+energy is a general quadratic form
+\[
+E(\mathbf{v},\mathbf{h}) = -\tfrac12\mathbf{v}^\top L \mathbf{v}
+- \tfrac12\mathbf{h}^\top J \mathbf{h} - \mathbf{v}^\top W \mathbf{h}
+- \mathbf{c}^\top \mathbf{v} - \mathbf{b}^\top \mathbf{h},
+\]
+with $P(\mathbf{v},\mathbf{h}) = \frac{1}{Z}\exp(-E(\mathbf{v},\mathbf{h}))$,
+$Z = \sum_{\mathbf{v},\mathbf{h}} \exp(-E(\mathbf{v},\mathbf{h}))$. This is
+just a log-linear MN whose features are all pairwise products $s_i s_j$ and
+all singletons $s_i$, i.e.\ a fully general pairwise binary MRF. Because the
+graph is a complete graph (every unit is a neighbor of every other unit),
+none of the units are conditionally independent of each other given the
+rest, so exact inference and even computing $Z$ are intractable in general
+(the sum has $2^{|\mathbf{v}|+|\mathbf{h}|}$ terms); this is the price paid
+for the extra representational power of hidden units and dense
+connectivity.
+
+\paragraph{Restricted Boltzmann machine (RBM).} Restricting the graph to be
+\emph{bipartite} -- dropping all visible-visible edges ($L=0$) and all
+hidden-hidden edges ($J=0$), keeping only visible-hidden edges $W$ -- gives
+the RBM:
+\[
+E(\mathbf{v},\mathbf{h}) = -\mathbf{v}^\top W \mathbf{h} - \mathbf{c}^\top
+\mathbf{v} - \mathbf{b}^\top \mathbf{h}, \qquad
+P(\mathbf{v},\mathbf{h}) = \frac{1}{Z}\exp(-E(\mathbf{v},\mathbf{h})).
+\]
+The point of removing intra-layer edges is exactly the pairwise-Markov
+property from Section~1.1: with no visible-visible or hidden-hidden edges,
+each visible unit is separated from the other visible units by the hidden
+layer (and vice versa), so
+\[
+P(\mathbf{h}\mid\mathbf{v}) = \prod_j P(h_j \mid \mathbf{v}), \qquad
+P(\mathbf{v}\mid\mathbf{h}) = \prod_i P(v_i \mid \mathbf{h}),
+\]
+i.e.\ all hidden units are conditionally independent given the visible
+units, and all visible units are conditionally independent given the
+hidden units. Expanding the energy for a single unit shows each conditional
+is a logistic/sigmoid unit exactly as in Section~2.2 (CRFs generalize
+logistic regression):
+\[
+P(h_j = 1 \mid \mathbf{v}) = \operatorname{sigmoid}\Big(b_j + \sum_i v_i W_{ij}\Big),
+\qquad
+P(v_i = 1 \mid \mathbf{h}) = \operatorname{sigmoid}\Big(c_i + \sum_j W_{ij} h_j\Big).
+\]
+This is what makes RBMs practical: although $Z$ (and hence
+$P(\mathbf{v},\mathbf{h})$ itself) is still intractable to compute exactly,
+one can alternate sampling $\mathbf{h}\mid\mathbf{v}$ and
+$\mathbf{v}\mid\mathbf{h}$ in \emph{block Gibbs sampling}, since each block
+factorizes into independent coordinates. This alternating structure
+underlies contrastive-divergence training, and stacking RBMs (feeding one
+layer's hidden samples as the next RBM's visible data) is the basis of deep
+belief networks.
 
 \subsubsection{Metric MRFs}
 
