@@ -38,28 +38,35 @@ def generate_quiz(transcript: str, n_questions: int = 8, seed=None):
     Each question blanks out one keyword from a sentence and offers it plus
     three distractor keywords pulled from elsewhere in the same text as
     multiple-choice options. Returns [] if the text is too short/sparse to
-    build a decent quiz from."""
+    build a decent quiz from.
+
+    Each question also carries "context" (the un-blanked source sentence)
+    and "context_before"/"context_after" (its neighbors in the document, or
+    None at a boundary) -- an offline stand-in for an explanation: when the
+    quiz-taker misses a question, showing where it came from is the
+    closest this heuristic approach gets to "explaining" the answer."""
     rng = random.Random(seed)
 
+    all_sentences = _sentences(transcript)
     candidates = []
-    for s in _sentences(transcript):
+    for i, s in enumerate(all_sentences):
         if not (40 <= len(s) <= 220):
             continue
         kws = _keywords(s)
         if kws:
-            candidates.append((s, kws))
+            candidates.append((i, s, kws))
 
     if len(candidates) < 4:
         return []
 
     rng.shuffle(candidates)
-    all_terms = list({w for _, kws in candidates for w in kws})
+    all_terms = list({w for _, _, kws in candidates for w in kws})
     if len(all_terms) < 4:
         return []
 
     questions = []
     used_terms_lower = set()
-    for sentence, kws in candidates:
+    for i, sentence, kws in candidates:
         if len(questions) >= n_questions:
             break
 
@@ -81,6 +88,13 @@ def generate_quiz(transcript: str, n_questions: int = 8, seed=None):
 
         opts = distractors + [term]
         rng.shuffle(opts)
-        questions.append({"question": blanked, "options": opts, "answer": term})
+        questions.append({
+            "question": blanked,
+            "options": opts,
+            "answer": term,
+            "context": sentence,
+            "context_before": all_sentences[i - 1] if i > 0 else None,
+            "context_after": all_sentences[i + 1] if i < len(all_sentences) - 1 else None,
+        })
 
     return questions

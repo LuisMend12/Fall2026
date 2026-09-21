@@ -628,7 +628,7 @@ function renderDetail() {
       <div class="secondary-row">
         <button id="seen-toggle-btn" class="secondary-btn" type="button"></button>
         <button id="summary-btn" class="secondary-btn" type="button">Summarize</button>
-        <button id="quiz-btn" class="secondary-btn" type="button" disabled>Take quiz</button>
+        <button id="quiz-btn" class="secondary-btn" type="button">Take quiz</button>
       </div>
       <div id="summary-block"></div>
       <div id="quiz-block"></div>
@@ -649,7 +649,6 @@ function renderDetail() {
   document.getElementById('summary-btn').onclick = startSummary;
   document.getElementById('quiz-btn').onclick = startQuiz;
   updateSeenButton();
-  setQuizEnabled(!!note.has_audio);
 }
 
 function updateSeenButton() {

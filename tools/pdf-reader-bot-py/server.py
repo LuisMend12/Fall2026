@@ -227,18 +227,26 @@ def api_progress():
 
 @app.get("/api/quiz")
 def api_quiz():
-    slug = request.args.get("id", "")
-    if not slug:
-        return jsonify({"error": "missing id"}), 400
+    rel = request.args.get("path", "")
+    if not rel:
+        return jsonify({"error": "missing path"}), 400
 
-    transcript_path = AUDIO_ROOT / slug / "transcript.txt"
-    if not transcript_path.is_file():
-        return jsonify({"error": "Generate audio first -- no transcript available yet."}), 404
+    full = (REPO_ROOT / rel).resolve()
+    if not str(full).startswith(str(REPO_ROOT)) or full.suffix.lower() != ".pdf":
+        return jsonify({"error": "invalid path"}), 400
+    if not full.is_file():
+        return jsonify({"error": "PDF not found"}), 404
 
-    text = transcript_path.read_text(encoding="utf-8")
-    questions = quizmod.generate_quiz(text)
+    try:
+        paragraphs = p2s.extract_paragraphs(str(full))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 422
+    if not paragraphs:
+        return jsonify({"error": "No extractable text found (the PDF may be scanned images without OCR)."}), 422
+
+    questions = quizmod.generate_quiz(p2s.full_text(paragraphs))
     if not questions:
-        return jsonify({"error": "This chapter's text is too short to build a quiz from."}), 422
+        return jsonify({"error": "This document's text is too short/sparse to build a quiz from."}), 422
 
     return jsonify({"questions": questions})
 
