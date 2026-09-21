@@ -1,0 +1,316 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{Probabilistic graphical models}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Markov Networks and Conditional Random Fields (Lecture 6)}
+
+This lecture covers the parameterization of Markov networks (MNs), their
+log-linear form, conditional random fields (CRFs), and how MNs and Bayesian
+networks (BNs) relate to and convert into one another.
+
+\subsection{Independencies of a Markov network (recap)}
+
+A trail $X_1 - \cdots - X_n$ is \emph{active} given $Z$ if none of the
+$X_i$ (other than the endpoints) is in $Z$; unlike in a BN, activity of a
+trail in an MN depends only on the graph structure, not on the direction of
+edges or on colliders. This gives three families of independence statements
+associated with an MN $\mathcal{H}$:
+
+\begin{itemize}
+  \item \textbf{Global Markov}: $\mathcal{I}(\mathcal{H}) =
+    \{(\mathbf{X} \perp \mathbf{Y} \mid \mathbf{Z}) :
+    \operatorname{sep}_{\mathcal{H}}(\mathbf{X}; \mathbf{Y} \mid \mathbf{Z})\}$,
+    i.e. $\mathbf{X}$ and $\mathbf{Y}$ are independent given $\mathbf{Z}$
+    whenever every trail between them is blocked by $\mathbf{Z}$.
+  \item \textbf{Pairwise Markov}: $\mathcal{I}_p(\mathcal{H}) =
+    \{(X \perp Y \mid \mathcal{X} - \{X,Y\}) : X\text{---}Y \notin \mathcal{H}\}$,
+    any two non-adjacent nodes are independent given everything else.
+  \item \textbf{Local Markov}: $\mathcal{I}_\ell(\mathcal{H}) =
+    \{(X \perp \mathcal{X} - \{X\} - \mathrm{MB}_{\mathcal{H}}(X) \mid
+    \mathrm{MB}_{\mathcal{H}}(X)) : X \in \mathcal{X}\}$, a node is
+    independent of the rest of the graph given its Markov blanket (here,
+    just its neighbors).
+\end{itemize}
+
+These three notions coincide for positive distributions; they are stated in
+decreasing order of strength (global $\Rightarrow$ pairwise $\Rightarrow$
+local in general, with equivalence under positivity).
+
+\subsection{Gibbs distribution and alternative parameterizations}
+
+The MN's graph being an I-map for $P$ is equivalent to $P$ factorizing over
+the graph's cliques:
+
+\[
+P(\mathbf{X}) = \frac{1}{Z} \prod_{i=1}^{m} \phi_i(\mathbf{D}_i), \qquad
+Z = \sum_{\mathbf{x} \in \mathrm{Val}(\mathbf{X})} \prod_{i=1}^m \phi_i(\mathbf{d}_i),
+\]
+
+where each $\mathbf{D}_i$ is (a subset of) a clique and $Z$ is the
+\emph{partition function}, a normalizing constant. Writing $U(\mathbf{X}) =
+\prod_i \phi_i(\mathbf{D}_i)$, $P(\mathbf{X}) = U(\mathbf{X})/Z$ is called a
+\emph{Gibbs distribution}.
+
+\subsubsection{Logarithmic / energy representation}
+
+Since factors are non-negative, each can be written as
+$\phi_i(\mathbf{D}_i) = e^{-\psi_i(\mathbf{D}_i)}$ for some
+$\psi_i : \mathrm{Val}(\mathbf{D}_i) \to \mathbb{R}$. Substituting,
+
+\[
+P(\mathbf{X}) = \frac{1}{Z} \exp\Big(-\sum_i \psi_i(\mathbf{D}_i)\Big), \qquad
+\ln P(\mathbf{X}) = -\ln Z - \sum_i \psi_i(\mathbf{D}_i).
+\]
+
+The quantity $\sum_i \psi_i(\mathbf{D}_i)$ is called the \emph{energy}:
+lower energy corresponds to higher probability. A \emph{feature} is a
+function $f : \mathrm{Val}(\mathbf{D}_i) \to \mathbb{R}$ that need not be
+non-negative (a factor without the positivity requirement); a canonical
+example is an \emph{indicator feature} that is $1$ for a particular
+assignment and $0$ otherwise (e.g. ``these two superpixels have the same
+color'').
+
+\textbf{Worked example.} For the 4-cycle $A - B - C - D - A$ with pairwise
+factors $\phi_1(A,B)$, $\phi_2(B,C)$, $\phi_3(C,D)$, $\phi_4(D,A)$, set
+$\psi_i = -\ln \phi_i$ (so $\phi_1(a^0,b^0)=30 \Rightarrow \psi_1(a^0,b^0) =
+-\ln 30 = -3.4$, etc.). Then
+\[
+P(A,B,C,D) \propto \exp\big[-\psi_1(A,B) - \psi_2(B,C) - \psi_3(C,D) - \psi_4(D,A)\big].
+\]
+
+\subsection{Log-linear Markov networks}
+
+A \emph{log-linear} MN is specified by a set of features
+$\mathcal{F} = \{f_1(\mathbf{D}_1), \dots, f_k(\mathbf{D}_k)\}$ (each with
+scope $\mathbf{D}_i$, a complete subgraph) and weights $w_1, \dots, w_k$:
+
+\[
+P(X_1, \dots, X_n) = \frac{1}{Z} \exp\Big[-\sum_{i=1}^k w_i f_i(\mathbf{D}_i)\Big],
+\qquad
+\ln P(X_1,\dots,X_n) \propto \sum_{i=1}^k w_i f_i(\mathbf{D}_i).
+\]
+
+Different features may share a scope, and features/weights can be reused
+across different factors (typically: features hand-designed, weights
+learned from data). Log-linear form does not change the independence
+assertions of the underlying model; it only changes how factors are
+parameterized. Log-probability is linear in the weights, which is what
+makes maximum-likelihood weight learning a (concave) convex optimization
+problem.
+
+\textbf{Example.} With $f_1(\text{Smoking}, \text{Cancer}) = \mathbb{1}[\lnot
+\text{Smoking} \lor \text{Cancer}]$ and $w_1 = 1.5$, the feature/weight pair
+encodes a soft implication ``smoking tends to cause cancer'' as one term in
+$\sum_i w_i f_i$.
+
+\subsubsection{Example: Ising model}
+
+Binary spins $X_i \in \{+1,-1\}$ on a grid, with pairwise interaction
+potentials $\phi_{i,j}(x_i,x_j) = w_{i,j} x_i x_j$ between neighbors and
+single-node bias potentials $\phi_i(x_i) = u_i x_i$:
+
+\[
+P(\xi) = \frac{1}{Z}\exp\Big(-\sum_{i<j} w_{i,j} x_i x_j - \sum_i u_i x_i\Big).
+\]
+
+\subsubsection{Example: (Restricted) Boltzmann machine}
+
+Visible units $\mathbf{v}$ and hidden units $\mathbf{h}$ with energy
+$E(\mathbf{v},\mathbf{h}) = -\mathbf{v}^\top W \mathbf{h} - \mathbf{b}^\top
+\mathbf{h} - \mathbf{c}^\top \mathbf{v}$ and
+$P(\mathbf{v},\mathbf{h}) = \frac{1}{Z}\exp(-E(\mathbf{v},\mathbf{h}))$; in
+the \emph{restricted} version there are no visible-visible or
+hidden-hidden edges, only a bipartite visible-hidden structure.
+
+\subsubsection{Metric MRFs}
+
+A special case of pairwise MRFs used for labeling problems (image
+segmentation, denoising): all $x_i$ take values in a common label space
+$V$, and neighbors are encouraged to take similar labels via a smoothness
+energy
+\[
+E(x_1,\dots,x_n) = \sum_i \epsilon_i(x_i) + \sum_{(i,j)\in\mathcal{E}} \epsilon_{i,j}(x_i,x_j),
+\qquad P \propto \exp(-E),
+\]
+where $\epsilon_{i,j}$ is built from a distance/metric function $\mu$ on
+labels, e.g. $\epsilon(x_i,x_j) = \min(c\|x_i-x_j\|_p,\ \mathrm{dist}_{\max})$
+(a robust, truncated distance). Inference reduces to minimizing the energy,
+equivalently maximizing the probability.
+
+\section{Conditional Random Fields (CRFs)}
+
+\subsection{Motivation}
+
+Often we only care about $P(\mathbf{Y}\mid\mathbf{X})$ for target variables
+$\mathbf{Y}$ given observed variables $\mathbf{X}$, not the full joint
+$P(\mathbf{X},\mathbf{Y})$. Modeling $P(\mathbf{X},\mathbf{Y})$ directly
+would force us to also model the (possibly complicated, high-dimensional,
+or continuous) distribution over $\mathbf{X}$ itself. A CRF instead defines
+an MN over $\{\mathbf{X}\cup\mathbf{Y}\}$ with factors
+$\phi_1(\mathbf{D}_1),\dots,\phi_m(\mathbf{D}_m)$, but normalizes only over
+$\mathbf{Y}$, for each fixed value of $\mathbf{X}$:
+
+\[
+P(\mathbf{Y}\mid\mathbf{X}) = \frac{1}{Z(\mathbf{X})}\tilde P(\mathbf{Y},\mathbf{X}),
+\qquad
+\tilde P(\mathbf{Y},\mathbf{X}) = \prod_{i=1}^m \phi_i(\mathbf{D}_i),
+\qquad
+Z(\mathbf{X}) = \sum_{\mathbf{Y}} \tilde P(\mathbf{Y},\mathbf{X}).
+\]
+
+This is parameterized exactly like a Gibbs distribution, but normalized
+differently (per-$\mathbf{X}$ rather than globally). Consequences:
+\begin{itemize}
+  \item We never need to model dependencies among the $X$'s, which may be
+    complex, poorly understood, continuous, or simply not of interest.
+  \item We are free to use highly expressive, even overlapping/correlated
+    features of $\mathbf{X}$ (e.g. many overlapping windows of text or
+    image patches) without worrying about violating an independence
+    assumption on $\mathbf{X}$ -- unlike, say, Naive Bayes, which assumes
+    features are conditionally independent given the label and breaks down
+    when features (e.g. neighboring pixels or words) are highly
+    correlated.
+  \item CRFs are widely used in NLP (sequence/entity labeling) and image
+    segmentation.
+\end{itemize}
+
+\subsection{CRFs generalize logistic regression}
+
+Logistic regression is the special case of a conditional MN with a single
+binary query variable $Y$ and binary features $X_1,\dots,X_k$. With
+pairwise potentials $\phi_i(X_i,Y) = \exp\{w_i \mathbb{1}[X_i=1,Y=1]\}$ and a
+node potential $\phi_0(Y) = \exp\{w_0\mathbb{1}[Y=1]\}$,
+
+\[
+\tilde P(Y{=}1\mid x_1,\dots,x_k) = \exp\Big\{w_0+\sum_i w_i x_i\Big\}, \qquad
+\tilde P(Y{=}0\mid \cdot) = 1,
+\]
+so that, after normalizing,
+\[
+P(Y{=}1\mid x_1,\dots,x_k) = \operatorname{sigmoid}\Big(w_0+\sum_{i=1}^k w_i x_i\Big),
+\]
+the familiar logistic regression model. This shows logistic regression is a
+CRF with trivial (star-shaped) structure, and motivates CRFs as its
+generalization to structured, correlated $\mathbf{Y}$.
+
+\subsection{Applications}
+
+\begin{itemize}
+  \item \textbf{Image segmentation}: one node per superpixel $X_i$, edges
+    between adjacent regions, a class label $S_i$ per superpixel. Because
+    everything is conditioned on the (given) image, correlation among
+    pixels does not need to be modeled; node/edge factors can use
+    arbitrary image features (color histograms, texture, CNN outputs).
+    Modern architectures (CRF-as-RNN, dense CRFs stacked on deep nets)
+    embed CRF inference as a layer trained end-to-end with a CNN, rather
+    than as a disconnected post-processing step.
+  \item \textbf{Text/sequence labeling} (e.g. named entity recognition):
+    target labels $Y_t$ (e.g. B-PER/I-PER/B-LOC/I-LOC/OTH) chained together
+    with pairwise factors $\Phi_1(Y_t,Y_{t+1})$ enforcing label
+    consistency, and per-position factors $\Phi_2(Y_t, X_1,\dots,X_T)$
+    tying each label to (features of) the whole observed sequence.
+  \item \textbf{Graph convolutional networks}: a CRF layer can be inserted
+    between convolutional layers to encourage connected/similar nodes to
+    have similar hidden representations, i.e. the CRF acts as a
+    regularizer on the network's hidden features rather than on raw
+    observations.
+\end{itemize}
+
+\section{Bayesian Networks vs. Markov Networks}
+
+\subsection{Relative expressiveness}
+
+\begin{itemize}
+  \item \textbf{Directed (BN)}: captures inter-causal/``explaining away''
+    reasoning; parameters (CPDs) are individually interpretable and can be
+    elicited by hand; easy to generate data by ancestral sampling; large
+    body of work on latent-variable models.
+  \item \textbf{Undirected (MN)}: captures symmetric ``affinity''
+    relationships; naturally represents cyclic dependency structures;
+    parameters are less interpretable and usually learned from data;
+    trickier (but tractable) parameter estimation; easy to add overlapping
+    factors/features.
+\end{itemize}
+
+Neither family strictly contains the other: some independence patterns
+(e.g. induced by a single common cause vs.\ a 4-cycle of pairwise
+dependencies) can be captured exactly by a BN but not any MN, and vice
+versa.
+
+\subsection{BN $\to$ MN: moralization}
+
+Every factor of a BN (i.e. every CPD, a node together with its parents)
+must correspond to a subset of some clique of the target MN. \textbf{Moralize}
+the graph: drop edge directions and add an (undirected) edge between any two
+nodes that share a child (``marrying the parents''), so that every
+node-plus-parents set becomes a clique. The moralized graph is a
+\emph{minimal I-map} for the BN; it is a perfect map only if the original
+DAG had no immoralities (v-structures) to begin with. Moralization can lose
+independence information that was present in the original DAG (extra edges
+= fewer independencies).
+
+\subsection{MN $\to$ BN: triangulation}
+
+Given an MN $\mathcal{H}$, build a minimal I-map BN by fixing an
+elimination/variable ordering (each $X_i$ before its descendants) and, for
+$i=1,\dots,n$, setting $\mathrm{Parents}(X_i)$ to the minimal subset
+$\mathbf{S}\subseteq\{X_1,\dots,X_{i-1}\}$ such that $X_i \perp
+(\{X_1,\dots,X_{i-1}\}\setminus\mathbf{S}) \mid \mathbf{S}$ in
+$\mathcal{H}$. Applied along an ordering that visits the MN's cycle
+structure, this typically introduces extra directed edges (to avoid
+immoralities) -- the resulting BN must be \textbf{chordal} (every cycle of
+length $\ge 4$ has a chord), since a v-structure-free DAG cannot contain
+chordless long cycles. Equivalently, converting MN $\to$ BN requires
+\textbf{triangulating} the MN's graph (adding edges until it is chordal);
+different elimination orderings can produce very different numbers of
+added edges, and the conversion can lose independence information.
+
+\subsection{Perfect maps and chordal graphs}
+
+Moralize (BN $\to$ MN) and triangulate (MN $\to$ BN) are, in general, lossy
+in opposite directions. The distributions representable \emph{perfectly}
+(as a P-map) in both families are exactly those whose MN is an
+\textbf{undirected chordal graph} (a graph whose minimal cycles have length
+$\le 3$). \textbf{Theorem}: if $\mathcal{H}$ is non-chordal, there is no BN
+$G$ with $I(G) = I(\mathcal{H})$ -- because a minimal I-map BN for
+$\mathcal{H}$ must itself be chordal, so representing a non-chordal MN
+exactly as a BN is impossible without adding edges that destroy some of its
+independence assertions.
+
+\section{Factor Graphs}
+
+A \textbf{factor graph} is a third graphical representation (alongside BNs
+and MNs) that makes the factorization of a distribution explicit, rather
+than only its independence structure. It is bipartite, with two kinds of
+node:
+
+\begin{itemize}
+  \item \emph{variable nodes} (drawn as circles), one per random variable;
+  \item \emph{factor nodes} (drawn as squares), one per factor $\phi$,
+    connected to exactly the variables in its scope.
+\end{itemize}
+
+Unlike an MN graph -- which only records \emph{that} some factor exists
+over each clique, collapsing all factors sharing that clique into one edge
+set -- a factor graph distinguishes individual factors, including multiple
+factors over the same or overlapping scopes (e.g.\ separate pairwise
+factors $\phi_1,\phi_2,\phi_3$ plus higher-order factors $\phi_4$ over
+triangle $\{X,Y,Z\}$, or extra unary factors $\phi_5,\phi_6,\phi_7$ on
+individual variables). This makes factor graphs the natural representation
+for deriving and running message-passing (sum-product / belief
+propagation) inference algorithms, since messages are exchanged along the
+explicit variable--factor edges.
+
+\end{document}
