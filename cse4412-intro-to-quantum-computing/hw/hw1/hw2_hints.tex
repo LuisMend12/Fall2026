@@ -46,7 +46,25 @@ Since $\braket{+|+}=\braket{-|-}=1$, both $\ket{+}$ and $\ket{-}$ are normalized
 
 \textbf{Your answer:}
 
-\vspace{4cm}
+For a state $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$, $\Pr(\ket{1}) = |\beta|^2$.
+\begin{enumerate}
+    \item $\ket{+} = \frac{1}{\sqrt2}\ket{0} + \frac{1}{\sqrt2}\ket{1}$, so $\beta = \frac{1}{\sqrt2}$ and
+    \[
+    \Pr(\ket{1}) = \left|\frac{1}{\sqrt2}\right|^2 = \frac12.
+    \]
+    \item $\ket{-} = \frac{1}{\sqrt2}\ket{0} - \frac{1}{\sqrt2}\ket{1}$, so $\beta = -\frac{1}{\sqrt2}$. Squaring the \emph{magnitude} discards the sign, so
+    \[
+    \Pr(\ket{1}) = \left|-\frac{1}{\sqrt2}\right|^2 = \frac12,
+    \]
+    the same probability as for $\ket{+}$, even though the two states are orthogonal (Exercise 2.2) -- the relative phase (sign) between $\alpha$ and $\beta$ does not affect the measurement probabilities in the computational basis.
+    \item $\ket{1} = 0\cdot\ket{0} + 1\cdot\ket{1}$, so $\beta = 1$ and
+    \[
+    \Pr(\ket{1}) = |1|^2 = 1,
+    \]
+    i.e.\ measuring $\ket{1}$ always yields ``1'' with certainty, as expected since the state already is a computational basis state.
+\end{enumerate}
+
+\vspace{2cm}
 
 \section*{Exercise 2.5}
 \textbf{Statement.} Imagine you are given a qubit $\ket{\psi}$ but not told anything about it (i.e., you do not know its probability amplitudes). If you perform a measurement on the state and the outcome is ``0,'' what does this tell you about the state? Can you learn the original probability amplitudes? What if you are given as many copies of $\ket{\psi}$ as you want -- what can be said then?
