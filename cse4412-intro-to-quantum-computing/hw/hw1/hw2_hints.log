@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  21 SEP 2026 22:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  21 SEP 2026 23:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -764,13 +764,13 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 {C:/Users/Luis Mendez/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
 LaTeX Font Info:    Trying to load font information for OMS+cmtt on input line 
-95.
-LaTeX Font Info:    No file OMScmtt.fd. on input line 95.
+91.
+LaTeX Font Info:    No file OMScmtt.fd. on input line 91.
 
 
 LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbackslash' on input line 95.
+(Font)              for symbol `textbackslash' on input line 91.
 
 [3] [4] [5] (hw2_hints.aux)
  ***********
@@ -787,11 +787,11 @@ Package rerunfilecheck Info: File `hw2_hints.out' has not changed.
 Here is how much of TeX's memory you used:
  31102 strings out of 467871
  729150 string characters out of 5428423
- 1284440 words of memory out of 5000000
+ 1280440 words of memory out of 5000000
  59501 multiletter control sequences out of 15000+600000
  635640 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,17n,118p,1365b,2105s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,17n,118p,1093b,2105s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Progra
 m Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKT
 eX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX/fonts/typ
@@ -802,11 +802,10 @@ ogram Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/Mi
 KTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/t
 ype1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/a
 msfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/c
-mtt10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.p
-fb>
-Output written on hw2_hints.pdf (5 pages, 180889 bytes).
+mtt10.pfb>
+Output written on hw2_hints.pdf (5 pages, 172577 bytes).
 PDF statistics:
- 109 PDF objects out of 1000 (max. 8388607)
+ 104 PDF objects out of 1000 (max. 8388607)
  17 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -32,7 +32,7 @@ Expand each inner product using bilinearity, then substitute $\braket{0|0}=\brak
 \[
 \braket{-|-} = \frac{1}{\sqrt2}\cdot\frac{1}{\sqrt2}\big(\braket{0|0}-\braket{0|1}-\braket{1|0}+\braket{1|1}\big) = \frac12(1-0-0+1) = 1
 \]
-Since $\braket{+|+}=\braket{-|-}=1$, both $\ket{+}$ and $\ket{-}$ are normalized (unit vectors), and since $\braket{+|-}=0$, they are orthogonal to each other. Two normalized, mutually orthogonal vectors in a 2-dimensional space form an orthonormal basis, so $\{\ket{+},\ket{-}\}$ is an alternative orthonormal basis for the qubit state space (alongside $\{\ket{0},\ket{1}\}$).
+$\braket{+|+}=\braket{-|-}=1$ means both $\ket{+}$ and $\ket{-}$ are unit vectors, and $\braket{+|-}=0$ means they're orthogonal. Two normalized, mutually orthogonal vectors in a 2D space form a basis, so $\{\ket{+},\ket{-}\}$ works as an orthonormal basis for the qubit just as well as $\{\ket{0},\ket{1}\}$ does.
 
 \vspace{1cm}
 
@@ -54,16 +54,12 @@ For a state $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$, $\Pr(\ket{1}) = |\beta|
     \[
     \Pr(\ket{1}) = \left|\frac{1}{\sqrt2}\right|^2 = \frac12.
     \]
-    \item $\ket{-} = \frac{1}{\sqrt2}\ket{0} - \frac{1}{\sqrt2}\ket{1}$, so $\beta = -\frac{1}{\sqrt2}$. Squaring the \emph{magnitude} discards the sign, so
+    \item $\ket{-} = \frac{1}{\sqrt2}\ket{0} - \frac{1}{\sqrt2}\ket{1}$, so $\beta = -\frac{1}{\sqrt2}$. The minus sign disappears once we square the magnitude:
     \[
-    \Pr(\ket{1}) = \left|-\frac{1}{\sqrt2}\right|^2 = \frac12,
+    \Pr(\ket{1}) = \left|-\frac{1}{\sqrt2}\right|^2 = \frac12.
     \]
-    the same probability as for $\ket{+}$, even though the two states are orthogonal (Exercise 2.2) -- the relative phase (sign) between $\alpha$ and $\beta$ does not affect the measurement probabilities in the computational basis.
-    \item $\ket{1} = 0\cdot\ket{0} + 1\cdot\ket{1}$, so $\beta = 1$ and
-    \[
-    \Pr(\ket{1}) = |1|^2 = 1,
-    \]
-    i.e.\ measuring $\ket{1}$ always yields ``1'' with certainty, as expected since the state already is a computational basis state.
+    Same answer as for $\ket{+}$, even though $\ket+$ and $\ket-$ are orthogonal (Exercise 2.2) -- flipping the sign between $\alpha$ and $\beta$ doesn't show up in computational-basis measurement probabilities.
+    \item $\ket{1} = 0\cdot\ket{0} + 1\cdot\ket{1}$, so $\beta = 1$ and $\Pr(\ket{1}) = |1|^2 = 1$: measuring $\ket1$ gives ``1'' every time, which makes sense since it's already a basis state.
 \end{enumerate}
 
 \vspace{2cm}
@@ -75,13 +71,13 @@ For a state $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$, $\Pr(\ket{1}) = |\beta|
 
 \textbf{Your answer:}
 
-Write $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$ with unknown $\alpha,\beta \in \mathbb{C}$, $|\alpha|^2+|\beta|^2=1$.
+Let $\ket{\psi} = \alpha\ket{0} + \beta\ket{1}$ with $\alpha,\beta$ unknown, $|\alpha|^2+|\beta|^2=1$.
 
-\textbf{(a) Single measurement.} Before the measurement, the state carries two continuous, real degrees of freedom (e.g.\ $|\alpha|$ and the relative phase, since one global degree of freedom is fixed by normalization and another which the global phase is physically unobservable). A measurement in the computational basis produces only \emph{one classical bit} of outcome data (``0'' or ``1''), which cannot possibly encode two continuous parameters -- so a single outcome can never pin down $\alpha,\beta$ exactly. Concretely, observing ``0'' tells us only that $\alpha \ne 0$ (this outcome had nonzero probability $|\alpha|^2$), and by \emph{state collapse} the qubit is now \emph{exactly} $\ket{0}$, regardless of what $\alpha,\beta$ were beforehand. So the single measurement destroys the very information we wanted to learn: post-measurement the state is deterministically $\ket{0}$, and the original amplitudes are unrecoverable, whether they were, say, $(\alpha,\beta) = (1,0)$ or $(\alpha,\beta) = \left(\frac{1}{\sqrt2},\frac{1}{\sqrt2}\right)$ or anything else with $\alpha \ne 0$ -- all of these are consistent with having observed ``0.''
+\textbf{One measurement.} $\alpha$ and $\beta$ are really two continuous numbers (normalization removes one degree of freedom, and global phase is unobservable, but there's still the relative phase plus a magnitude left to pin down). A single measurement only gives us one classical bit -- "0" or "1" -- and one bit can't encode two continuous numbers. All we learn from seeing "0" is that $\alpha \ne 0$: this outcome had probability $|\alpha|^2 > 0$. Worse, the measurement collapses the qubit to exactly $\ket 0$, so whatever information was in the original amplitudes is gone -- $(\alpha,\beta)$ could have been $(1,0)$, $(\tfrac{1}{\sqrt2},\tfrac{1}{\sqrt2})$, or anything else with $\alpha \ne 0$, and we'd have seen the same outcome and be left holding the same post-measurement state $\ket0$.
 
-\textbf{(b) Many copies.} If instead we are handed $n$ independently prepared copies of the same unknown $\ket{\psi}$ and measure each one (in the computational basis), the fraction of ``0'' outcomes is a random variable whose expectation is $|\alpha|^2$. By the law of large numbers, as $n \to \infty$ this empirical fraction converges to $|\alpha|^2$ exactly (and the fraction of ``1'' outcomes converges to $|\beta|^2 = 1-|\alpha|^2$). So with enough copies we can estimate the \emph{magnitudes} $|\alpha|$ and $|\beta|$ to arbitrary precision. However, this still does not recover $\alpha$ and $\beta$ exactly: measuring only in the computational basis is blind to the \emph{relative phase} between $\alpha$ and $\beta$ (e.g.\ $\frac{1}{\sqrt2}(\ket{0}+\ket{1}) = \ket{+}$ and $\frac{1}{\sqrt2}(\ket{0}-\ket{1}) = \ket{-}$ give identical statistics in the $\{\ket{0},\ket{1}\}$ basis -- see Exercise 2.4 parts 1--2 -- yet are orthogonal states). To also determine the relative phase one needs additional copies measured in other bases (e.g.\ $\{\ket{+},\ket{-}\}$); doing so for a tomographically complete set of bases lets one reconstruct $\alpha,\beta$ up to the single remaining, physically unobservable global phase (i.e.\ $\ket{\psi}$ and $e^{i\theta}\ket{\psi}$ can never be distinguished by any measurement).
+\textbf{Many copies.} Say we get $n$ independent copies of $\ket\psi$ and measure each one. The fraction that come out "0" has expected value $|\alpha|^2$, and by the law of large numbers that fraction converges to $|\alpha|^2$ as $n$ grows (similarly the "1" fraction converges to $|\beta|^2$). So with enough copies we can pin down $|\alpha|$ and $|\beta|$ as precisely as we like. What we still can't get is the relative phase between $\alpha$ and $\beta$: measuring in the $\{\ket0,\ket1\}$ basis can't tell $\ket+ = \tfrac{1}{\sqrt2}(\ket0+\ket1)$ apart from $\ket- = \tfrac{1}{\sqrt2}(\ket0-\ket1)$, even though they're orthogonal states (see Exercise 2.4, parts 1 and 2 give the same probability). To catch that phase you'd need copies measured in a different basis too, e.g. $\{\ket+,\ket-\}$. Do this in enough bases and you can reconstruct $\alpha,\beta$ up to an overall global phase -- which is the one thing you can never measure, since $\ket\psi$ and $e^{i\theta}\ket\psi$ are physically identical.
 
-Finally, note why the problem insists the copies must be \emph{given} to us rather than something we produce ourselves: the \textbf{no-cloning theorem} (Section 2.5.4) says there is no physical process that takes one copy of an arbitrary, unknown state $\ket{\psi}$ and outputs two copies of it. So we cannot bypass part (a)'s limitation by measuring our single qubit, then cloning it before measuring again -- copies of an unknown state can only come from someone (or something) re-preparing the same state independently each time, not from duplicating the one qubit we hold.
+One more thing: the problem says "given" copies for a reason. The no-cloning theorem rules out making those copies yourself -- there's no way to take a single unknown $\ket\psi$ and produce two copies of it. So you can't dodge the single-measurement problem by cloning your one qubit before measuring; the extra copies have to come from someone re-preparing the same state independently each time.
 
 \vspace{1cm}
 
@@ -96,26 +92,26 @@ Answer the following: (1) probability of observing $\ket{0}$ for a given $p$; (2
 
 \textbf{Your answer:}
 
-\textbf{(1) Probability of observing $\ket{0}$.} Writing $\ket{\psi} = \alpha\ket{0}+\beta\ket{1}$ with $\alpha=\sqrt{p}$, the rule from Exercise 2.4 (applied to $\ket{0}$ instead of $\ket{1}$) gives
+\textbf{(1) $\Pr(\ket0)$.} $\ket\psi = \sqrt p\,\ket0 + \sqrt{1-p}\,\ket1$, so $\alpha = \sqrt p$ and
 \[
-\Pr(\ket{0}) = |\alpha|^2 = \left|\sqrt{p}\right|^2 = p.
+\Pr(\ket{0}) = |\alpha|^2 = p.
 \]
-(Sanity check: $p=0 \Rightarrow \ket{\psi}=\ket{1} \Rightarrow \Pr(\ket 0)=0$; $p=1 \Rightarrow \ket{\psi}=\ket 0 \Rightarrow \Pr(\ket 0)=1$. Both match $\Pr(\ket0)=p$.)
+That checks out at the endpoints: $p=0$ gives $\ket\psi=\ket1$ so $\Pr(\ket0)=0$, and $p=1$ gives $\ket\psi=\ket0$ so $\Pr(\ket0)=1$.
 
-\textbf{(2) Probability of observing $\ket{-}$.} Since $\ket{-}$ is not one of the two basis vectors $\ket{\psi}$ is expanded in, use $\Pr(\ket{-}) = |\braket{-|\psi}|^2$. Expand $\bra{-} = \frac{1}{\sqrt2}(\bra0-\bra1)$ against $\ket\psi = \sqrt p\,\ket0+\sqrt{1-p}\,\ket1$:
+\textbf{(2) $\Pr(\ket-)$.} $\ket-$ isn't one of the two basis states $\ket\psi$ is written in, so we can't just read off a coefficient -- we need $\Pr(\ket{-}) = |\braket{-|\psi}|^2$. Expanding $\bra{-} = \frac{1}{\sqrt2}(\bra0-\bra1)$ against $\ket\psi$:
 \[
 \braket{-|\psi} = \frac{1}{\sqrt2}\Big(\sqrt p\,\braket{0|0} + \sqrt{1-p}\,\braket{0|1} - \sqrt p\,\braket{1|0} - \sqrt{1-p}\,\braket{1|1}\Big)
 = \frac{1}{\sqrt2}\big(\sqrt p - \sqrt{1-p}\big).
 \]
-Squaring the magnitude,
+Squaring that magnitude:
 \[
 \Pr(\ket{-}) = \big|\braket{-|\psi}\big|^2 = \frac12\big(\sqrt p-\sqrt{1-p}\big)^2
 = \frac12\Big(p + (1-p) - 2\sqrt{p(1-p)}\Big)
 = \frac12 - \sqrt{p(1-p)}.
 \]
-(Sanity check: $p=\tfrac12 \Rightarrow \ket\psi=\ket+$, and $\Pr(\ket-) = \tfrac12-\tfrac12=0$, correct since $\ket+\perp\ket-$. At $p=0$ or $p=1$, $\ket\psi\in\{\ket0,\ket1\}$ and $\Pr(\ket-)=\tfrac12-0=\tfrac12$, correct since $\ket0,\ket1$ each have overlap $\tfrac{1}{\sqrt2}$ with $\ket-$.)
+At $p=\tfrac12$, $\ket\psi=\ket+$ and this gives $\Pr(\ket-)=0$, which makes sense since $\ket+$ and $\ket-$ are orthogonal. At $p=0$ or $1$, $\ket\psi$ is $\ket0$ or $\ket1$, and we get $\Pr(\ket-)=\tfrac12$ -- also right, since $\ket0$ and $\ket1$ each overlap $\ket-$ with amplitude $\tfrac{1}{\sqrt2}$.
 
-\textbf{(3)--(4) Plots.} Both are functions of $p\in[0,1]$: $\Pr(\ket0)=p$ is a straight line from $(0,0)$ to $(1,1)$; $\Pr(\ket-)=\tfrac12-\sqrt{p(1-p)}$ is symmetric about $p=\tfrac12$, equal to $0$ at $p=\tfrac12$ (its minimum) and rising to $\tfrac12$ at both endpoints $p=0,1$ (its maximum) -- an upside-down ``dome'' turned into a ``valley''.
+\textbf{(3)--(4) Plots.} $\Pr(\ket0)=p$ is just a straight line from $(0,0)$ to $(1,1)$. $\Pr(\ket-)=\tfrac12-\sqrt{p(1-p)}$ is a valley shape: symmetric around $p=\tfrac12$, hits $0$ right at $p=\tfrac12$, and climbs back up to $\tfrac12$ at both ends.
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
@@ -144,22 +140,18 @@ Squaring the magnitude,
 
 \textbf{Your answer:}
 
-Since $\mathcal{B} = \{\ket{b_0},\dots,\ket{b_{d-1}}\}$ is a basis for the $d$-dimensional space, every vector in that space -- including $\ket\psi$ -- can be written as \emph{some} linear combination of the $\ket{b_j}$:
+$\mathcal B$ is a basis, so $\ket\psi$ can be written as \emph{some} combination of the $\ket{b_j}$:
 \[
-\ket\psi = \sum_{j=0}^{d-1} c_j \ket{b_j}, \qquad \text{for some (as yet unknown) scalars } c_j \in \mathbb{C}.
+\ket\psi = \sum_{j=0}^{d-1} c_j \ket{b_j}
 \]
-To identify the coefficients $c_j$, take the inner product of both sides with an arbitrary basis bra $\bra{b_k}$:
+for coefficients $c_j$ we don't know yet. To find them, hit both sides with $\bra{b_k}$ for some fixed $k$:
 \[
 \braket{b_k|\psi} = \sum_{j=0}^{d-1} c_j \braket{b_k|b_j}.
 \]
-Because $\mathcal B$ is \emph{orthonormal}, $\braket{b_k|b_j} = \delta_{kj}$ (i.e.\ $1$ if $k=j$, $0$ otherwise), so every term in the sum vanishes except $j=k$:
+Orthonormality means $\braket{b_k|b_j} = \delta_{kj}$, so every term on the right vanishes except $j=k$, leaving $\braket{b_k|\psi} = c_k$. That holds for every $k$, so $c_j = \braket{b_j|\psi}$ for all $j$. Plugging back in:
 \[
-\braket{b_k|\psi} = c_k.
+\ket\psi = \sum_{j=0}^{d-1} \braket{b_j|\psi}\,\ket{b_j}.
 \]
-This holds for every $k=0,\dots,d-1$, so the unknown coefficients are exactly $c_j = \braket{b_j|\psi}$. Substituting back into the original expansion gives
-\[
-\ket\psi = \sum_{j=0}^{d-1} \braket{b_j|\psi}\,\ket{b_j},
-\]
-as required. Equivalently, this is the statement that $\sum_j \ket{b_j}\bra{b_j} = I$ (the \emph{completeness relation}): applying this operator identity to $\ket\psi$ gives $\ket\psi = I\ket\psi = \sum_j \ket{b_j}\bra{b_j}\ket\psi$, and regrouping each term $\ket{b_j}\big(\bra{b_j}\ket\psi\big)$ as the scalar $\braket{b_j|\psi}$ times the vector $\ket{b_j}$ recovers the same formula. This is exactly why $\braket{b_j|\psi}$ is called the ``component of $\ket\psi$ along $\ket{b_j}$'' -- it plays the same role as a dot product picking out coordinates in ordinary vector geometry, just generalized to any orthonormal basis of the state space (not only $\{\ket0,\ket1\}$).
+This is really the same thing as the completeness relation $\sum_j \ket{b_j}\bra{b_j} = I$ -- apply it to $\ket\psi$ and regroup each term $\ket{b_j}\bra{b_j}\ket\psi$ as $\braket{b_j|\psi}\ket{b_j}$ and you get the identical formula. It's also why $\braket{b_j|\psi}$ gets called the "component of $\ket\psi$ along $\ket{b_j}$" -- same idea as a dot product picking out coordinates, just for any orthonormal basis, not only $\{\ket0,\ket1\}$.
 
 \end{document}
