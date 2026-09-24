@@ -1,0 +1,177 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{braket}
+
+\title{CSE 5830: Bayesian Machine Learning - Week 3 Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\section*{Dirichlet distribution}
+The categorical distribution is the vector generalization of the bernoulli, and we use beta distribution as the conjugate prior for the bernoulli. The dirichlet distribution is the conjugate prior for the categorical distribution.
+\section{Maximum likelihood estimate}
+classical way to estiamting unknown parameters is to use maximum likelihood estimation. The MLE is the value of the parameter that maximizes the likelihood function. For example, for a bernoulli distribution, the MLE of the parameter $p$ is given by:
+\begin{equation}
+    \hat{p} = \frac{1}{N} \sum_{i=1}^{N} x_i
+\end{equation}
+
+\section{Hamiltonian Monte Carlo}
+\subsection{Motivation}
+Random-walk Metropolis--Hastings proposes moves blindly, so in high dimensions the step size has to shrink to keep the acceptance rate reasonable, and the chain explores the posterior by slow diffusion. Hamiltonian Monte Carlo (HMC) uses the \emph{gradient} of the log posterior to propose distant points that still have a high probability of being accepted.
+
+\subsection{Setup: position, momentum, and energy}
+Let $q \in \mathbb{R}^d$ be the parameters we want to sample from the posterior $\pi(q) \propto p(\mathcal{D} \mid q)\, p(q)$. We add an auxiliary \emph{momentum} variable $p \in \mathbb{R}^d$ and define
+\begin{align}
+    U(q) &= -\log \pi(q) \quad \text{(potential energy, only needed up to a constant)} \\
+    K(p) &= \tfrac{1}{2} p^\top M^{-1} p \quad \text{(kinetic energy, $M$ = mass matrix)} \\
+    H(q, p) &= U(q) + K(p) \quad \text{(Hamiltonian, total energy)}
+\end{align}
+The joint distribution is
+\begin{equation}
+    \pi(q, p) \propto e^{-H(q,p)} = \pi(q)\, \mathcal{N}(p \mid 0, M),
+\end{equation}
+so $q$ and $p$ are independent and the marginal over $q$ is exactly the posterior. Sample the joint, throw away $p$, and the $q$'s are posterior samples.
+
+\subsection{Hamiltonian dynamics}
+The pair $(q, p)$ evolves in time according to Hamilton's equations:
+\begin{equation}
+    \frac{dq}{dt} = \frac{\partial H}{\partial p} = M^{-1} p, \qquad
+    \frac{dp}{dt} = -\frac{\partial H}{\partial q} = -\nabla U(q).
+\end{equation}
+Intuition: a puck sliding on a surface whose height is $U(q)$. It speeds up going downhill (into high-probability regions) and slows down going uphill, so it follows the shape of the posterior instead of wandering randomly.
+
+The exact dynamics have three properties that make them a valid MCMC proposal:
+\begin{itemize}
+    \item \textbf{Energy conservation:} $H$ is constant along a trajectory, so the exact proposal would always be accepted.
+    \item \textbf{Volume preservation} (Liouville's theorem): the map has Jacobian determinant 1, so no Jacobian correction is needed in the acceptance ratio.
+    \item \textbf{Reversibility:} running the dynamics forward and then negating $p$ brings you back to the start, which gives detailed balance.
+\end{itemize}
+
+\subsection{Leapfrog integrator}
+We cannot solve Hamilton's equations exactly, so we discretize with step size $\varepsilon$ using the leapfrog scheme:
+\begin{align}
+    p_{t + \varepsilon/2} &= p_t - \tfrac{\varepsilon}{2} \nabla U(q_t) \\
+    q_{t + \varepsilon} &= q_t + \varepsilon\, M^{-1} p_{t + \varepsilon/2} \\
+    p_{t + \varepsilon} &= p_{t + \varepsilon/2} - \tfrac{\varepsilon}{2} \nabla U(q_{t + \varepsilon})
+\end{align}
+Leapfrog is \emph{symplectic}: it is exactly volume preserving and reversible, but it only conserves $H$ approximately (error $O(\varepsilon^2)$ over a fixed trajectory length). The small energy error is corrected by a Metropolis accept/reject step. Euler's method is \emph{not} a good substitute because it is not volume preserving and its energy error drifts.
+
+\subsection{The HMC algorithm}
+\begin{algorithm}[h]
+\caption{Hamiltonian Monte Carlo (one iteration)}
+\begin{algorithmic}[1]
+\Require current $q$, step size $\varepsilon$, number of steps $L$, mass matrix $M$
+\State Sample momentum $p \sim \mathcal{N}(0, M)$
+\State $(q^*, p^*) \gets (q, p)$
+\For{$\ell = 1, \dots, L$}
+    \State Take one leapfrog step from $(q^*, p^*)$
+\EndFor
+\State $p^* \gets -p^*$ \Comment{makes the proposal symmetric}
+\State Accept $q^*$ with probability $\min\!\left(1,\ \exp\big(H(q, p) - H(q^*, p^*)\big)\right)$, else keep $q$
+\end{algorithmic}
+\end{algorithm}
+
+Note that resampling $p$ each iteration is what lets the chain move between energy levels; the leapfrog trajectory alone stays on (approximately) one level set of $H$.
+
+\subsection{Tuning}
+\begin{itemize}
+    \item \textbf{Step size $\varepsilon$:} too large $\Rightarrow$ big energy errors and low acceptance (or ``divergent'' trajectories); too small $\Rightarrow$ many gradient evaluations per step. A common target acceptance rate is around $0.65$--$0.8$.
+    \item \textbf{Number of steps $L$:} too short $\Rightarrow$ behaves like a random walk; too long $\Rightarrow$ the trajectory can loop back toward where it started, wasting computation.
+    \item \textbf{Mass matrix $M$:} ideally close to the posterior \emph{precision}, $M \approx \operatorname{Cov}(q)^{-1}$. This rescales the space so all directions look similar, which helps a lot with correlated or badly scaled posteriors.
+    \item \textbf{NUTS} (No-U-Turn Sampler, used by Stan and PyMC) picks $L$ automatically by extending the trajectory until it starts to turn back on itself, and adapts $\varepsilon$ during warmup.
+\end{itemize}
+
+\subsection{Comparison with random-walk MH}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+ & Random-walk MH & HMC \\
+\midrule
+Uses gradients & No & Yes, $\nabla \log \pi(q)$ \\
+Cost per iteration & 1 density evaluation & $L$ gradient evaluations \\
+Step size scaling in dimension $d$ & $O(d^{-1/2})$ & $O(d^{-1/4})$ \\
+Behavior & Diffusive, highly correlated samples & Long moves, low autocorrelation \\
+Parameter types & Continuous or discrete & Continuous, differentiable only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Limitations}
+\begin{itemize}
+    \item Requires $\pi(q)$ to be differentiable, so discrete parameters must be marginalized out or handled with a different sampler.
+    \item Constrained parameters (e.g.\ variances $>0$, probabilities in $[0,1]$) must be transformed to $\mathbb{R}$ first, e.g.\ $\log \sigma$ or $\operatorname{logit}(\theta)$, including the Jacobian term in $U$.
+    \item Struggles with posteriors whose curvature changes a lot across the space (e.g.\ Neal's funnel in hierarchical models), because one step size cannot fit every region. Reparameterizing (non-centered parameterization) often helps.
+    \item Still has trouble jumping between well-separated modes.
+\end{itemize}
+
+\section{Laplace approximation}
+\subsection{Idea}
+Instead of sampling from the posterior, the Laplace approximation replaces it with a Gaussian centered at the posterior mode. It is fast (one optimization plus one Hessian) and gives an approximate posterior \emph{and} an approximate marginal likelihood.
+
+\subsection{Derivation}
+Write the unnormalized log posterior as
+\begin{equation}
+    \Psi(\theta) = \log p(\mathcal{D} \mid \theta) + \log p(\theta), \qquad p(\theta \mid \mathcal{D}) = \frac{e^{\Psi(\theta)}}{Z}, \quad Z = p(\mathcal{D}) = \int e^{\Psi(\theta)}\, d\theta .
+\end{equation}
+Let $\hat\theta = \arg\max_\theta \Psi(\theta)$ be the MAP estimate. Take a second-order Taylor expansion around $\hat\theta$. The gradient term vanishes because $\nabla \Psi(\hat\theta) = 0$ at the mode:
+\begin{equation}
+    \Psi(\theta) \approx \Psi(\hat\theta) - \tfrac{1}{2} (\theta - \hat\theta)^\top A\, (\theta - \hat\theta),
+    \qquad A = -\nabla^2 \Psi(\theta)\big|_{\theta = \hat\theta}.
+\end{equation}
+$A$ is the negative Hessian of the log posterior at the mode. It is positive definite if $\hat\theta$ is a strict local maximum. Exponentiating gives a Gaussian kernel, so
+\begin{equation}
+    \boxed{\; p(\theta \mid \mathcal{D}) \approx \mathcal{N}\!\left(\theta \mid \hat\theta,\ A^{-1}\right) \;}
+\end{equation}
+The curvature at the mode sets the uncertainty. A sharply peaked posterior (large $A$) gives a small covariance.
+
+\subsection{Approximating the marginal likelihood}
+Integrating the Gaussian kernel in closed form gives
+\begin{equation}
+    p(\mathcal{D}) \approx e^{\Psi(\hat\theta)} (2\pi)^{d/2} |A|^{-1/2}
+    = p(\mathcal{D} \mid \hat\theta)\, p(\hat\theta)\, (2\pi)^{d/2} |A|^{-1/2},
+\end{equation}
+where $d = \dim(\theta)$. In log form:
+\begin{equation}
+    \log p(\mathcal{D}) \approx \underbrace{\log p(\mathcal{D} \mid \hat\theta)}_{\text{fit}} + \underbrace{\log p(\hat\theta) + \tfrac{d}{2}\log(2\pi) - \tfrac{1}{2}\log|A|}_{\text{Occam factor}} .
+\end{equation}
+The Occam factor penalizes models whose posterior is much narrower than the prior, meaning models that had to be fine-tuned to fit the data. This makes the Laplace approximation useful for model comparison.
+
+\paragraph{Connection to BIC.} With $N$ i.i.d.\ data points, $A$ grows roughly linearly in $N$, so $\log|A| \approx d \log N + O(1)$. Dropping the terms that do not grow with $N$ gives the Bayesian Information Criterion:
+\begin{equation}
+    \log p(\mathcal{D}) \approx \log p(\mathcal{D} \mid \hat\theta) - \tfrac{d}{2} \log N .
+\end{equation}
+
+\subsection{Worked example: Bernoulli with a Beta prior}
+Observe $k$ successes in $N$ trials with prior $\theta \sim \mathrm{Beta}(\alpha, \beta)$. The posterior is $\mathrm{Beta}(a, b)$ with $a = \alpha + k$, $b = \beta + N - k$, so up to a constant
+\begin{equation}
+    \Psi(\theta) = (a-1)\log\theta + (b-1)\log(1-\theta).
+\end{equation}
+Setting $\Psi'(\theta) = 0$ gives the mode $\hat\theta = \dfrac{a-1}{a+b-2}$. The second derivative is
+\begin{equation}
+    \Psi''(\theta) = -\frac{a-1}{\theta^2} - \frac{b-1}{(1-\theta)^2},
+\end{equation}
+and evaluating it at $\hat\theta$ gives
+\begin{equation}
+    A = \frac{(a+b-2)^3}{(a-1)(b-1)} \quad\Longrightarrow\quad
+    p(\theta \mid \mathcal{D}) \approx \mathcal{N}\!\left(\theta \;\middle|\; \hat\theta,\ \frac{\hat\theta(1-\hat\theta)}{a+b-2}\right).
+\end{equation}
+With a uniform prior ($\alpha = \beta = 1$) this is $\mathcal{N}\big(\hat p,\ \hat p(1-\hat p)/N\big)$, where $\hat p = k/N$ is the MLE from the previous section. This is the familiar large-sample standard error of a proportion. For small $N$ or $\hat\theta$ near $0$ or $1$, the approximation is poor: the Gaussian puts mass outside $[0,1]$ and misses the skew of the Beta.
+
+\subsection{Practical notes and limitations}
+\begin{itemize}
+    \item \textbf{Parameterization matters.} The approximation is not invariant to reparameterization. For constrained parameters it is usually much better to apply it to an unconstrained version (e.g.\ $\operatorname{logit}\theta$ or $\log\sigma$), including the Jacobian in $\Psi$.
+    \item \textbf{Local and unimodal.} It only sees the curvature at one mode, so it ignores other modes and any skew or heavy tails.
+    \item \textbf{Asymptotically exact.} By the Bernstein--von Mises theorem, for regular models the posterior becomes Gaussian as $N \to \infty$, so the approximation improves with more data.
+    \item \textbf{Cost.} Finding $\hat\theta$ requires an optimizer, and $A$ is a $d \times d$ Hessian. For large models (e.g.\ neural networks) people use diagonal, Kronecker-factored, or last-layer approximations of $A$.
+    \item \textbf{Compared to HMC.} Laplace is much cheaper but gives a crude, symmetric approximation. HMC is asymptotically exact but much more expensive. A Laplace fit is also a reasonable way to initialize HMC or to pick its mass matrix ($M \approx A$).
+\end{itemize}
+
+\end{document}
