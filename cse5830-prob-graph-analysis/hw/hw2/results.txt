@@ -1,0 +1,14 @@
+Size of ham training set: 3873
+Size of spam training set: 586
+Percentage of ham classified correctly: 15.1
+Percentage of spam classified correctly: 32.9
+Total accuracy: 17.47
+False Positive: 84.87
+
+Size of ham training set: 3873
+Size of spam training set: 586
+Percentage of ham classified correctly: 19.2
+Percentage of spam classified correctly: 47.8
+Total accuracy: 23.32
+False Positive: 80.82
+
