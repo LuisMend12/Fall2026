@@ -146,7 +146,32 @@ Let $(x_n)_n$ be an increasing sequence of positive real numbers. Define
 Prove that $(y_n)$ is increasing as well.
 
 \begin{proof}
-% TODO: Show y_{n+1} - y_n >= 0 for every n (or y_{n+1} >= y_n directly).
+We must show $y_n \le y_{n+1}$ for every $n$, i.e.\
+$y_{n+1} - y_n \ge 0$.
+
+Let $S_n = x_1 + x_2 + \cdots + x_n$, so that $y_n = \dfrac{S_n}{n}$ and
+$S_{n+1} = S_n + x_{n+1}$. Using the common denominator $n(n+1)$,
+\[
+  y_{n+1} - y_n
+  = \frac{S_{n+1}}{n+1} - \frac{S_n}{n}
+  = \frac{n\,S_{n+1} - (n+1)\,S_n}{n(n+1)} .
+\]
+We check the signs of the numerator and the denominator. The denominator
+satisfies $n(n+1) > 0$ since $n \ge 1$.
+
+For the numerator, substitute $S_{n+1} = S_n + x_{n+1}$ and expand:
+\[
+  n\,S_{n+1} - (n+1)\,S_n
+  = \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr)
+  % TODO (step 3): cancel the n S_n terms and write what is left:
+  % = ___ - ___ .
+  .
+\]
+% TODO (step 4): Use that (x_n) is increasing: x_k <= x_{n+1} for
+% k = 1, ..., n. Add these n inequalities to bound S_n, and conclude the
+% numerator is >= 0.
+% TODO (step 5): Numerator >= 0 and denominator > 0, so
+% y_{n+1} - y_n >= 0, i.e. y_n <= y_{n+1} for every n.
 
 \end{proof}
 

@@ -72,27 +72,43 @@ simplify $\to$ show numerator and denominator have the right signs.
 \newpage
 \section*{Your turn: $y_n = S_n/n$}
 
-\paragraph{1. Set up the difference.}
+\paragraph{1. Set up the difference. \checkmark\ (done)}
 \[
-  y_{n+1}-y_n = \frac{S_{n+1}}{\blank} - \frac{S_n}{\blank} .
+  y_{n+1}-y_n = \frac{S_{n+1}}{n+1} - \frac{S_n}{n} .
 \]
 
-\paragraph{2. Common denominator.} The denominators are $n+1$ and $n$,
-so use $n(n+1)$:
+\paragraph{2. Common denominator. \checkmark\ (done)} Multiply the first
+fraction by $\frac{n}{n}$ and the second by $\frac{n+1}{n+1}$:
 \[
-  y_{n+1}-y_n = \frac{\blank\cdot S_{n+1} \;-\; \blank\cdot S_n}{n(n+1)} .
+  y_{n+1}-y_n = \frac{n\,S_{n+1} - (n+1)\,S_n}{n(n+1)} .
 \]
 
-\paragraph{3. Simplify the numerator.} Substitute
-$S_{n+1} = S_n + x_{n+1}$ and expand. The $nS_n$ terms should cancel:
+\paragraph{Denominator sign. \checkmark\ (done)} $n(n+1)>0$ since
+$n\ge 1$. So the sign of $y_{n+1}-y_n$ is the sign of the numerator.
+
+\paragraph{Expand the numerator. \checkmark\ (done)} Substitute
+$S_{n+1} = S_n + x_{n+1}$:
 \[
-  \text{numerator} = \blank \;-\; \blank .
+  n\,S_{n+1} - (n+1)\,S_n
+  = \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr).
+\]
+
+\bigskip
+\hrule
+\bigskip
+\noindent\textbf{\large What's left for you: Steps 3 and 4.}
+
+\paragraph{3. Cancel. $\leftarrow$ \emph{you are here}} Distribute the minus
+sign, and the two $n\,S_n$ terms cancel. Write what remains:
+\[
+  \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr)
+  = \blank \;-\; \blank .
 \]
 (\emph{Target shape:} something times $x_{n+1}$, minus $S_n$.)
 
 \vspace{1.5cm}
 
-\paragraph{4. Show the numerator is $\ge 0$.} This is where
+\paragraph{4. Show the numerator is $\ge 0$. $\leftarrow$ \emph{then this}} This is where
 ``increasing'' is used.
 \begin{itemize}
   \item Since $(x_n)$ is increasing, how does each of
@@ -109,7 +125,8 @@ $S_{n+1} = S_n + x_{n+1}$ and expand. The $nS_n$ terms should cancel:
 
 \vspace{1cm}
 
-\paragraph{5. Sign of the denominator.} Is $n(n+1)$ positive? Why?
+\paragraph{5. Conclude.} Numerator $\ge 0$ and denominator $>0$, so
+$y_{n+1}-y_n\ge 0$.
 
 \paragraph{6. The proof.} Fill in the template:
 \begin{quote}
