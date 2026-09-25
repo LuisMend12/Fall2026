@@ -20,8 +20,36 @@ Prove that for any $x,y\in\mathbb{R}$,
 \]
 
 \begin{proof}
-% TODO: Use the triangle inequality twice (once starting from x, once
-% starting from y), then combine the two one-sided bounds.
+We start from the identity
+\[
+  x = (x-y) + y .
+\]
+Taking absolute values and applying the triangle inequality,
+\[
+  |x| = |(x-y)+y| \le |x-y| + |y| .
+\]
+Subtracting $|y|$ from both sides gives
+\[
+  |x| - |y| \le |x-y| .
+\]
+We can do the same thing starting from the identity
+\[
+  y = (y-x) + x .
+\]
+Taking absolute values and applying the triangle inequality,
+\[
+  |y| = |(y-x)+x| \le |y-x| + |x| .
+\]
+Subtracting $|x|$ from both sides gives
+\[
+  |y| - |x| \le |y-x| .
+\]
+% TODO: Rewrite the right-hand side using |y - x| = |x - y|. Why is that
+% true? Then rewrite |y| - |x| as -(something).
+
+Now let $a = |x|-|y|$ and $c = |x-y|$. Note that $c \ge 0$.
+% TODO: Restate your two inequalities in terms of a and c, then combine the two one-sided bounds using
+% |a| <= c  <=>  -c <= a <= c.
 
 \end{proof}
 
