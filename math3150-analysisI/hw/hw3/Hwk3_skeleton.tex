@@ -70,13 +70,27 @@ Use the limit definition to compute
 \]
 
 \begin{claim}
-$\displaystyle\lim_{n\to\infty}\frac{n+2}{3n+5} = L$, where $L = $ \underline{\hspace{2cm}}.
+$\displaystyle\lim_{n\to\infty}\frac{n+2}{3n+5} = L$, where $L = \dfrac{1}{3}$.
 \end{claim}
 
 \begin{proof}
-% TODO: Scratch work first: simplify |(n+2)/(3n+5) - L| into a single
-% fraction, bound it above by something simple, and solve for n.
-% Then write: Let eps > 0. Choose N = ... . For n >= N, ... < eps.
+First we simplify the distance to $\tfrac13$. Using the common
+denominator $3(3n+5) = 9n+15$,
+\[
+  \frac{n+2}{3n+5} - \frac13
+  = \frac{3(n+2) - (3n+5)}{3(3n+5)}
+  = \frac{3n+6-3n-5}{9n+15}
+  = \frac{1}{9n+15}.
+\]
+Since this is positive for every $n\in\mathbb{N}$, and $9n+15 > 9n$,
+\[
+  \left|\frac{n+2}{3n+5} - \frac13\right| = \frac{1}{9n+15} < \frac{1}{9n}.
+\]
+% TODO: Solve 1/(9n) < eps for n to find how big N must be. Then write:
+% Let eps > 0. By the Archimedean property, choose N in N with N > ___.
+% Then for all n >= N,
+%   |(n+2)/(3n+5) - 1/3| = 1/(9n+15) < 1/(9n) <= ___ < eps.
+% Hence the limit is 1/3.
 
 \end{proof}
 
