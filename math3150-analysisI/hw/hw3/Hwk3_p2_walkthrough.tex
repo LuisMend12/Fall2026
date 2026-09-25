@@ -1,0 +1,147 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
+
+\title{MAT 3150 --- Homework 3\\
+\large Problem 2 Walkthrough: Computing a Limit from the Definition}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\textbf{Goal.} Use the limit definition to compute
+\[
+  \lim_{n\to\infty}\frac{n+2}{3n+5}.
+\]
+
+% ============================================================
+\section*{The definition, in words}
+$a_n \to L$ means:
+\begin{quote}
+For every $\varepsilon>0$ there is $N\in\mathbb{N}$ such that
+$|a_n-L|<\varepsilon$ for all $n\ge N$.
+\end{quote}
+Think of it as a game. Someone hands you a tolerance $\varepsilon$
+(maybe tiny, like $0.001$). You must answer with a point $N$ after which
+\emph{every} term is within $\varepsilon$ of $L$. A proof is a recipe for
+$N$ that works no matter which $\varepsilon$ you are handed.
+
+\textbf{Tool you'll need.} Archimedean property: for any real number
+$r$, there is a natural number $N$ with $N>r$.
+
+\textbf{The plan (every problem of this type):}
+\begin{enumerate}
+  \item Guess $L$.
+  \item Scratch work: simplify $|a_n-L|$, bound it by something simple,
+        and solve ``simple thing $<\varepsilon$'' for $n$.
+  \item Write the proof forward: ``Let $\varepsilon>0$. Choose $N$\ldots''
+\end{enumerate}
+
+% ============================================================
+\section*{Worked example: $\displaystyle\lim_{n\to\infty}\frac{2n+1}{n+3}$}
+
+\paragraph{1. Guess.} For large $n$, the $+1$ and $+3$ barely matter, so
+$\dfrac{2n+1}{n+3}\approx\dfrac{2n}{n}=2$. Guess $L=2$.
+
+\paragraph{2. Scratch work.} Common denominator:
+\[
+  \frac{2n+1}{n+3}-2
+  = \frac{(2n+1)-2(n+3)}{n+3}
+  = \frac{2n+1-2n-6}{n+3}
+  = \frac{-5}{n+3}.
+\]
+The $n$'s in the numerator cancelled --- a good sign the guess is right.
+So
+\[
+  \left|\frac{2n+1}{n+3}-2\right| = \frac{5}{n+3}.
+\]
+Simplify by making the denominator \emph{smaller}, which makes the
+fraction \emph{bigger} (an overestimate is fine):
+\[
+  \frac{5}{n+3} < \frac{5}{n}.
+\]
+Now solve $\dfrac{5}{n}<\varepsilon$ for $n$: \quad
+$n>\dfrac{5}{\varepsilon}$. That tells us how big $N$ must be.
+
+\paragraph{3. The proof (what you hand in).}
+\begin{proof}
+We claim the limit is $2$. Let $\varepsilon>0$. By the Archimedean
+property, choose $N\in\mathbb{N}$ with $N>\dfrac{5}{\varepsilon}$. Then
+for all $n\ge N$,
+\[
+  \left|\frac{2n+1}{n+3}-2\right|
+  = \frac{5}{n+3}
+  < \frac{5}{n}
+  \le \frac{5}{N}
+  < \varepsilon .
+\]
+Hence $\displaystyle\lim_{n\to\infty}\frac{2n+1}{n+3}=2$.
+\end{proof}
+
+\noindent\textbf{Why each step in the chain holds:}
+\begin{itemize}
+  \item $=\,\dfrac{5}{n+3}$: the scratch-work algebra.
+  \item $<\,\dfrac{5}{n}$: because $n+3>n$.
+  \item $\le\,\dfrac{5}{N}$: because $n\ge N$.
+  \item $<\,\varepsilon$: because $N>\dfrac{5}{\varepsilon}$, i.e.\
+        $\dfrac{5}{N}<\varepsilon$.
+\end{itemize}
+
+% ============================================================
+\newpage
+\section*{Your turn: $\displaystyle\lim_{n\to\infty}\frac{n+2}{3n+5}$}
+
+\paragraph{1. Guess.} For large $n$,
+$\dfrac{n+2}{3n+5}\approx\dfrac{n}{3n}=\blank$. So $L=\blank$.
+
+\paragraph{2. Scratch work.} Put it over a common denominator:
+\[
+  \frac{n+2}{3n+5}-L = \frac{\blank}{\blank}.
+\]
+\emph{Tip:} if $L$ is a fraction, multiply out carefully. If your guess
+is right, the $n$'s in the numerator should cancel, leaving a constant.
+
+\vspace{2cm}
+
+Take absolute values:
+\[
+  \left|\frac{n+2}{3n+5}-L\right| = \blank .
+\]
+
+Now make the denominator smaller to get something simpler. (What is
+$3n+5$ bigger than? You may need to handle an extra constant factor in
+the denominator too.)
+\[
+  \blank \;<\; \blank .
+\]
+
+Solve ``simple bound $<\varepsilon$'' for $n$:
+\[
+  n > \blank .
+\]
+
+\vspace{1cm}
+
+\paragraph{3. The proof.} Fill in the template:
+\begin{quote}
+We claim the limit is \blank. Let $\varepsilon>0$. By the Archimedean
+property, choose $N\in\mathbb{N}$ with $N>\blank$. Then for all
+$n\ge N$,
+\[
+  \left|\frac{n+2}{3n+5}-\blank\right|
+  = \blank
+  < \blank
+  \le \blank
+  < \varepsilon .
+\]
+Hence $\displaystyle\lim_{n\to\infty}\frac{n+2}{3n+5}=\blank$.
+\end{quote}
+
+\paragraph{Check yourself.} Can you justify each ``$=$'', ``$<$'',
+``$\le$'' in your chain the same way the worked example does?
+
+\end{document}

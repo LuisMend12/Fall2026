@@ -55,14 +55,35 @@ Subtract $|x|$ from both sides:
 % ============================================================
 \section*{Step 3 (combine)}
 Let $a = |x|-|y|$ and $c = |x-y|$. Note that $c \ge 0$.
-\begin{itemize}
-  \item Step 1 shows $a \le c$.
-  \item Step 2 should show $-a \le c$, i.e.\ $a \ge -c$.
-\end{itemize}
-So $-c \le a \le c$. Which of the tools above turns that into a statement
-about $|a|$? Write that conclusion in terms of $x$ and $y$.
+\paragraph{Step 1 gives $a \le c$.} Inequality $(\star)$ says
+$|x|-|y| \le |x-y|$, which is literally $a \le c$.
 
-\vspace{2.5cm}
+\paragraph{Step 2 gives $-a \le c$.} Rewrite both sides of $(\star\star)$:
+\begin{itemize}
+  \item Left side: $|y|-|x| = -(|x|-|y|) = -a$.
+  \item Right side: $y-x = -(x-y)$, and $|-t| = |t|$ for every real $t$,
+        so $|y-x| = |x-y| = c$.
+\end{itemize}
+So $(\star\star)$ says $-a \le c$. Multiplying by $-1$ flips the
+inequality: $a \ge -c$.
+
+\paragraph{Together:}
+\[
+  -c \le a \le c .
+\]
+
+\paragraph{Which tool?} The triangle inequality has already been used.
+The other tool,
+\[
+  |a| \le c \iff -c \le a \le c \qquad (c \ge 0),
+\]
+has exactly $-c \le a \le c$ on its right-hand side, so it gives the
+left-hand side. (This is why we needed $c \ge 0$.)
+
+\paragraph{Your turn:} write $|a| \le c$ with $a$ and $c$ replaced by
+what they stand for. That one line is the statement of Problem 1.
+
+\vspace{2cm}
 
 % ============================================================
 \section*{Checklist for the final write-up}
