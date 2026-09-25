@@ -1,0 +1,135 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
+
+\title{MAT 3150 --- Homework 3\\
+\large Problem 4 Walkthrough: Averages of an Increasing Sequence}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\textbf{Goal.} Let $(x_n)_n$ be an increasing sequence of positive real
+numbers and define
+\[
+  y_n=\frac{x_1+x_2+\cdots+x_n}{n}.
+\]
+Prove that $(y_n)$ is increasing as well.
+
+% ============================================================
+\section*{What ``increasing'' means}
+A sequence $(a_n)$ is increasing if $a_n \le a_{n+1}$ for every $n$.
+(If your course uses \emph{strictly} increasing, replace $\le$ by $<$
+everywhere below; the argument is the same.)
+
+\textbf{The standard way to prove it:} show that
+\[
+  a_{n+1} - a_n \ge 0 \quad\text{for every } n .
+\]
+With fractions, that means: put $a_{n+1}-a_n$ over a common denominator,
+note the denominator is positive, and show the numerator is $\ge 0$.
+
+\textbf{Notation that makes this problem manageable.} Let
+\[
+  S_n = x_1 + x_2 + \cdots + x_n, \qquad\text{so}\qquad y_n = \frac{S_n}{n}.
+\]
+The one fact about $S_n$ you'll need:
+\[
+  S_{n+1} = S_n + x_{n+1}.
+\]
+
+% ============================================================
+\section*{Worked example: $a_n = \dfrac{n}{n+1}$ is increasing}
+
+\paragraph{Compute the difference.} Common denominator $(n+1)(n+2)$:
+\[
+  a_{n+1}-a_n = \frac{n+1}{n+2}-\frac{n}{n+1}
+  = \frac{(n+1)^2 - n(n+2)}{(n+1)(n+2)}
+  = \frac{n^2+2n+1 - n^2-2n}{(n+1)(n+2)}
+  = \frac{1}{(n+1)(n+2)} .
+\]
+
+\paragraph{Sign check.} The numerator $1>0$ and the denominator
+$(n+1)(n+2)>0$, so $a_{n+1}-a_n>0$.
+
+\begin{proof}
+For every $n\in\mathbb{N}$,
+\[
+  a_{n+1}-a_n = \frac{1}{(n+1)(n+2)} > 0,
+\]
+since the numerator and denominator are both positive. Hence
+$a_n < a_{n+1}$ for every $n$, so $(a_n)$ is increasing.
+\end{proof}
+
+\noindent\textbf{Pattern:} difference $\to$ common denominator $\to$
+simplify $\to$ show numerator and denominator have the right signs.
+
+% ============================================================
+\newpage
+\section*{Your turn: $y_n = S_n/n$}
+
+\paragraph{1. Set up the difference.}
+\[
+  y_{n+1}-y_n = \frac{S_{n+1}}{\blank} - \frac{S_n}{\blank} .
+\]
+
+\paragraph{2. Common denominator.} The denominators are $n+1$ and $n$,
+so use $n(n+1)$:
+\[
+  y_{n+1}-y_n = \frac{\blank\cdot S_{n+1} \;-\; \blank\cdot S_n}{n(n+1)} .
+\]
+
+\paragraph{3. Simplify the numerator.} Substitute
+$S_{n+1} = S_n + x_{n+1}$ and expand. The $nS_n$ terms should cancel:
+\[
+  \text{numerator} = \blank \;-\; \blank .
+\]
+(\emph{Target shape:} something times $x_{n+1}$, minus $S_n$.)
+
+\vspace{1.5cm}
+
+\paragraph{4. Show the numerator is $\ge 0$.} This is where
+``increasing'' is used.
+\begin{itemize}
+  \item Since $(x_n)$ is increasing, how does each of
+        $x_1, x_2, \ldots, x_n$ compare to $x_{n+1}$?
+        \[
+          x_k \;\blank\; x_{n+1} \quad\text{for each } k=1,\ldots,n.
+        \]
+  \item Add those $n$ inequalities together. What do you get for $S_n$?
+        \[
+          S_n = x_1+\cdots+x_n \;\le\; \blank .
+        \]
+  \item So the numerator from step 3 is $\ge \blank$.
+\end{itemize}
+
+\vspace{1cm}
+
+\paragraph{5. Sign of the denominator.} Is $n(n+1)$ positive? Why?
+
+\paragraph{6. The proof.} Fill in the template:
+\begin{quote}
+Let $S_n = x_1+\cdots+x_n$, so $y_n = S_n/n$ and
+$S_{n+1} = S_n + x_{n+1}$. For every $n$,
+\[
+  y_{n+1}-y_n = \frac{\blank}{n(n+1)} .
+\]
+Since $(x_n)$ is increasing, $x_k \le x_{n+1}$ for $k=1,\ldots,n$;
+adding these gives $S_n \le \blank$. Hence the numerator is $\ge 0$.
+The denominator $n(n+1)$ is positive. Therefore
+$y_{n+1}-y_n \ge 0$, i.e.\ $y_n \le y_{n+1}$ for every $n$, so $(y_n)$
+is increasing.
+\end{quote}
+
+\paragraph{Check yourself.}
+\begin{itemize}
+  \item Where did you use that $(x_n)$ is increasing?
+  \item Did you use that the $x_n$ are \emph{positive}? (It's fine if
+        you didn't --- just notice.)
+\end{itemize}
+
+\end{document}

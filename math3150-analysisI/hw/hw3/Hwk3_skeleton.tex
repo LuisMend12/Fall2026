@@ -109,9 +109,31 @@ bounded, then
 \]
 
 \begin{proof}
-% TODO: State what "bounded" gives you (a constant M) and what
-% "x_n -> infinity" means (for every K there is N ...). Given K, decide
-% which threshold to feed into the definition for x_n.
+Since $(y_n)$ is bounded, there is $M>0$ with $|y_n|\le M$ for every
+$n$, i.e.\ $-M\le y_n\le M$. In particular,
+\[
+  y_n \ge -M \quad\text{for every } n .
+\]
+Recall that $x_n\to\infty$ means: for every $H\in\mathbb{R}$ there is
+$N\in\mathbb{N}$ such that $x_n > H$ for all $n\ge N$.
+Adding $x_n$ to both sides of $y_n\ge -M$ gives, for every $n$,
+\[
+  x_n + y_n \ge x_n - M .
+\]
+So to make $x_n+y_n > K$, it is enough to make $x_n - M > K$.
+
+Let $K\in\mathbb{R}$ be arbitrary.
+We want $x_n - M > K$; solving for $x_n$, this means $x_n > K + M$.
+Since $x_n\to\infty$, applying the definition with the height $H = K+M$
+gives $N\in\mathbb{N}$ such that
+\[
+  x_n > K + M \quad\text{for all } n\ge N .
+\]
+Then for all $n\ge N$,
+\[
+  x_n + y_n \;\ge\; x_n - M \;>\; (K+M) - M \;=\; K .
+\]
+Since $K$ was arbitrary, $\displaystyle\lim_{n\to\infty}(x_n+y_n)=\infty$.
 
 \end{proof}
 
