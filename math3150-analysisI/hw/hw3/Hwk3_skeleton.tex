@@ -2,8 +2,13 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{hyperref}
+\usepackage{xcolor}
 
 \newtheorem*{claim}{Claim}
+
+% Visible placeholder for unfinished steps -- delete every \todo before submitting.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
 
 \title{MAT 3150 --- Homework 3}
 \author{}
@@ -163,15 +168,23 @@ For the numerator, substitute $S_{n+1} = S_n + x_{n+1}$ and expand:
 \[
   n\,S_{n+1} - (n+1)\,S_n
   = \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr)
-  % TODO (step 3): cancel the n S_n terms and write what is left:
-  % = ___ - ___ .
-  .
+  = n\,x_{n+1} - S_n .
 \]
-% TODO (step 4): Use that (x_n) is increasing: x_k <= x_{n+1} for
-% k = 1, ..., n. Add these n inequalities to bound S_n, and conclude the
-% numerator is >= 0.
-% TODO (step 5): Numerator >= 0 and denominator > 0, so
-% y_{n+1} - y_n >= 0, i.e. y_n <= y_{n+1} for every n.
+
+Since $(x_n)$ is increasing,
+\[
+  x_k \le x_{n+1} \quad\text{for each } k = 1, \ldots, n .
+\]
+Adding these $n$ inequalities, the left-hand sides sum to $S_n$ and the
+right-hand side is $n$ copies of $x_{n+1}$, so
+\[
+  S_n \le n\,x_{n+1}, \qquad\text{i.e.}\qquad n\,x_{n+1} - S_n \ge 0 .
+\]
+Thus the numerator is nonnegative and the denominator is positive, so
+\[
+  y_{n+1} - y_n = \frac{n\,x_{n+1} - S_n}{n(n+1)} \ge 0 .
+\]
+Hence $y_n \le y_{n+1}$ for every $n$, so $(y_n)$ is increasing.
 
 \end{proof}
 

@@ -93,40 +93,80 @@ $S_{n+1} = S_n + x_{n+1}$:
   = \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr).
 \]
 
+\paragraph{3. Cancel. \checkmark\ (done)} Distribute the minus
+sign over both terms in the second bracket:
+\[
+  \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr)
+  = n\,S_n + n\,x_{n+1} - n\,S_n - S_n .
+\]
+The first term $+n\,S_n$ and the third term $-n\,S_n$ cancel
+\checkmark. The two terms that remain:
+\[
+  = n\,x_{n+1} - S_n .
+\]
+So
+\[
+  y_{n+1}-y_n = \frac{n\,x_{n+1} - S_n}{n(n+1)} .
+\]
+
 \bigskip
 \hrule
 \bigskip
-\noindent\textbf{\large What's left for you: Steps 3 and 4.}
+\noindent\textbf{\large Step 4 --- where ``increasing'' is used.}
 
-\paragraph{3. Cancel. $\leftarrow$ \emph{you are here}} Distribute the minus
-sign, and the two $n\,S_n$ terms cancel. Write what remains:
-\[
-  \bigl(n\,S_n + n\,x_{n+1}\bigr) - \bigl(n\,S_n + S_n\bigr)
-  = \blank \;-\; \blank .
-\]
-(\emph{Target shape:} something times $x_{n+1}$, minus $S_n$.)
-
-\vspace{1.5cm}
-
-\paragraph{4. Show the numerator is $\ge 0$. $\leftarrow$ \emph{then this}} This is where
-``increasing'' is used.
+\paragraph{Numerical example first.} Take the increasing sequence
+$x_1=2,\ x_2=5,\ x_3=7,\ x_4=10$ and $n=3$, so $x_{n+1}=x_4=10$.
 \begin{itemize}
-  \item Since $(x_n)$ is increasing, how does each of
-        $x_1, x_2, \ldots, x_n$ compare to $x_{n+1}$?
-        \[
-          x_k \;\blank\; x_{n+1} \quad\text{for each } k=1,\ldots,n.
-        \]
-  \item Add those $n$ inequalities together. What do you get for $S_n$?
-        \[
-          S_n = x_1+\cdots+x_n \;\le\; \blank .
-        \]
-  \item So the numerator from step 3 is $\ge \blank$.
+  \item Each earlier term is at most the new one:
+        $2\le 10,\quad 5\le 10,\quad 7\le 10$.
+  \item Add them:
+        $\underbrace{2+5+7}_{S_3=14} \le \underbrace{10+10+10}_{3\cdot 10=30}$.
+  \item Numerator: $3\cdot 10 - 14 = 16 \ge 0$.
+  \item Check: $y_3 = 14/3 \approx 4.67$, $y_4 = 24/4 = 6$, and
+        $\dfrac{16}{3\cdot 4} = \dfrac43 = y_4 - y_3$. \checkmark
 \end{itemize}
 
-\vspace{1cm}
+\paragraph{Example $\to$ general.}
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{l|l|l}
+  & Example ($n=3$) & General \\ \hline
+  New term & $x_4 = 10$ & $x_{n+1}$ \\
+  Earlier terms & $2,5,7$ & $x_1,\ldots,x_n$ \\
+  Each earlier $\le$ new & $2\le10,\ 5\le10,\ 7\le10$
+    & $x_k\le x_{n+1}$, $k=1,\ldots,n$ \\
+  Sum of left sides & $2+5+7=S_3$ & $x_1+\cdots+x_n=S_n$ \\
+  Sum of right sides & $10+10+10=3\cdot10$
+    & $x_{n+1}+\cdots+x_{n+1}=n\,x_{n+1}$ \\
+  Result & $S_3\le 3\cdot 10$ & $S_n\le n\,x_{n+1}$
+\end{tabular}
+\end{center}
 
-\paragraph{5. Conclude.} Numerator $\ge 0$ and denominator $>0$, so
-$y_{n+1}-y_n\ge 0$.
+\paragraph{4. Show the numerator is $\ge 0$. \checkmark\ (done)}
+Since $(x_n)$ is increasing,
+\[
+  x_k \le x_{n+1} \quad\text{for each } k=1,\ldots,n.
+\]
+Adding these $n$ inequalities: the left sides sum to $S_n$, and the
+right side is $n$ copies of $x_{n+1}$, so
+\[
+  S_n \le n\,x_{n+1} .
+\]
+Subtracting $S_n$ from both sides,
+\[
+  n\,x_{n+1} - S_n \ge 0 .
+\]
+
+\paragraph{5. Conclude. \checkmark\ (done)} Numerator $\ge 0$ and
+denominator $n(n+1)>0$, so
+\[
+  y_{n+1}-y_n = \frac{n\,x_{n+1} - S_n}{n(n+1)} \ge 0,
+\]
+i.e.\ $y_n \le y_{n+1}$ for every $n$.
+
+\paragraph{In your own words:} why is $S_n \le n\,x_{n+1}$? Finish the
+sentence: ``Each of the $n$ terms $x_1,\ldots,x_n$ is at most \blank,
+so their sum is at most \blank.''
 
 \paragraph{6. The proof.} Fill in the template:
 \begin{quote}
