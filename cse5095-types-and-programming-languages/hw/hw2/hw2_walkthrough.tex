@@ -1,0 +1,438 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm, xcolor, mathpartir}
+\usepackage{hyperref}
+
+\input{macros}
+
+% Shorthand for the WORKED EXAMPLES (not the homework's constructs)
+\newcommand{\val}[1]{#1\ \mathsf{val}}
+\newcommand{\stepto}[2]{#1 \mapsto #2}
+\newcommand{\PAIR}[2]{(#1,\, #2)}
+\newcommand{\FST}[1]{\mathsf{fst}\ #1}
+\newcommand{\SQRT}[1]{\mathsf{sqrt}\ #1}
+\newcommand{\INT}{\mathsf{int}}
+\newcommand{\STRING}{\mathsf{string}}
+\newcommand{\NN}{\mathsf{nn}}
+\newcommand{\ANY}{\mathsf{any}}
+\newcommand{\NP}{\mathsf{np}}
+\newcommand{\NZ}{\mathsf{nz}}
+\newcommand{\MZ}{\mathsf{mz}}
+\newcommand{\num}[1]{\overline{#1}}
+\newcommand{\str}[1]{\text{``#1''}}
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
+
+\title{CSE5095 --- Homework 2 Walkthrough\\
+\large Type Safety, by Worked Analogy}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\textbf{How to use this.} Every section below works a \emph{different}
+construct than the homework, but uses \emph{the same technique} you need.
+Read the worked example, then do the matching task yourself (the
+fill-in-the-blank skeletons in \texttt{hw2\_hints.tex} pair well with this).
+Nothing here is an answer to a homework task. Your syllabus allows AI for
+understanding the material; the submitted write-up has to be yours.
+
+\paragraph{The four judgments you'll use.}
+\begin{itemize}
+  \item $\val{e}$: $e$ is finished evaluating.
+  \item $\stepto{e}{e'}$: $e$ takes one step to $e'$.
+  \item $e:\tau$: $e$ has type $\tau$.
+  \item Theorems: \textbf{Progress} (if $e:\tau$ then $\val{e}$ or
+        $\exists e'.\ \stepto{e}{e'}$) and \textbf{Preservation} (if $e:\tau$
+        and $\stepto{e}{e'}$ then $e':\tau$).
+\end{itemize}
+
+\paragraph{The one distinction to keep in your head.}
+\begin{itemize}
+  \item A \emph{search rule} has a \emph{step} judgment as a premise
+        (e.g.\ StepSearchAddLeft: ``if $e_1\mapsto e_1'$ then
+        $e_1+e_2\mapsto e_1'+e_2$''). It just says \emph{where} to evaluate
+        next.
+  \item A \emph{primitive / reduction rule} (StepAdd, StepCat,\dots) does
+        the actual computation. It has no step premises, though it may have
+        side conditions like $n_2\neq 0$.
+\end{itemize}
+In proofs, reduction-rule cases use \textbf{inversion}. Search-rule cases use
+\textbf{the induction hypothesis}.
+
+% ====================================================================
+\part*{Part A: Booleans (Tasks 1--6)}
+\addcontentsline{toc}{part}{Part A}
+
+\textbf{Worked construct: pairs.} We extend the class language $\mathsf{E}$ with
+\[
+  \tau \bnfdef \cdots \bnfalt \tau_1\times\tau_2
+  \qquad\qquad
+  e \bnfdef \cdots \bnfalt \PAIR{e_1}{e_2} \bnfalt \FST{e}
+\]
+Intended meaning: evaluate both components left to right; $\FST{}$ of a
+finished pair returns the first component.
+
+% --------------------------------------------------------------------
+\section*{A1. Writing dynamic rules \hfill (technique for Task 1)}
+
+\paragraph{Recipe.}
+\begin{enumerate}
+  \item \emph{Value rules:} which finished forms of the new syntax are done?
+  \item \emph{Reduction rules:} once the sub-expressions you care about are
+        values, what does the construct compute to?
+  \item \emph{Search rules:} for each sub-expression that must be evaluated
+        \emph{before} reducing, add one rule that steps it and leaves
+        everything else alone. Do \textbf{not} add search rules for
+        sub-expressions that shouldn't be evaluated yet.
+\end{enumerate}
+
+\paragraph{Worked.} A pair is a value when both parts are values. This value
+rule \emph{has premises}, unlike ValNum:
+\[
+  \Rule{ValPair}{\val{e_1} \\ \val{e_2}}{\val{\PAIR{e_1}{e_2}}}
+\]
+Reduction: $\FST{}$ of a finished pair gives the first component:
+\[
+  \Rule{StepFst}{\val{e_1} \\ \val{e_2}}{\stepto{\FST{\PAIR{e_1}{e_2}}}{e_1}}
+\]
+Search: we need to evaluate the left component, then the right one (only
+once the left is a value), and the argument of $\FST{}$:
+\[
+  \Rule{StepSearchPairL}{\stepto{e_1}{e_1'}}
+       {\stepto{\PAIR{e_1}{e_2}}{\PAIR{e_1'}{e_2}}}
+  \quad
+  \Rule{StepSearchPairR}{\val{e_1} \\ \stepto{e_2}{e_2'}}
+       {\stepto{\PAIR{e_1}{e_2}}{\PAIR{e_1}{e_2'}}}
+\]
+\[
+  \Rule{StepSearchFst}{\stepto{e}{e'}}{\stepto{\FST{e}}{\FST{e'}}}
+\]
+
+\paragraph{Sanity checks to run on your own rules.}
+\begin{itemize}
+  \item For every non-value expression, is there \emph{exactly one} rule
+        that applies? (No rule gives a stuck expression; two rules
+        means your semantics isn't deterministic.)
+  \item Does anything get evaluated that the English description says
+        \emph{shouldn't} be? For $\mathsf{if}$, reread the assignment's
+        $\mathsf{if}\ x = 0\ \mathsf{then}\ 0\ \mathsf{else}\ 42/x$ remark,
+        and ask which sub-expressions deserve a search rule.
+\end{itemize}
+
+\paragraph{Your turn: Task 1.} Apply the recipe to $\mathsf{true}$,
+$\mathsf{false}$, and $\mathsf{if}$. Target count from the assignment: 2 value
+rules, 3 step rules, exactly 1 of which is a search rule.
+
+% --------------------------------------------------------------------
+\section*{A2. Evaluating step by step \hfill (technique for Task 2)}
+
+\paragraph{Recipe.} At each line, find the \emph{innermost-leftmost} piece
+that a reduction rule can fire on. Then name the stack of search rules that
+``reaches in'' to it, from the outside in.
+
+\paragraph{Worked.} Evaluate $\FST{\PAIR{\num1+\num2}{\str{a}\,\hat{}\,\str{b}}}$:
+\[
+\begin{array}{r l l}
+  & \FST{\PAIR{\num1+\num2}{\str{a}\,\hat{}\,\str{b}}} & \\[2pt]
+  \mapsto & \FST{\PAIR{\num3}{\str{a}\,\hat{}\,\str{b}}}
+          & \text{StepSearchFst $\leftarrow$ StepSearchPairL $\leftarrow$ StepAdd}\\[2pt]
+  \mapsto & \FST{\PAIR{\num3}{\str{ab}}}
+          & \text{StepSearchFst $\leftarrow$ StepSearchPairR $\leftarrow$ StepCat}\\[2pt]
+  \mapsto & \num3
+          & \text{StepFst}
+\end{array}
+\]
+$\num3$ is a value by ValNum, so we stop. The pair $\PAIR{\num3}{\str{ab}}$
+wasn't the end, because it sits inside $\FST{}$.
+
+The ``$\leftarrow$'' stack is shorthand for a real derivation tree. Here is
+the first step written out in full. Put one like this in your write-up if
+you want to be extra rigorous:
+\[
+\Rule{StepSearchFst}
+  {\Rule{StepSearchPairL}
+     {\Rule{StepAdd}{\strut}{\stepto{\num1+\num2}{\num3}}}
+     {\stepto{\PAIR{\num1+\num2}{\str{a}\,\hat{}\,\str{b}}}{\PAIR{\num3}{\str{a}\,\hat{}\,\str{b}}}}}
+  {\stepto{\FST{\PAIR{\num1+\num2}{\str{a}\,\hat{}\,\str{b}}}}{\FST{\PAIR{\num3}{\str{a}\,\hat{}\,\str{b}}}}}
+\]
+The second step also needs a leaf $\val{\num3}$ (ValNum), because
+StepSearchPairR has that premise.
+
+\paragraph{Your turn: Task 2.} Your expression has three nesting levels:
+$\mathsf{if}$ $\supset$ $=$ $\supset$ $+$. Your first step's stack has one
+rule per level.
+
+% --------------------------------------------------------------------
+\section*{A3. Typing derivations \hfill (technique for Task 3)}
+
+Typing rules for pairs:
+\[
+  \Rule{TypePair}{e_1:\tau_1 \\ e_2:\tau_2}{\PAIR{e_1}{e_2}:\tau_1\times\tau_2}
+  \qquad
+  \Rule{TypeFst}{e:\tau_1\times\tau_2}{\FST{e}:\tau_1}
+\]
+
+\paragraph{Recipe.} Write the goal at the bottom. Look at the \emph{outermost}
+syntax to pick the rule, write its premises above the line, and repeat until
+every branch ends in an axiom (a rule with no premises).
+
+\paragraph{Worked.} $\FST{\PAIR{\num1+\num2}{\str{hi}}}:\INT$
+{\small
+\[
+\Rule{TFst}
+ {\Rule{TPair}
+   {\Rule{TA}
+      {\Rule{TN}{\strut}{\num1:\INT} \\ \Rule{TN}{\strut}{\num2:\INT}}
+      {\num1+\num2:\INT}
+    \\
+    \Rule{TS}{\strut}{\str{hi}:\STRING}}
+   {\PAIR{\num1+\num2}{\str{hi}}:\INT\times\STRING}}
+ {\FST{\PAIR{\num1+\num2}{\str{hi}}}:\INT}
+\]
+}
+When a rule like TypeFst lets you choose (here, any $\tau_2$), the
+sub-derivation decides it. With $\mathsf{if}$, TypeIf forces both branches
+to have the same $\tau$, and $\tau$ is also the type of the whole
+expression.
+
+\paragraph{Your turn: Task 3.} The outermost rule is TypeIf with
+\emph{three} premises. The condition's sub-tree looks just like the
+$\num1+\num2$ sub-tree above, with one more rule (TypeEq) underneath.
+
+% --------------------------------------------------------------------
+\section*{A4. Preservation cases \hfill (technique for Task 4)}
+
+\textbf{Structure:} induction on the derivation of $\stepto{e}{e'}$, one case
+per step rule. Each case follows this template:
+\begin{enumerate}
+  \item ``Then $e=\ldots$ and $e'=\ldots$'' (read off the rule).
+  \item Invert the typing rule for $e$'s outermost form, to learn the types
+        of its pieces.
+  \item \emph{Reduction rule:} $e'$ is one of those pieces (or a new
+        literal), so its type is already known, or comes from an axiom.\\
+        \emph{Search rule:} apply the IH to the premise $\stepto{e_i}{e_i'}$,
+        then re-apply the same typing rule.
+\end{enumerate}
+
+\paragraph{Worked: Case StepFst.} Then $e=\FST{\PAIR{e_1}{e_2}}$ and $e'=e_1$,
+with $\val{e_1}$ and $\val{e_2}$. We know $e:\tau$. The only rule concluding
+$\FST{\cdot}:\tau$ is TypeFst, so by inversion
+$\PAIR{e_1}{e_2}:\tau\times\tau_2$ for some $\tau_2$. The only rule
+concluding a pair's type is TypePair, so inverting again gives $e_1:\tau$ and
+$e_2:\tau_2$. So $e' = e_1 : \tau$. \qed
+
+\paragraph{Worked: Case StepSearchFst.} Then $e=\FST{e_0}$ and $e'=\FST{e_0'}$
+with $\stepto{e_0}{e_0'}$. By inversion on TypeFst, $e_0:\tau\times\tau_2$ for
+some $\tau_2$. By the induction hypothesis on $\stepto{e_0}{e_0'}$,
+$e_0':\tau\times\tau_2$. By TypeFst, $e'=\FST{e_0'}:\tau$. \qed
+
+\paragraph{Watch out.} In the search case, the IH is about the
+\emph{sub}-expression's type ($\tau\times\tau_2$ here), not $\tau$. Say
+which type you're applying it at.
+
+\paragraph{Your turn: Task 4.} Three cases, one per Task 1 step rule. Your two
+reduction cases each need \emph{one} inversion (on TypeIf).
+
+% --------------------------------------------------------------------
+\section*{A5. Canonical Forms \hfill (technique for Task 5)}
+
+\paragraph{Recipe.} Canonical forms answers: ``which value rules could
+possibly have produced a value of this type?'' List those shapes.
+
+\paragraph{Worked.} If $\val{e}$ and $e:\tau_1\times\tau_2$, then
+$e=\PAIR{e_1}{e_2}$ for some $e_1,e_2$ with $\val{e_1}$ and $\val{e_2}$.
+(ValNum and ValString produce things of type $\INT$ and $\STRING$, so only
+ValPair can produce a value of a product type.)
+
+\paragraph{Your turn: Task 5.} Which of your Task 1 value rules produce
+something of type $\mathsf{bool}$? A type may have more than one canonical
+form, and that's fine. It just means a case split later.
+
+% --------------------------------------------------------------------
+\section*{A6. Progress cases \hfill (technique for Task 6)}
+
+\textbf{Structure:} induction on the derivation of $e:\tau$. Template for a
+rule with sub-expressions:
+\begin{enumerate}
+  \item Invert to get the sub-expression typings (the premises of the rule).
+  \item Apply the IH to the sub-expression that gets evaluated first. You
+        get two cases: it's a value, or it steps.
+  \item \emph{Steps:} use the search rule.\quad
+        \emph{Value:} use Canonical Forms to get its exact shape, then use
+        the reduction rule for that shape.
+\end{enumerate}
+
+\paragraph{Worked: Case TypeFst.} Then $e=\FST{e_0}$ with
+$e_0:\tau\times\tau_2$. By the IH, $\val{e_0}$ or $\stepto{e_0}{e_0'}$.
+\begin{itemize}
+  \item Suppose $\val{e_0}$. By Canonical Forms (product case),
+        $e_0=\PAIR{e_1}{e_2}$ with $\val{e_1}$ and $\val{e_2}$. By StepFst,
+        $\stepto{e}{e_1}$.
+  \item Suppose $\stepto{e_0}{e_0'}$. By StepSearchFst,
+        $\stepto{e}{\FST{e_0'}}$.
+\end{itemize}
+\qed
+
+\paragraph{Worked: Case TypePair} (for the value-rule side). Here \emph{both}
+components get evaluated, so we need the IH on both, nested exactly like the
+class's TypeAdd case. If both are values, $\val{e}$ by ValPair (not a step!).
+If $e_1$ is a value and $e_2$ steps, use StepSearchPairR. If $e_1$ steps, use
+StepSearchPairL.
+
+\paragraph{Your turn: Task 6.} TypeTrue and TypeFalse are one-liners (like
+TypeNum). For TypeIf, how many sub-expressions does your semantics evaluate
+first? That tells you how many IHs you need. In the value case, Canonical Forms
+gives you \emph{two} shapes, so you get two sub-cases.
+
+% ====================================================================
+\newpage
+\part*{Part B: Division by zero (Tasks 7--9)}
+
+\textbf{Worked system: $\mathsf{SQ}$}, a language that prevents
+\emph{square roots of negatives}. Types $\tau \bnfdef \NN \bnfalt \ANY$
+(``definitely non-negative'' vs.\ ``any integer''). Expressions:
+$e \bnfdef \num n \bnfalt e+e \bnfalt e-e \bnfalt e*e \bnfalt \SQRT{e}$, with
+arithmetic dynamics like $\mathsf{EZ}$'s, plus
+\[
+  \Rule{StepSqrt}{n\ge 0}{\stepto{\SQRT{\num n}}{\num{\lfloor\sqrt n\rfloor}}}
+  \qquad
+  \Rule{StepSearchSqrt}{\stepto{e}{e'}}{\stepto{\SQRT{e}}{\SQRT{e'}}}
+\]
+So $\SQRT{\num{-4}}$ is stuck, just like $\num1/\num0$ in $\mathsf{EZ}$. As
+in $\mathsf{EZ}$, if $e:\NN$ then $e:\ANY$, and Canonical Forms says
+$\NN$-values are $\num n$ with $n\ge0$.
+
+% --------------------------------------------------------------------
+\section*{B1. Designing refinement rules \hfill (technique for Task 7)}
+
+\paragraph{Recipe (the whole trick).} For each blank, try the
+\emph{stronger} type first.
+\begin{itemize}
+  \item To show the stronger type is \textbf{unsafe}, find \emph{one}
+        counterexample: inputs satisfying the premises where the output
+        breaks the property.
+  \item To show it's \textbf{safe}, give an arithmetic argument that works
+        for \emph{all} such inputs.
+\end{itemize}
+
+\paragraph{Worked.} Base rules:
+$\Rule{TypeNum}{\strut}{\num n:\ANY}$ and
+$\Rule{TypeNumNN}{n\ge0}{\num n:\NN}$.
+\begin{itemize}
+  \item $e_1:\NN,\ e_2:\NN \Rightarrow e_1+e_2:\ ?$ \
+        A sum of two non-negatives is $\ge 0$ for \emph{all} inputs. Safe, so
+        $\NN$.
+  \item $e_1:\NN,\ e_2:\NN \Rightarrow e_1-e_2:\ ?$ \
+        Counterexample: $0-1=-1$. So only $\ANY$.
+  \item $e_1:\NN,\ e_2:\NN \Rightarrow e_1*e_2:\ ?$ \
+        A product of non-negatives is $\ge0$. So $\NN$.
+  \item $\SQRT{e}$: StepSqrt's side condition is $n\ge0$, so the premise
+        must be $e:\NN$. Result: $\lfloor\sqrt n\rfloor\ge 0$ always. So
+        $\NN$.
+\end{itemize}
+Plus $\ANY$-versions ($e_1:\ANY,\ e_2:\ANY\Rightarrow e_1\,op\,e_2:\ANY$) so
+that mixed programs still type check.
+
+\paragraph{Your turn: Task 7.} Same drill for $\mathsf{EZ}$'s blanks. The
+assignment reminds you integers can be negative, and division truncates.
+Test $\num1/\num2$ before you decide the result type of TypeDiv.
+
+% --------------------------------------------------------------------
+\section*{B2. Progress with a side condition \hfill (technique for Task 8, Progress)}
+
+\paragraph{Worked: Case TypeSqrt.} Then $e=\SQRT{e_0}$, $\tau=\NN$, and
+$e_0:\NN$. By the IH, $\val{e_0}$ or $\stepto{e_0}{e_0'}$.
+\begin{itemize}
+  \item Suppose $\val{e_0}$. By Canonical Forms (\textbf{the $\NN$ case}),
+        $e_0=\num n$ with $n\ge 0$. That's exactly StepSqrt's side condition,
+        so $\stepto{e}{\num{\lfloor\sqrt n\rfloor}}$.
+  \item Suppose $\stepto{e_0}{e_0'}$. By StepSearchSqrt,
+        $\stepto{e}{\SQRT{e_0'}}$.
+\end{itemize}
+\qed
+
+\noindent\textbf{The point:} the \emph{type} of the argument is what gives
+you the side condition, through Canonical Forms. That's the whole reason
+the type system exists. TypeDiv has two sub-expressions, so you'll nest two
+IHs (like the class's TypeAdd case) and use the $\NZ$ case of Canonical
+Forms only on the one where it matters.
+
+% --------------------------------------------------------------------
+\section*{B3. Preservation when inversion gives two rules \hfill (Task 8 \& Bonus)}
+
+\paragraph{Worked: Case StepAdd in $\mathsf{SQ}$.} Then $e=\num{n_1}+\num{n_2}$
+and $e'=\num{n_1+n_2}$. \emph{Two} typing rules conclude a sum, so inversion
+gives two sub-cases:
+\begin{itemize}
+  \item \emph{Via TypeAddNN.} Then $\tau=\NN$ and $\num{n_1}:\NN$,
+        $\num{n_2}:\NN$. Inverting again (the only rule typing a numeral
+        $\NN$ is TypeNumNN): $n_1\ge0$ and $n_2\ge0$. So $n_1+n_2\ge0$, and by
+        TypeNumNN, $e':\NN$.
+  \item \emph{Via TypeAddAny.} Then $\tau=\ANY$. By TypeNum, $e':\ANY$.
+\end{itemize}
+\qed
+
+\paragraph{Your turn.} In $\mathsf{EZ}$, only \emph{one} rule concludes a
+sum, a difference, or a quotient, so StepAdd, StepSub, and StepDiv each have one
+case. Ask yourself what $\tau$ inversion forces, and which base typing rule
+retypes the resulting numeral. The Bonus (StepMul) is the two-rule situation
+shown above.
+
+% --------------------------------------------------------------------
+\section*{B4. Finding the type system's blind spot \hfill (technique for Task 9)}
+
+\paragraph{Recipe.} Find a rule that \emph{throws away information} (its
+conclusion is weaker than what's actually true for some inputs). Build an
+expression whose runtime value is fine, but only because of the information
+that got thrown away. Then propose extra information to track, and explain
+why the fix still blocks the bad programs.
+
+\paragraph{Worked.} In $\mathsf{SQ}$, consider
+$\SQRT{(\num{-2}*\num{-3})}$. At runtime, $(-2)(-3)=6\ge0$, so it steps to
+$\num2$ with no error. But $\num{-2}$ and $\num{-3}$ can only be typed
+$\ANY$, so the product is $\ANY$ and TypeSqrt rejects it. The information
+``both factors are negative'' was never recorded.
+
+\emph{Fix:} add a type $\NP$ (``non-positive'') with
+\[
+  \Rule{TypeNumNP}{n\le 0}{\num n:\NP}
+  \qquad
+  \Rule{TypeMulNP}{e_1:\NP \\ e_2:\NP}{e_1*e_2:\NN}
+\]
+\emph{Still safe:} each new rule is backed by a true arithmetic fact (a
+product of two non-positives is $\ge 0$), so nothing that evaluates to a
+negative can be typed $\NN$. $\SQRT{\num{-4}}$ is still rejected.
+
+\paragraph{Your turn: Task 9.} Look at which $\mathsf{EZ}$ rules only ever
+conclude $\MZ$. The assignment says your fix doesn't need to be complete or
+practical. One or two sentences of justification is fine.
+
+% ====================================================================
+\section*{LaTeX quick reference (this homework's \texttt{macros.tex})}
+\begin{itemize}
+  \item \verb|\Rule{Name}{prem1 \\ prem2}{conclusion}|: a labeled rule. Use
+        \verb|{\strut}| for no premises.
+  \item Nest a \verb|\Rule| inside a premise to build derivation trees. Wrap
+        big ones in \verb|{\small ...}| or \verb|\scriptsize|.
+  \item Evaluation traces: an \verb|array| with columns
+        \verb|{r l l}| (\verb|\mapsto|, expression, rule names).
+  \item Overlined numerals: \verb|\overline{3}|.
+\end{itemize}
+
+\section*{Final checklist}
+\begin{itemize}
+  \item Task 1: 5 rules, exactly one search rule, no rule evaluates an
+        un-chosen branch.
+  \item Task 2: every step names its rule stack. Stop at a value.
+  \item Task 3: every leaf is an axiom. Both branches get the same type.
+  \item Tasks 4/6/8: say what you're inducting on. Each case names the
+        rule it inverts on and the rule it concludes with.
+  \item Task 8 Progress (TypeDiv): the $n_2\neq 0$ side condition is
+        justified by Canonical Forms, not assumed.
+  \item Task 9: an expression, why it fails to type check, a fix, and why
+        the fix is still safe.
+  \item Task 10: don't forget it!
+\end{itemize}
+
+\end{document}
