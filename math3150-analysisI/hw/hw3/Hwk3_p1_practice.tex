@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\title{MAT 3150 --- Homework 3\\
+\large Problem 1 Practice: Triangle Inequality Tricks}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\textbf{Tools.}
+\begin{itemize}
+  \item Triangle inequality: $|a+b|\le|a|+|b|$ for all $a,b\in\mathbb{R}$.
+  \item $|-a| = |a|$.
+  \item For $c\ge 0$: \quad $|a|\le c \iff -c\le a\le c$.
+\end{itemize}
+
+% ============================================================
+\section*{Worked example}
+\textbf{Prove:} for all $x,y\in\mathbb{R}$, \quad $|x|-|y|\le|x+y|$.
+
+\textbf{Trick:} write $x$ as a sum that contains $x+y$:
+\[
+  x = (x+y) + (-y).
+\]
+Take absolute values and apply the triangle inequality:
+\[
+  |x| = |(x+y)+(-y)| \le |x+y| + |-y| = |x+y| + |y| .
+\]
+Subtract $|y|$ from both sides:
+\[
+  |x|-|y| \le |x+y| . \qquad \checkmark
+\]
+
+% ============================================================
+\section*{Practice A}
+\textbf{Prove:} $|y|-|x|\le|x+y|$.
+
+\emph{Hint:} same idea, but write $y$ as a sum that contains $x+y$.
+What do you add to $x+y$ to get back to $y$?
+
+\vspace{3cm}
+
+% ============================================================
+\section*{Practice B}
+\textbf{Prove:} $\bigl|\,|x|-|y|\,\bigr|\le|x+y|$.
+
+\emph{Hint:} let $a=|x|-|y|$ and $c=|x+y|$. What do the worked example
+and Practice A tell you about $a$ and about $-a$?
+
+\vspace{3cm}
+
+% ============================================================
+\section*{Practice C}
+\textbf{Prove:} for all $x,y,z\in\mathbb{R}$,
+\[
+  |x-z| \le |x-y| + |y-z| .
+\]
+
+\emph{Hint:} what can you add to \emph{and} subtract from $x-z$ so it
+splits into the two pieces on the right?
+
+\vspace{3cm}
+
+% ============================================================
+\section*{The pattern}
+In every one of these, you \textbf{rewrite a number as a sum of two
+pieces}, where one piece is the quantity you want on the right-hand side.
+Then apply $|a+b|\le|a|+|b|$ and rearrange. In HW3 Problem 1 that piece is
+$x-y$; here it is $x+y$.
+
+\end{document}
