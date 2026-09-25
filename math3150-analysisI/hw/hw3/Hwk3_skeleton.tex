@@ -1,0 +1,74 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\newtheorem*{claim}{Claim}
+
+\title{MAT 3150 --- Homework 3}
+\author{}
+\date{Due September 24}
+
+\begin{document}
+\maketitle
+
+% ============================================================
+\section*{Problem 1 (10 points)}
+Prove that for any $x,y\in\mathbb{R}$,
+\[
+  \bigl|\,|x|-|y|\,\bigr| \le |x-y| .
+\]
+
+\begin{proof}
+% TODO: Use the triangle inequality twice (once starting from x, once
+% starting from y), then combine the two one-sided bounds.
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 2 (10 points)}
+Use the limit definition to compute
+\[
+  \lim_{n\to\infty}\frac{n+2}{3n+5}.
+\]
+
+\begin{claim}
+$\displaystyle\lim_{n\to\infty}\frac{n+2}{3n+5} = L$, where $L = $ \underline{\hspace{2cm}}.
+\end{claim}
+
+\begin{proof}
+% TODO: Scratch work first: simplify |(n+2)/(3n+5) - L| into a single
+% fraction, bound it above by something simple, and solve for n.
+% Then write: Let eps > 0. Choose N = ... . For n >= N, ... < eps.
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 3 (10 points)}
+Prove that if $\displaystyle\lim_{n\to\infty}x_n=\infty$ and $(y_n)_n$ is
+bounded, then
+\[
+  \lim_{n\to\infty}(x_n+y_n)=\infty .
+\]
+
+\begin{proof}
+% TODO: State what "bounded" gives you (a constant M) and what
+% "x_n -> infinity" means (for every K there is N ...). Given K, decide
+% which threshold to feed into the definition for x_n.
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 4 (10 points)}
+Let $(x_n)_n$ be an increasing sequence of positive real numbers. Define
+\[
+  y_n=\frac{x_1+x_2+\cdots+x_n}{n}.
+\]
+Prove that $(y_n)$ is increasing as well.
+
+\begin{proof}
+% TODO: Show y_{n+1} - y_n >= 0 for every n (or y_{n+1} >= y_n directly).
+
+\end{proof}
+
+\end{document}

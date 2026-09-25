@@ -1,0 +1,122 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\title{MAT 3150 --- Homework 3 Hints}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+These are hints, not finished proofs: each one gives the key idea and
+leaves the write-up to you.
+
+% ============================================================
+\section*{Problem 1: reverse triangle inequality}
+
+\paragraph{Tools.}
+\begin{itemize}
+  \item Triangle inequality: $|a+b|\le|a|+|b|$ for all $a,b\in\mathbb{R}$.
+  \item For $c\ge 0$: \quad $|a|\le c \iff -c\le a\le c$.
+\end{itemize}
+
+\paragraph{Hint.}
+Write $x$ as a sum that contains $x-y$:
+\[
+  x = (x-y) + y .
+\]
+Apply the triangle inequality to this and rearrange. What upper bound do
+you get for $|x|-|y|$?
+
+Now do the same thing with the roles of $x$ and $y$ swapped. What do you
+get for $|y|-|x|$? Note that $|y-x|=|x-y|$.
+
+\paragraph{Finishing.} You now have $|x|-|y|\le|x-y|$ and
+$-(|x|-|y|)\le|x-y|$. Which of the tools above turns that pair into the
+single statement you want?
+
+% ============================================================
+\section*{Problem 2: a limit from the definition}
+
+\paragraph{The definition.} $a_n\to L$ means: for every $\varepsilon>0$
+there is $N\in\mathbb{N}$ such that $|a_n-L|<\varepsilon$ for all
+$n\ge N$.
+
+\paragraph{Step 1: guess $L$.} For large $n$ the ``$+2$'' and ``$+5$'' are
+negligible. What is $n/(3n)$?
+
+\paragraph{Step 2: scratch work (don't hand this in as is).}
+Put $\left|\dfrac{n+2}{3n+5}-L\right|$ over a common denominator. If your
+guess is right, the $n$'s in the numerator cancel and you are left with a
+\emph{constant} over something that grows with $n$.
+
+Then make it simpler by \emph{making the denominator smaller}. For
+example, $3n+5>3n$, so the fraction gets \emph{bigger} if you replace
+$3n+5$ by $3n$. You're allowed to overestimate here: you only need an
+upper bound that is still less than $\varepsilon$.
+
+Solve ``simple bound $<\varepsilon$'' for $n$. That tells you how to
+choose $N$ (use the Archimedean property to justify that such an $N$
+exists).
+
+\paragraph{Step 3: the write-up.} Present it in the forward direction:
+\begin{quote}
+Let $\varepsilon>0$. By the Archimedean property choose $N\in\mathbb{N}$
+with $N>\,$\underline{\hspace{1.5cm}}. Then for all $n\ge N$,
+\[
+  \left|\frac{n+2}{3n+5}-L\right| = \cdots \le \cdots < \varepsilon .
+\]
+\end{quote}
+
+% ============================================================
+\section*{Problem 3: $\infty$ + bounded $=\infty$}
+
+\paragraph{Definitions.}
+\begin{itemize}
+  \item $(y_n)$ bounded: there is $M>0$ with $|y_n|\le M$ for all $n$,
+        so in particular $y_n\ge -M$.
+  \item $x_n\to\infty$: for every $K\in\mathbb{R}$ there is $N$ such that
+        $x_n>K$ for all $n\ge N$.
+  \item You must show that for every $K$ there is $N$ such that
+        $x_n+y_n>K$ for all $n\ge N$.
+\end{itemize}
+
+\paragraph{Hint.}
+Using $y_n\ge -M$, find a lower bound for $x_n+y_n$ in terms of $x_n$ and
+$M$ alone.
+
+Given a target $K$, how large does $x_n$ need to be so that this lower
+bound is bigger than $K$? The definition of $x_n\to\infty$ works for
+\emph{any} threshold, so apply it to that threshold (not to $K$ itself).
+
+% ============================================================
+\section*{Problem 4: averages of an increasing sequence}
+
+Let $S_n=x_1+\cdots+x_n$, so $y_n=S_n/n$. You want $y_{n+1}\ge y_n$ for
+every $n$.
+
+\paragraph{Approach A: compute the difference.}
+Put $y_{n+1}-y_n=\dfrac{S_{n+1}}{n+1}-\dfrac{S_n}{n}$ over the common
+denominator $n(n+1)$, and use $S_{n+1}=S_n+x_{n+1}$. The numerator should
+simplify to an expression involving only $x_{n+1}$, $n$, and $S_n$.
+
+Then ask: since $(x_n)$ is increasing, how does each of
+$x_1,\dots,x_n$ compare to $x_{n+1}$? What does that tell you about $S_n$
+compared to $n\,x_{n+1}$?
+
+\paragraph{Approach B: a weighted average.}
+Check that
+\[
+  y_{n+1}=\frac{n\,y_n + x_{n+1}}{n+1},
+\]
+so $y_{n+1}$ is a weighted average of $y_n$ and $x_{n+1}$. When is a
+weighted average of two numbers at least as large as the smaller of the
+two numbers? So what do you need to know about how $y_n$ compares with
+$x_{n+1}$? (An average of numbers is never bigger than the biggest one.)
+
+\paragraph{Side question.} Is the hypothesis ``positive'' actually needed
+anywhere in your argument? (It's fine to not use it; just notice.)
+
+\end{document}
