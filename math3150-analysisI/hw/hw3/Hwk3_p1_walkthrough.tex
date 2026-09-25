@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\title{MAT 3150 --- Homework 3\\
+\large Problem 1 Walkthrough: Reverse Triangle Inequality}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\textbf{Goal.} Prove that for any $x,y\in\mathbb{R}$,
+\[
+  \bigl|\,|x|-|y|\,\bigr| \le |x-y| .
+\]
+
+\textbf{Tools.}
+\begin{itemize}
+  \item Triangle inequality: $|a+b|\le|a|+|b|$ for all $a,b\in\mathbb{R}$.
+  \item For $c\ge 0$: \quad $|a|\le c \iff -c\le a\le c$.
+\end{itemize}
+
+% ============================================================
+\section*{Step 1 (worked)}
+Start from the identity
+\[
+  x = (x-y) + y .
+\]
+Take absolute values and apply the triangle inequality:
+\[
+  |x| = |(x-y)+y| \le |x-y| + |y| .
+\]
+Subtract $|y|$ from both sides:
+\[
+  |x|-|y| \le |x-y| . \tag{$\star$}
+\]
+
+% ============================================================
+\section*{Step 2 (your turn)}
+Do the same thing, but start from
+\[
+  y = (y-x) + x .
+\]
+\begin{itemize}
+  \item What inequality do you get for $|y|-|x|$?
+  \item Remember that $|y-x| = |x-y|$.
+\end{itemize}
+
+\vspace{2.5cm}
+
+% ============================================================
+\section*{Step 3 (combine)}
+Let $a = |x|-|y|$ and $c = |x-y|$. Note that $c \ge 0$.
+\begin{itemize}
+  \item Step 1 shows $a \le c$.
+  \item Step 2 should show $-a \le c$, i.e.\ $a \ge -c$.
+\end{itemize}
+So $-c \le a \le c$. Which of the tools above turns that into a statement
+about $|a|$? Write that conclusion in terms of $x$ and $y$.
+
+\vspace{2.5cm}
+
+% ============================================================
+\section*{Checklist for the final write-up}
+\begin{itemize}
+  \item Both one-sided inequalities are stated and justified by the
+        triangle inequality.
+  \item You explicitly use $|y-x| = |x-y|$.
+  \item You cite the fact $|a|\le c \iff -c\le a\le c$ (with $c\ge0$) to
+        finish.
+\end{itemize}
+
+\end{document}
