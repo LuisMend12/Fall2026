@@ -1,0 +1,128 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
+
+\title{MAT 3150 --- Homework 3\\
+\large Problem 3 Walkthrough: $\infty$ + Bounded $= \infty$}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\textbf{Goal.} Prove that if $\displaystyle\lim_{n\to\infty}x_n=\infty$
+and $(y_n)_n$ is bounded, then
+$\displaystyle\lim_{n\to\infty}(x_n+y_n)=\infty$.
+
+% ============================================================
+\section*{The definitions}
+
+\paragraph{Bounded.} $(y_n)$ is bounded if there is a number $M>0$ with
+\[
+  |y_n| \le M \quad\text{for every } n .
+\]
+Unpacking the absolute value: $-M \le y_n \le M$. For this problem you
+only need the \emph{lower} half, $y_n \ge -M$. (Why the lower half? We
+want $x_n+y_n$ to be \emph{big}, so the danger is $y_n$ being very
+negative.)
+
+\paragraph{Diverging to $\infty$.} $a_n\to\infty$ means:
+\begin{quote}
+For every $K\in\mathbb{R}$ there is $N\in\mathbb{N}$ such that
+$a_n > K$ for all $n\ge N$.
+\end{quote}
+Same game as the $\varepsilon$ definition, but now the challenger hands
+you a \emph{height} $K$ (maybe huge, like $10^{6}$), and you must find a
+point $N$ after which every term is above $K$.
+
+\paragraph{The key move for this whole topic.} The hypothesis
+$x_n\to\infty$ works for \emph{every} height. So you are free to apply it
+to a \emph{different} height than $K$ --- whatever height makes your
+target work out.
+
+% ============================================================
+\section*{Worked example: if $x_n\to\infty$, then $3x_n-5\to\infty$}
+
+\paragraph{Scratch work.} Given a height $K$, we want $3x_n-5>K$. Solve
+for $x_n$:
+\[
+  3x_n - 5 > K \iff x_n > \frac{K+5}{3}.
+\]
+So we should apply the hypothesis to the height $\dfrac{K+5}{3}$, not to
+$K$.
+
+\paragraph{The proof.}
+\begin{proof}
+Let $K\in\mathbb{R}$. Since $x_n\to\infty$, applying the definition with
+the height $\dfrac{K+5}{3}$ gives $N\in\mathbb{N}$ such that
+\[
+  x_n > \frac{K+5}{3} \quad\text{for all } n\ge N .
+\]
+Then for all $n\ge N$,
+\[
+  3x_n - 5 > 3\cdot\frac{K+5}{3} - 5 = K .
+\]
+Since $K$ was arbitrary, $3x_n-5\to\infty$.
+\end{proof}
+
+\noindent\textbf{Notice:} the proof starts with ``Let $K$'' (the height
+for the \emph{conclusion}), then feeds a \emph{modified} height into the
+\emph{hypothesis}.
+
+% ============================================================
+\newpage
+\section*{Your turn: $x_n\to\infty$ and $(y_n)$ bounded $\Rightarrow$ $x_n+y_n\to\infty$}
+
+\paragraph{1. Write down what you're given.}
+\begin{itemize}
+  \item Bounded: there is $M>0$ with $\blank$ for every $n$. \\
+        In particular, $y_n \ge \blank$ for every $n$.
+  \item $x_n\to\infty$: for every height $H$ there is $N$ with
+        $\blank$ for all $n\ge N$.
+\end{itemize}
+
+\paragraph{2. Write down what you must show.}
+For every $K$ there is $N$ such that $\blank > K$ for all $n\ge N$.
+
+\paragraph{3. Scratch work: get rid of $y_n$.}
+Using $y_n\ge -M$, find a lower bound for $x_n+y_n$ that involves only
+$x_n$ and $M$:
+\[
+  x_n + y_n \;\ge\; \blank .
+\]
+For this lower bound to be bigger than $K$, you need
+\[
+  x_n > \blank .
+\]
+That is the height to feed into the hypothesis.
+
+\vspace{1cm}
+
+\paragraph{4. The proof.} Fill in the template:
+\begin{quote}
+Since $(y_n)$ is bounded, there is $M>0$ with $|y_n|\le M$, so in
+particular $y_n\ge -M$ for all $n$.
+
+Let $K\in\mathbb{R}$. Since $x_n\to\infty$, applying the definition with
+the height $\blank$ gives $N\in\mathbb{N}$ such that
+\[
+  x_n > \blank \quad\text{for all } n\ge N .
+\]
+Then for all $n\ge N$,
+\[
+  x_n + y_n \;\ge\; \blank \;>\; \blank \;=\; K .
+\]
+Since $K$ was arbitrary, $x_n+y_n\to\infty$.
+\end{quote}
+
+\paragraph{Check yourself.}
+\begin{itemize}
+  \item Why is the first step ``$\ge$'' and not ``$>$''?
+  \item Which step uses boundedness, and which uses $x_n\to\infty$?
+  \item Where did you use that $K$ was arbitrary?
+\end{itemize}
+
+\end{document}
