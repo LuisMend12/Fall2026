@@ -1,0 +1,233 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8},
+  rulecolor=\color{gray!40},
+  showstringspaces=false
+}
+
+\newtcolorbox{notebox}[1][Note]{colback=blue!4, colframe=blue!50!black, fonttitle=\bfseries, title={#1}}
+\newtcolorbox{warnbox}[1][Watch out]{colback=red!5, colframe=red!60!black, fonttitle=\bfseries, title={#1}}
+
+\title{CodePath AI301 --- Open Source Capstone \\ Assignment 1: Issue Selection \\ \large Step-by-Step Guide and Submission Skeleton}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Deliverables at a glance (25 points)}
+\begin{center}
+\begin{tabular}{@{}lp{6cm}l@{}}
+\toprule
+\textbf{Where in \texttt{ai301-coursework}} & \textbf{What} & \textbf{Points} \\
+\midrule
+\texttt{tools/issue-select/} & \texttt{rubric.md}, \texttt{SKILL.md}, \texttt{scope.md}, \texttt{references/} \texttt{evidence-guide.md} & 6 \\
+\texttt{beat-1-sandbox/unit-1/eval-run.txt} & one complete harness run (\texttt{--save-run}) & 3 \\
+\texttt{beat-1-sandbox/unit-1/selection.md} & four write-up fields & 7 \\
+\texttt{beat-1-sandbox/unit-1/selection.md} & chosen issue, verdict, reflection & 9 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Submit the link to the \textbf{whole repo}, not a folder.
+
+%----------------------------------------------------------------
+\section{Create the course repo}
+\begin{enumerate}[label=\textbf{1.\arabic*}]
+  \item Open the course template on GitHub $\rightarrow$ \textbf{Use this template}.
+  \item Name it \texttt{ai301-coursework}, set it to \textbf{Public}, create it.
+  \item Confirm that \texttt{tools/issue-select/} and \texttt{beat-1-sandbox/unit-1/} exist (or will be created when you upload).
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Install the skill}
+On Windows, run these in \textbf{Git Bash}, where \texttt{\textasciitilde} is \texttt{C:\textbackslash Users\textbackslash Luis Mendez}.
+\begin{lstlisting}
+mkdir -p ~/.claude/skills
+cp -r path/to/unit-1-materials/skill ~/.claude/skills/issue-select
+ls ~/.claude/skills/issue-select
+# expect: SKILL.md  scope.md  rubric.md  references/evidence-guide.md
+\end{lstlisting}
+Edit \texttt{\textasciitilde/.claude/skills/issue-select/scope.md} and set its repo line to:
+\begin{lstlisting}
+Repo: codepath/pathreview-ai301-fa26-s1
+\end{lstlisting}
+
+\begin{notebox}[{One rubric, two uses}]
+The installed \texttt{rubric.md} is the \emph{only} copy you edit. Point the eval harness's
+\texttt{--rubric} at it, and live mode reads it too, so the two always agree.
+\end{notebox}
+
+%----------------------------------------------------------------
+\section{Read before you write}
+\begin{enumerate}[label=\textbf{3.\arabic*}]
+  \item Read \texttt{SKILL.md} (how the skill runs and what it outputs), \texttt{scope.md} (house rules and the repo),
+        and \texttt{references/evidence-guide.md} (what counts as evidence).
+  \item Read the empty \texttt{rubric.md} and keep its \emph{exact} section layout. The harness and the skill parse it.
+  \item Re-read the 4 calibration issues from the activity. They are not scored, so you can use them to sanity-check your checks.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Draft the rubric}
+The motto is \emph{``evidence sources and thresholds, not adjectives.''} A check like ``the issue is well scoped''
+is an adjective. A check that names \emph{where to look} and \emph{what number or condition flips the verdict} is a threshold.
+
+\subsection*{Pattern for one check}
+Adapt this to the template's format. Fill in the brackets yourself.
+\begin{lstlisting}
+### Check [N]: [short name]
+- Evidence source: [where the skill looks: issue body, labels, comments,
+  assignees, linked PRs, files named in the issue, ...]
+- Threshold: [the concrete condition, e.g. a count, a presence/absence,
+  a time window]
+- Verdict effect: [reject | lowers fit]
+- Why: [one sentence: what goes wrong for a first-time contributor if
+  this check is skipped]
+\end{lstlisting}
+
+\subsection*{Questions that lead to checks}
+Answer each one with an evidence source and a threshold:
+\begin{itemize}
+  \item Is someone already working on it? Where would you see that, and how recent must it be to count?
+  \item Is the problem reproducible from what is written? What must the issue contain?
+  \item Is it small enough for a first issue? What signals size (files touched, subsystems, open questions)?
+  \item Is it in scope for Path Review's house rules (see \texttt{scope.md})?
+  \item Does it need access, secrets, or maintainer decisions you cannot get?
+\end{itemize}
+
+%----------------------------------------------------------------
+\section{Evaluate with the cheap loop}
+From the \texttt{eval/} directory of the Unit 1 materials (use \texttt{python} or \texttt{py} if \texttt{python3} is missing on Windows):
+\begin{lstlisting}
+# full run, about $4
+python3 run_eval.py --rubric ~/.claude/skills/issue-select/rubric.md
+
+# re-grade only the disagreements, about $0.20 per issue
+python3 run_eval.py --rubric ~/.claude/skills/issue-select/rubric.md \
+  --only issue-07,issue-12
+\end{lstlisting}
+
+\begin{enumerate}[label=\textbf{5.\arabic*}]
+  \item After each full run, read the \textbf{per-category tallies}. You must match at least one verdict in \emph{every} category.
+  \item For each disagreement, decide: is it one of the ``clear'' 16 (fix the rubric) or an arguable scope call (maybe leave it)?
+  \item Change \emph{one} check at a time, then use \texttt{--only} on the issues it should affect.
+  \item \textbf{Log every run as you go.} Your ``Run history'' field is graded on order, so keep this table:
+\end{enumerate}
+
+\begin{center}
+\small
+\begin{tabular}{@{}llllp{5.5cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Type} & \textbf{Score} & \textbf{Categories OK?} & \textbf{What I changed before this run} \\
+\midrule
+1 & full & \_\_/20 & & initial rubric \\
+2 & only & & & \\
+3 & & & & \\
+4 & & & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notebox}[The bar]
+Aim for \textbf{18/20} with the category floor met. A first run that already scores 20/20 is fine and loses nothing.
+\end{notebox}
+
+%----------------------------------------------------------------
+\section{Record the final run}
+Once the rubric is final, do one \textbf{full} run with \texttt{--save-run}:
+\begin{lstlisting}
+python3 run_eval.py --rubric ~/.claude/skills/issue-select/rubric.md \
+  --save-run eval-run.txt
+\end{lstlisting}
+\begin{warnbox}
+Never hand-edit \texttt{eval-run.txt}. Its header fingerprints your files, so after this run do \textbf{not}
+change \texttt{rubric.md}, or the file you upload will no longer match the run. \texttt{--only} and
+\texttt{--limit} runs refuse to save.
+\end{warnbox}
+
+%----------------------------------------------------------------
+\section{Choose your issue (live mode)}
+\begin{enumerate}[label=\textbf{7.\arabic*}]
+  \item Browse the open issues in \texttt{codepath/pathreview-ai301-fa26-s1} and pick 2--3 candidates.
+  \item Run the skill from any directory:
+\begin{lstlisting}
+claude "issue-select: grade these candidate first issues: <URL1> <URL2> <URL3>"
+\end{lstlisting}
+  \item Check the output: a ranked read-out (accepted issues with a fit reason, then rejected ones with the check that sank them)
+        and a fenced JSON block with \texttt{accept}/\texttt{reject}. \textbf{No JSON block means the skill did not run.}
+  \item Of the accepted issues, choose the one that fits you best. Save the verdict output.
+  \item \textbf{Do not comment on or claim the issue.} That happens in Unit 2.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Upload and submit}
+\begin{enumerate}[label=\textbf{8.\arabic*}]
+  \item In \texttt{tools/issue-select/}: \textbf{Add file $\rightarrow$ Upload files}, then upload the \emph{current} installed
+        \texttt{SKILL.md}, \texttt{scope.md}, \texttt{rubric.md}, and \texttt{evidence-guide.md} (inside a \texttt{references/} folder).
+  \item In \texttt{beat-1-sandbox/unit-1/}: upload \texttt{eval-run.txt} and the filled \texttt{selection.md}.
+  \item Open the repo in a private browser window to confirm it is public, then submit the \textbf{repo} link in the portal.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\newpage
+\section*{Skeleton for \texttt{selection.md}}
+\emph{Use the headings that are already in the template file if they differ. Everything in \texttt{[\ldots]} is yours to write, in your own words.}
+
+\begin{lstlisting}
+## Chosen issue
+Link: [https://github.com/codepath/pathreview-ai301-fa26-s1/issues/N]
+
+Skill verdict:
+[paste the ranked read-out line and the JSON entry for this issue]
+
+## Reflection prompts
+[answer each prompt from the template here]
+
+## Run history
+[In order: run 1 (full, score, category tallies) -> what you changed
+ -> run 2 (--only issue-xx, result) -> ... -> final saved run and score.]
+
+## Issue analysis
+Issue: [issue-NN]
+My rubric's verdict: [accept/reject]   Gold label: [accept/reject]
+[Why the rubric read it that way: which check fired or didn't fire, and
+ what evidence in the issue it looked at.]
+
+## Check rationale
+Quoted check (current wording, identical to the uploaded rubric.md):
+> [paste exactly]
+[Why this evidence source and this threshold, and what you would lose
+ with a looser or stricter threshold.]
+
+## Trade-offs
+[What your rubric deliberately accepts or rejects on the arguable
+ calls, and the cost of that choice.]
+\end{lstlisting}
+
+\subsection*{Final checklist}
+\begin{itemize}[label=$\square$]
+  \item Repo \texttt{ai301-coursework} is public and made from the template
+  \item Skill installed; \texttt{scope.md} Repo line set
+  \item $\geq$ 18/20 and category floor met (or the shortfall explained in the write-up)
+  \item \texttt{eval-run.txt} from a full \texttt{--save-run}, unedited, and the rubric unchanged since
+  \item Skill files uploaded to \texttt{tools/issue-select/}
+  \item \texttt{selection.md}: issue link, verdict, reflection, and all four write-up fields
+  \item No comment posted on the chosen issue
+  \item Whole-repo link submitted
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,200 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8},
+  rulecolor=\color{gray!40},
+  showstringspaces=false
+}
+
+\newtcolorbox{warnbox}{colback=red!5, colframe=red!60!black, fonttitle=\bfseries, title=Safety}
+\newtcolorbox{tipbox}{colback=blue!4, colframe=blue!50!black, fonttitle=\bfseries, title=Tip}
+
+\title{CodePath Intermediate Cybersecurity \\ Unit 1, Project 1 --- Catch Me if You Can! \\ \large Step-by-Step Guide and Submission Skeleton}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{warnbox}
+The \texttt{.pcap} files contain \textbf{real Windows malware}. Do every step below inside your
+\textbf{Ubuntu VM} (or on a Mac/Linux machine), never on the Windows host. Do not copy extracted
+objects or \texttt{.eml} files back to Windows. Take your screenshots \emph{inside} the VM and move
+only the \texttt{.png} images out.
+\end{warnbox}
+
+\section*{Deliverables at a glance}
+\begin{enumerate}[label=\arabic*.]
+  \item The malicious actor's \textbf{IP address}.
+  \item The \textbf{subject lines} of three different phishing emails.
+  \item A \textbf{detailed explanation} of how you found the actor.
+  \item \emph{Stretch:} three \texttt{.eml} files (screenshots of them opened in a mail client).
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Set up the environment (in the VM)}
+\begin{enumerate}[label=\textbf{1.\arabic*}]
+  \item Boot your Ubuntu VM. Install Wireshark and the command-line tools:
+\begin{lstlisting}
+sudo apt update
+sudo apt install -y wireshark tshark unzip
+\end{lstlisting}
+  \item Download \texttt{pcap\_files.zip} \emph{from inside the VM's browser} so it never touches Windows.
+  \item Unzip it into its own folder and look at what you have:
+\begin{lstlisting}
+mkdir -p ~/pj1 && cd ~/pj1
+unzip ~/Downloads/pcap_files.zip -d pcaps
+ls -lh pcaps/
+capinfos pcaps/*.pcap      # capture dates, packet counts, durations
+\end{lstlisting}
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Triage: which capture has the phishing?}
+The brief says only \textbf{one} capture contains malicious email. Find where the SMTP traffic is first.
+
+\begin{enumerate}[label=\textbf{2.\arabic*}]
+  \item Count SMTP packets per file:
+\begin{lstlisting}
+for f in pcaps/*.pcap; do
+  echo "$f: $(tshark -r "$f" -Y smtp 2>/dev/null | wc -l) smtp packets"
+done
+\end{lstlisting}
+  \item In the GUI, \textbf{Statistics $\rightarrow$ Protocol Hierarchy} gives the same picture visually.
+  \item Keep notes on every file, including the ones that look clean. ``I ruled out file X because\ldots''
+        is part of a good explanation.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Read the emails}
+\subsection*{Useful display filters}
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Filter} & \textbf{What it shows} \\
+\midrule
+\texttt{smtp} & all SMTP commands and responses \\
+\texttt{smtp.req.command == "MAIL"} & envelope sender (\texttt{MAIL FROM}) \\
+\texttt{smtp.req.command == "RCPT"} & envelope recipients (\texttt{RCPT TO}) \\
+\texttt{smtp.req.command == "DATA"} & start of each message body \\
+\texttt{smtp.data.fragment} & the body data fragments \\
+\texttt{imf} & reassembled messages (Internet Message Format) \\
+\texttt{imf.subject contains "..."} & search by subject text \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[label=\textbf{3.\arabic*}]
+  \item Start with \texttt{imf} (or a \texttt{data} filter, as the hints suggest). Click a packet and expand the
+        \emph{Internet Message Format} section in the details pane to see the headers.
+  \item Right-click a packet $\rightarrow$ \textbf{Follow $\rightarrow$ TCP Stream} to read the entire SMTP
+        conversation (\texttt{EHLO}, \texttt{MAIL FROM}, \texttt{RCPT TO}, \texttt{DATA}, headers, body).
+  \item Dump a one-line-per-email summary to build your evidence table:
+\begin{lstlisting}
+tshark -r pcaps/<file>.pcap -Y imf -T fields -E header=y -E separator=' | ' \
+  -e frame.number -e ip.src -e ip.dst -e imf.from -e imf.to -e imf.subject
+\end{lstlisting}
+  \item \textbf{Tip:} right-click a header field (e.g.\ \emph{Subject}) $\rightarrow$ \textbf{Apply as Column}
+        to see it in the packet list.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Decide: legitimate or fraudulent?}
+For every email, record the fields below. BEC shows up in \emph{metadata}, not in obvious typos.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lllllll@{}}
+\toprule
+\textbf{Frame} & \textbf{Src IP} & \textbf{MAIL FROM} & \textbf{From:} & \textbf{Reply-To:} & \textbf{Subject} & \textbf{Verdict} \\
+\midrule
+\rule{0pt}{14pt} & & & & & & \\
+\rule{0pt}{14pt} & & & & & & \\
+\rule{0pt}{14pt} & & & & & & \\
+\rule{0pt}{14pt} & & & & & & \\
+\rule{0pt}{14pt} & & & & & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Questions to ask about each message:
+\begin{itemize}
+  \item Does the envelope sender (\texttt{MAIL FROM}) match the header \texttt{From:}?
+  \item Is there a \texttt{Reply-To:} that points somewhere different from \texttt{From:}?
+  \item Is the domain a look-alike (swapped letters, extra words, a different TLD)?
+  \item Does the \textbf{source IP} match the IP that the organization's real mail comes from?
+  \item What do the \texttt{Received:} headers say about the route the message took?
+  \item Does the body ask for money, wire transfers, changed bank details, gift cards, urgency, or secrecy?
+  \item Are there attachments (\texttt{Content-Disposition: attachment})? \emph{Do not open them.}
+\end{itemize}
+
+%----------------------------------------------------------------
+\section{Attribute the actor}
+\begin{enumerate}[label=\textbf{5.\arabic*}]
+  \item Group your fraudulent emails by source IP. Do they share one sender?
+  \item Confirm the legitimate emails come from a \emph{different} IP. That contrast is your strongest evidence.
+  \item Check what else that IP did in the capture: \texttt{ip.addr == <suspect IP>}.
+        \textbf{Statistics $\rightarrow$ Conversations} (IPv4 tab) helps here.
+  \item Write down frame numbers for every claim, so a grader can verify each one.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\section{Stretch: export \texttt{.eml} files (VM only)}
+\begin{enumerate}[label=\textbf{6.\arabic*}]
+  \item With the phishing packets showing, go to \textbf{File $\rightarrow$ Export Objects $\rightarrow$ IMF\ldots}
+  \item Save three phishing messages as \texttt{.eml} into a folder \emph{inside the VM}.
+  \item Open each in a mail client in the VM (e.g.\ \texttt{sudo apt install thunderbird}) and screenshot it.
+  \item Move only the screenshots out. If antivirus flags anything, that is expected: these are real samples.
+\end{enumerate}
+
+%----------------------------------------------------------------
+\newpage
+\section*{Submission skeleton}
+\emph{Copy this structure into the Google Doc template, keeping the template's layout. Fill every
+\texttt{[\ldots]} in your own words.}
+
+\subsection*{Malicious actor IP}
+\texttt{[IP address]}
+
+\subsection*{Phishing email subject lines}
+\begin{enumerate}
+  \item \texttt{[subject 1]} \quad (frame \texttt{[\#]}, capture \texttt{[file]})
+  \item \texttt{[subject 2]} \quad (frame \texttt{[\#]}, capture \texttt{[file]})
+  \item \texttt{[subject 3]} \quad (frame \texttt{[\#]}, capture \texttt{[file]})
+\end{enumerate}
+
+\subsection*{How I found the malicious actor}
+\begin{enumerate}[label=\textbf{\arabic*.}]
+  \item \textbf{Triage.} \emph{[Which captures you checked, how, and why you ruled each one in or out.]}
+  \item \textbf{Filtering.} \emph{[The filters you used and what each one revealed. Include screenshots.]}
+  \item \textbf{Red flags.} \emph{[For each phishing email: the specific header or body evidence (From vs.\ Reply-To, domain, request).]}
+  \item \textbf{Attribution.} \emph{[How the source IP ties the emails together, and how it differs from legitimate mail.]}
+  \item \textbf{Why metadata matters.} \emph{[One or two sentences connecting your evidence to the Key Takeaways.]}
+\end{enumerate}
+
+\subsection*{Stretch: \texttt{.eml} screenshots}
+\texttt{[Screenshot 1]} \quad \texttt{[Screenshot 2]} \quad \texttt{[Screenshot 3]}
+
+\subsection*{Submission checklist}
+\begin{itemize}[label=$\square$]
+  \item All required challenges complete
+  \item Template layout followed; checklist in the doc ticked
+  \item Images display correctly
+  \item Doc sharing set to ``Anyone with the link can Edit''
+\end{itemize}
+
+\end{document}
