@@ -21,6 +21,11 @@
 \newcommand{\num}[1]{\overline{#1}}
 \newcommand{\str}[1]{\text{``#1''}}
 \newcommand{\blank}{\underline{\hspace{1.5cm}}}
+\newcommand{\SND}[1]{\mathsf{snd}\ #1}
+\newcommand{\MAX}[2]{\mathsf{max}(#1,\, #2)}
+\newcommand{\HALF}[1]{\mathsf{half}\ #1}
+\newcommand{\EV}{\mathsf{ev}}
+\newcommand{\MF}{\mathsf{m4}}
 
 \title{CSE5095 --- Homework 2 Walkthrough\\
 \large Type Safety, by Worked Analogy}
@@ -409,6 +414,207 @@ conclude $\MZ$. The assignment says your fix doesn't need to be complete or
 practical. One or two sentences of justification is fine.
 
 % ====================================================================
+\newpage
+\part*{Part C: Understanding the ideas}
+
+This part explains \emph{why} the proof techniques in Parts A and B work.
+If a step in a proof feels like magic, the answer is probably here.
+
+% --------------------------------------------------------------------
+\section*{C1. What an inference rule actually says}
+
+A rule
+\[
+  \Rule{TypeAdd}{e_1:\INT \\ e_2:\INT}{e_1+e_2:\INT}
+\]
+reads: \emph{if} everything above the line holds, \emph{then} the thing below
+holds. $e_1,e_2$ are placeholders, so the rule is a template: you get an
+\emph{instance} by plugging in actual expressions.
+
+A judgment ``holds'' \textbf{exactly when there is a derivation tree for
+it}, made of rule instances. Nothing else makes it true. That's why
+\[
+  \num1 + \str{a} : \INT
+\]
+does \emph{not} hold. The only rule concluding a type for a $+$ is TypeAdd.
+Using it would need $\str{a}:\INT$, and the only rule that types a string
+literal (TypeString) concludes $\STRING$. So no tree exists.
+
+% --------------------------------------------------------------------
+\section*{C2. Inversion: reading rules upside down}
+
+Rules normally go top to bottom (premises, so conclusion). Inversion goes the
+other way:
+\begin{quote}
+If a judgment holds, then \emph{some} rule was used at the bottom of its
+tree. Look at every rule whose conclusion could match. Its premises must hold.
+\end{quote}
+\begin{itemize}
+  \item \textbf{One matching rule:} you get its premises for free. Example:
+        if $\PAIR{e_1}{e_2}:\tau$, only TypePair can conclude a pair's type,
+        so $\tau=\tau_1\times\tau_2$ with $e_1:\tau_1$ and $e_2:\tau_2$.
+  \item \textbf{Several matching rules:} you get one case per rule. This is
+        what happened in B3 with TypeAddNN and TypeAddAny.
+  \item \textbf{No matching rule:} the case is impossible, so you can skip
+        it. Example: in the class's Canonical Forms proof for $\INT$, the
+        ValString case ``doesn't apply'', because a string literal can't
+        have type $\INT$.
+\end{itemize}
+\textbf{How to spot it:} whenever a proof says ``we know $e$ has
+\emph{some} type, and $e$ has a specific shape'', and then needs to know
+more, it's inversion.
+
+% --------------------------------------------------------------------
+\section*{C3. Induction on derivations}
+
+This is ordinary induction, but on the size of a tree, not on a number.
+\begin{itemize}
+  \item \textbf{Base cases:} axioms (rules with no premises of the judgment
+        you're inducting on). No IH is available.
+  \item \textbf{Inductive cases:} rules with premises of that judgment. Each
+        such premise is a \emph{smaller} tree, so you get the IH for it.
+\end{itemize}
+This explains which cases use the IH:
+\begin{center}
+\begin{tabular}{l l l}
+  \textbf{Theorem} & \textbf{Induct on} & \textbf{IH available in} \\ \hline
+  Preservation & $\stepto{e}{e'}$ & search rules (they have a $\mapsto$ premise) \\
+  Progress     & $e:\tau$         & rules like TypeAdd, TypeFst (they have a $:$ premise) \\
+\end{tabular}
+\end{center}
+In Preservation, StepAdd and StepFst have no $\mapsto$ premise, so there's no
+IH, and you use inversion alone. In Progress, TypeNum has no premises, so
+it's a one-liner.
+
+\textbf{A common slip:} the IH is only for the sub-derivation, with
+\emph{its} type. In the TypeFst case of Progress, the IH is about
+$e_0:\tau\times\tau_2$, not about $e$.
+
+% --------------------------------------------------------------------
+\section*{C4. Why Progress + Preservation = ``can't go wrong''}
+
+An expression is \textbf{stuck} if it is not a value and no step rule
+applies. Examples: $\num1+\str{a}$, $\FST{\num3}$, $\SQRT{\num{-4}}$,
+$\num1/\num0$. A stuck expression is a run-time error.
+
+Now chain the two theorems. Start with $e_0:\tau$.
+\[
+  e_0:\tau
+  \ \xrightarrow{\text{Progress}}\
+  \text{$e_0$ is a value, or } e_0\mapsto e_1
+  \ \xrightarrow{\text{Preservation}}\
+  e_1:\tau
+  \ \xrightarrow{\text{Progress}}\ \cdots
+\]
+Every expression along the way is well-typed, and Progress says no
+well-typed expression is stuck. So evaluation either reaches a value or runs
+forever, but it never gets stuck.
+
+\begin{itemize}
+  \item \textbf{Progress} checks the \emph{dynamics}: there are enough step
+        rules to handle every well-typed expression.
+  \item \textbf{Preservation} checks the \emph{typing rules}: they never
+        promise something that evaluation doesn't deliver.
+\end{itemize}
+
+% --------------------------------------------------------------------
+\section*{C5. Breaking things on purpose}
+
+The fastest way to understand a theorem is to see it fail.
+
+\paragraph{(a) A missing step rule breaks Progress.} Delete StepSearchPairR.
+Then $\PAIR{\num3}{\num1+\num2}:\INT\times\INT$ is well-typed. It's not a
+value, since $\num1+\num2$ isn't. And no rule steps it: StepSearchPairL needs
+$\num3$ to step, which it can't. So it's stuck. In the proof, the TypePair
+case breaks in the sub-case ``$e_1$ is a value and $e_2$ steps'': there's no
+rule left to cite.
+
+\paragraph{(b) A dishonest typing rule breaks Preservation.} Add a bogus rule
+to $\mathsf{SQ}$:
+\[
+  \Rule{TypeSubBad}{e_1:\NN \\ e_2:\NN}{e_1-e_2:\NN}
+\]
+Now $\SQRT{(\num0-\num1)}:\NN$ type checks. But
+\[
+  \SQRT{(\num0-\num1)} \mapsto \SQRT{\num{-1}}
+\]
+(StepSearchSqrt $\leftarrow$ StepSub), which is stuck. Preservation failed
+at the StepSub step: $\num0-\num1:\NN$, but $\num{-1}:\NN$ has no
+derivation (TypeNumNN needs $-1\ge0$). In the proof, the StepSub case would
+need $n_1-n_2\ge0$, and nothing gives you that.
+
+\paragraph{(c) A too-strict typing rule breaks nothing.} Delete TypeAddAny
+from $\mathsf{SQ}$. The system is still safe, but now $\num{-1}+\num2$ has
+no type, even though it runs fine. Type systems are \emph{conservative}:
+they may reject good programs, but a safe one never accepts a bad one.
+Task 9 is about exactly this trade-off.
+
+% ====================================================================
+\newpage
+\part*{Part D: Practice problems}
+
+Solutions are at the end of this document. Try each one first. They use the
+pair language from Part A and the systems from Part B.
+
+\paragraph{P1 (dynamic rules and proofs).} Add $\SND{e}$ to the pair
+language.
+\begin{enumerate}
+  \item Write its reduction rule, search rule, and typing rule.
+  \item Prove the Preservation case for your reduction rule.
+  \item Prove the Progress case for your typing rule.
+\end{enumerate}
+
+\paragraph{P2 (two arguments).} Add $\MAX{e_1}{e_2}$ on integers. It
+evaluates $e_1$, then $e_2$, then returns the larger number. Write all its
+step rules and its typing rule, and prove the Progress case for the typing
+rule. How many IHs do you need?
+
+\paragraph{P3 (evaluation and typing).}
+\begin{enumerate}
+  \item Evaluate $\SND{(\FST{\PAIR{\PAIR{\num1}{\num2+\num3}}{\str{x}}})}$
+        step by step, naming the rule stack at each step.
+  \item Give its typing derivation.
+\end{enumerate}
+
+\paragraph{P4 (designing refinement rules).} Language $\mathsf{EV}$: types
+$\EV$ (``definitely even'') and $\ANY$, expressions
+$e \bnfdef \num n \bnfalt e+e \bnfalt e*e \bnfalt \HALF{e}$, with
+\[
+  \Rule{StepHalf}{\text{$n$ even}}{\stepto{\HALF{\num n}}{\num{n/2}}}
+  \qquad
+  \Rule{TypeNum}{\strut}{\num n:\ANY}
+  \qquad
+  \Rule{TypeNumEv}{\text{$n$ even}}{\num n:\EV}
+\]
+and $e:\EV$ implies $e:\ANY$. Design the rules:
+\begin{enumerate}
+  \item $e_1:\EV,\ e_2:\EV \Rightarrow e_1+e_2:\ ?$ \quad and \quad
+        $e_1:\ANY,\ e_2:\ANY \Rightarrow e_1+e_2:\ ?$
+  \item Multiplication: which operands must be $\EV$ for the product to be
+        $\EV$? Write the rules. How is this different from $\mathsf{EZ}$'s
+        TypeMulNZ?
+  \item $e:\ ? \Rightarrow \HALF{e}:\ ?$
+\end{enumerate}
+
+\paragraph{P5 (inversion with several rules).} Using your P4 rules, prove
+the StepMul case of Preservation for $\mathsf{EV}$. How many sub-cases does
+inversion give you?
+
+\paragraph{P6 (blind spot).} Find an expression in $\mathsf{EV}$ that never
+halves an odd number but doesn't type check. Suggest a fix, and say why it
+is still safe. (Don't use a sum. Look at $\mathsf{half}$ itself.)
+
+\paragraph{P7 (which theorem breaks?).} For each change, say whether
+Progress fails, Preservation fails, or neither (the system is just more
+restrictive). Give an example expression.
+\begin{enumerate}
+  \item Remove StepSearchFst from the pair language.
+  \item Add the rule
+        $\Rule{TypeFstBad}{e:\tau_1\times\tau_2}{\FST{e}:\tau_2}$.
+  \item Remove TypeMulAny from $\mathsf{EV}$.
+\end{enumerate}
+
+% ====================================================================
 \section*{LaTeX quick reference (this homework's \texttt{macros.tex})}
 \begin{itemize}
   \item \verb|\Rule{Name}{prem1 \\ prem2}{conclusion}|: a labeled rule. Use
@@ -434,5 +640,142 @@ practical. One or two sentences of justification is fine.
         the fix is still safe.
   \item Task 10: don't forget it!
 \end{itemize}
+
+% ====================================================================
+\newpage
+\part*{Solutions to Part D}
+
+\paragraph{P1.}
+\[
+  \Rule{StepSnd}{\val{e_1} \\ \val{e_2}}{\stepto{\SND{\PAIR{e_1}{e_2}}}{e_2}}
+  \quad
+  \Rule{StepSearchSnd}{\stepto{e}{e'}}{\stepto{\SND{e}}{\SND{e'}}}
+  \quad
+  \Rule{TypeSnd}{e:\tau_1\times\tau_2}{\SND{e}:\tau_2}
+\]
+\emph{Preservation, Case StepSnd.} Then $e=\SND{\PAIR{e_1}{e_2}}$ and
+$e'=e_2$. By inversion on TypeSnd, $\PAIR{e_1}{e_2}:\tau_1\times\tau$ for some
+$\tau_1$. By inversion on TypePair, $e_1:\tau_1$ and $e_2:\tau$. So
+$e':\tau$.
+
+\emph{Progress, Case TypeSnd.} Then $e=\SND{e_0}$ with
+$e_0:\tau_1\times\tau$. By the IH, $\val{e_0}$ or $\stepto{e_0}{e_0'}$. If
+$\val{e_0}$: by Canonical Forms, $e_0=\PAIR{e_1}{e_2}$ with both values, so
+by StepSnd, $\stepto{e}{e_2}$. If $\stepto{e_0}{e_0'}$: by StepSearchSnd,
+$\stepto{e}{\SND{e_0'}}$.
+
+\paragraph{P2.}
+\[
+  \Rule{StepMax}{\strut}{\stepto{\MAX{\num{n_1}}{\num{n_2}}}{\num{\max(n_1,n_2)}}}
+  \qquad
+  \Rule{TypeMax}{e_1:\INT \\ e_2:\INT}{\MAX{e_1}{e_2}:\INT}
+\]
+\[
+  \Rule{StepSearchMaxL}{\stepto{e_1}{e_1'}}{\stepto{\MAX{e_1}{e_2}}{\MAX{e_1'}{e_2}}}
+\]
+\[
+  \Rule{StepSearchMaxR}{\stepto{e_2}{e_2'}}{\stepto{\MAX{\num{n_1}}{e_2}}{\MAX{\num{n_1}}{e_2'}}}
+\]
+\emph{Progress, Case TypeMax.} Two IHs, nested, exactly like TypeAdd. By the
+IH on $e_1$: if $\stepto{e_1}{e_1'}$, use StepSearchMaxL. If $\val{e_1}$,
+then $e_1=\num{n_1}$ by Canonical Forms, and by the IH on $e_2$: if
+$\stepto{e_2}{e_2'}$, use StepSearchMaxR; if $\val{e_2}$, then
+$e_2=\num{n_2}$, and StepMax applies.
+
+\paragraph{P3.}
+\[
+\begin{array}{r l l}
+  & \SND{(\FST{\PAIR{\PAIR{\num1}{\num2+\num3}}{\str{x}}})} & \\[2pt]
+  \mapsto & \SND{(\FST{\PAIR{\PAIR{\num1}{\num5}}{\str{x}}})}
+    & \text{\small SSnd $\leftarrow$ SFst $\leftarrow$ SPairL $\leftarrow$ SPairR $\leftarrow$ StepAdd}\\[2pt]
+  \mapsto & \SND{\PAIR{\num1}{\num5}}
+    & \text{\small SSnd $\leftarrow$ StepFst}\\[2pt]
+  \mapsto & \num5 & \text{\small StepSnd}
+\end{array}
+\]
+(S = StepSearch. In step 1, SPairR needs $\val{\num1}$. In step 2, StepFst
+needs $\val{\PAIR{\num1}{\num5}}$ by ValPair, and $\val{\str{x}}$.)
+
+Typing derivation. It's too wide for one tree, so name the inner pair
+$p=\PAIR{\num1}{\num2+\num3}$ and build it in two pieces (a handy trick for
+your own write-up too). First, the tree $\mathcal{D}$ for $p$:
+{\small
+\[
+\mathcal{D} \;=\;
+\Rule{TPair}
+  {\Rule{TN}{\strut}{\num1:\INT} \\
+   \Rule{TA}{\Rule{TN}{\strut}{\num2:\INT} \\ \Rule{TN}{\strut}{\num3:\INT}}{\num2+\num3:\INT}}
+  {p:\INT\times\INT}
+\]
+}
+Then the whole expression, with $\mathcal{D}$ plugged in as a premise:
+{\small
+\[
+\Rule{TSnd}
+ {\Rule{TFst}
+   {\Rule{TPair}
+     {\mathcal{D} \\ \Rule{TS}{\strut}{\str{x}:\STRING}}
+     {\PAIR{p}{\str{x}}:(\INT\times\INT)\times\STRING}}
+   {\FST{\PAIR{p}{\str{x}}}:\INT\times\INT}}
+ {\SND{(\FST{\PAIR{p}{\str{x}}})}:\INT}
+\]
+}
+
+\paragraph{P4.}
+\begin{enumerate}
+  \item $\EV+\EV:\EV$ (even plus even is always even).
+        $\ANY+\ANY:\ANY$ (counterexample: $1+2=3$).
+  \item \emph{One} even factor is enough, so there are three rules:
+        \[
+          \Rule{TypeMulEvL}{e_1:\EV \\ e_2:\ANY}{e_1*e_2:\EV}
+          \quad
+          \Rule{TypeMulEvR}{e_1:\ANY \\ e_2:\EV}{e_1*e_2:\EV}
+        \]
+        \[
+          \Rule{TypeMulAny}{e_1:\ANY \\ e_2:\ANY}{e_1*e_2:\ANY}
+        \]
+        In $\mathsf{EZ}$ you need \emph{both} factors nonzero, because one
+        zero factor makes the product zero. The arithmetic fact decides the
+        shape of the rules.
+  \item The premise must be $e:\EV$, to match StepHalf's side condition. The
+        result is only $\ANY$ (counterexample: $\HALF{\num2}\mapsto\num1$).
+\end{enumerate}
+
+\paragraph{P5.} $e=\num{n_1}*\num{n_2}$, $e'=\num{n_1n_2}$. Three typing rules
+conclude a product, so there are three sub-cases.
+\begin{itemize}
+  \item \emph{Via TypeMulEvL.} $\tau=\EV$ and $\num{n_1}:\EV$. Inverting on
+        TypeNumEv (the only rule giving a numeral type $\EV$), $n_1$ is even.
+        So $n_1n_2$ is even, and by TypeNumEv, $e':\EV$.
+  \item \emph{Via TypeMulEvR.} Symmetric, with $n_2$ even.
+  \item \emph{Via TypeMulAny.} $\tau=\ANY$. By TypeNum, $e':\ANY$.
+\end{itemize}
+
+\paragraph{P6.} $\HALF{(\HALF{\num4})}$ runs fine:
+$\mapsto\HALF{\num2}\mapsto\num1$. But $\HALF{\num4}$ only gets type $\ANY$,
+so the outer $\mathsf{half}$ rejects it. \emph{Fix:} add a type $\MF$
+(``multiple of 4''), with $e:\MF$ implying $e:\EV$, and
+\[
+  \Rule{TypeNumM4}{\text{$4$ divides $n$}}{\num n:\MF}
+  \qquad
+  \Rule{TypeHalfM4}{e:\MF}{\HALF{e}:\EV}
+\]
+\emph{Still safe:} if $4$ divides $n$, then $n/2$ is even, so the new rule
+never promises too much.
+
+\paragraph{P7.}
+\begin{enumerate}
+  \item \textbf{Progress fails.} $\FST{\PAIR{\num1+\num2}{\num3}}:\INT$, but
+        it's not a value, StepFst needs a value pair, and there's no rule
+        left to step inside $\mathsf{fst}$. It's stuck.
+  \item \textbf{Preservation fails.} $\FST{\PAIR{\num1}{\str{a}}}:\STRING$ by
+        TypeFstBad, but it steps to $\num1$, which isn't a $\STRING$. Worse,
+        $\FST{\PAIR{\num1}{\str{a}}}\,\hat{}\,\str{b}$ type checks and gets
+        stuck at $\num1\,\hat{}\,\str{b}$.
+  \item \textbf{Neither.} The system is still safe but more restrictive:
+        $\num1*\num3$ no longer has a type. (Careful: deleting a rule
+        \emph{can} break Preservation in general, if some step produces an
+        expression only that rule could type. Here nothing does.)
+\end{enumerate}
 
 \end{document}
