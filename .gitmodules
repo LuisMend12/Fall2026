@@ -1,0 +1,18 @@
+[submodule "TIP103"]
+	path = TIP103
+	url = https://github.com/LuisMend12/TIP103
+[submodule "codepath-open-source-capstone/ai301-coursework"]
+	path = codepath-open-source-capstone/ai301-coursework
+	url = https://github.com/LuisMend12/ai301-coursework.git
+[submodule "codepath-open-source-capstone/ai301-unit1-starter"]
+	path = codepath-open-source-capstone/ai301-unit1-starter
+	url = https://github.com/codepath/ai301-unit1-starter
+[submodule "codepath-open-source-capstone/ai301-unit2-starter"]
+	path = codepath-open-source-capstone/ai301-unit2-starter
+	url = https://github.com/codepath/ai301-unit2-starter.git
+[submodule "math3510-numerical-analysisI/JavaScript-Dataset"]
+	path = math3510-numerical-analysisI/JavaScript-Dataset
+	url = https://github.com/ziqin-liu/JavaScript-Dataset.git
+[submodule "math3510-numerical-analysisI/fnc-extras"]
+	path = math3510-numerical-analysisI/fnc-extras
+	url = https://github.com/tobydriscoll/fnc-extras.git
