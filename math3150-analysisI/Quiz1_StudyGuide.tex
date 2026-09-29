@@ -210,13 +210,73 @@ contradicts lowest terms.
 \end{ex}
 
 \begin{ex}[rational $\pm$ irrational]
-If $r\in\Q$ and $y\notin\Q$, then $r+y\notin\Q$, and if also $r\ne0$,
-then $ry\notin\Q$. (If $r+y=z\in\Q$, then $y=z-r\in\Q$, contradiction.
-If $ry=w\in\Q$, then $y=w/r\in\Q$, contradiction.)
+Let $r\in\Q$ and $y\notin\Q$. Then
+\begin{enumerate}[nosep, label=(\alph*)]
+  \item $r+y\notin\Q$ and $r-y\notin\Q$;
+  \item if also $r\ne0$, then $ry\notin\Q$ and $y/r\notin\Q$.
+\end{enumerate}
+
+\noindent\key{Tool: closure of $\Q$.} If $a=\frac pq$ and $b=\frac st$ with
+$p,q,s,t\in\Z$ and $q,t\ne0$, then
+\[
+a+b=\frac{pt+sq}{qt},\qquad a-b=\frac{pt-sq}{qt},\qquad
+ab=\frac{ps}{qt},\qquad \frac ab=\frac{pt}{qs}\ \ (\text{if } b\ne0,\text{ i.e.\ } s\ne0).
+\]
+Each is an integer over a nonzero integer, so it is rational. This is the
+only fact about $\Q$ the proof uses.
+
+\begin{proof}[Proof of (a), the sum]
+\emph{Step 1 (assume the opposite).} Suppose, for contradiction, that
+$r+y\in\Q$. Give it a name: $z:=r+y$, so $z\in\Q$.
+
+\emph{Step 2 (solve for the irrational piece).} Subtract $r$ from both
+sides: $y=z-r$.
+
+\emph{Step 3 (apply closure).} Both $z$ and $r$ are rational, so $z-r$ is
+rational by closure under subtraction. Hence $y\in\Q$.
+
+\emph{Step 4 (contradiction).} This contradicts the hypothesis
+$y\notin\Q$. So the assumption in Step~1 was false, and $r+y\notin\Q$.
+\end{proof}
+
+\begin{proof}[Proof of (a), the difference]
+Suppose $r-y=z\in\Q$. Solving for $y$ gives $y=r-z$, which is rational
+by closure. This contradicts $y\notin\Q$, so $r-y\notin\Q$.
+\end{proof}
+
+\begin{proof}[Proof of (b), the product]
+\emph{Step 1.} Suppose, for contradiction, that $ry\in\Q$. Call it
+$w:=ry$, so $w\in\Q$.
+
+\emph{Step 2.} Solve for $y$. Because $r\ne0$ we may divide by $r$:
+$y=\dfrac wr$.
+
+\emph{Step 3.} $w$ and $r$ are rational and $r\ne0$, so $w/r$ is rational
+by closure under division. Hence $y\in\Q$.
+
+\emph{Step 4.} This contradicts $y\notin\Q$, so $ry\notin\Q$.
+
+For the quotient, note $1/r\in\Q$ and $1/r\ne0$, and $y/r=(1/r)\cdot y$.
+The product case with $1/r$ in place of $r$ gives $y/r\notin\Q$.
+\end{proof}
+
+\noindent\key{Where is $r\ne0$ used?} Only in Step 2 of (b), to divide
+by $r$. It is really needed: if $r=0$, then $ry=0\in\Q$, so the claim
+is false.
+
+\noindent\key{Concrete check.} $3+\sqrt2\notin\Q$: if $3+\sqrt2=z\in\Q$,
+then $\sqrt2=z-3\in\Q$, which contradicts the previous example. Likewise
+$5\sqrt2\notin\Q$, because otherwise $\sqrt2=\frac{5\sqrt2}{5}\in\Q$.
 
 \noindent\key{Counterexample question:} is irrational $+$ irrational
-always irrational? No: $\sqrt2+(-\sqrt2)=0$. Is irrational $\times$
-irrational always irrational? No: $\sqrt2\cdot\sqrt2=2$.
+always irrational? No: $\sqrt2+(-\sqrt2)=0$. Another one is
+$\sqrt2+(1-\sqrt2)=1$, where $1-\sqrt2\notin\Q$ by part (a). Is
+irrational $\times$ irrational always irrational? No: $\sqrt2\cdot\sqrt2=2$
+and $\sqrt2\cdot\sqrt8=\sqrt{16}=4$.
+
+\noindent\emph{Why the proof above fails here:} Step 3 needs $r$ to be
+rational to conclude $z-r\in\Q$. If $r$ is irrational, closure says
+nothing, and the argument breaks down.
 \end{ex}
 
 % =====================================================================
