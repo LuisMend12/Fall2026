@@ -145,7 +145,7 @@ Split into cases wherever the definition involves ``or'' (a union) or
 
 \begin{ex}[De Morgan-type identity]
 $A\setminus(B\cup C)=(A\setminus B)\cap(A\setminus C)$.
-\begin{proof}
+\begin{proof}[Quiz-length version]
 ($\subseteq$) Let $x\in A\setminus(B\cup C)$. Then $x\in A$ and
 $x\notin B\cup C$, so $x\notin B$ \emph{and} $x\notin C$. Hence
 $x\in A\setminus B$ and $x\in A\setminus C$.
@@ -154,6 +154,46 @@ $x\in A\setminus B$ and $x\in A\setminus C$.
 $x\notin B$, and $x\notin C$, so $x\notin B\cup C$. Hence
 $x\in A\setminus(B\cup C)$.
 \end{proof}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (unpack the definitions you will use).}
+\[
+x\in A\setminus D\iff (x\in A\text{ and }x\notin D),\qquad
+x\in D\cup E\iff(x\in D\text{ or }x\in E).
+\]
+Negating the second one gives
+$x\notin D\cup E\iff(x\notin D\text{ and }x\notin E)$. This negation of an
+``or'' is the whole content of the identity.
+
+\emph{Step 2 ($\subseteq$: start with an arbitrary element).} Let
+$x\in A\setminus(B\cup C)$ be arbitrary. By the definition of set
+difference, $x\in A$ and $x\notin B\cup C$.
+
+\emph{Step 3 (negate the union).} By Step 1, $x\notin B\cup C$ means
+$x\notin B$ and $x\notin C$.
+
+\emph{Step 4 (repackage).} From $x\in A$ and $x\notin B$ we get
+$x\in A\setminus B$. From $x\in A$ and $x\notin C$ we get
+$x\in A\setminus C$. So $x$ is in both, i.e.\
+$x\in(A\setminus B)\cap(A\setminus C)$. Since $x$ was arbitrary,
+$A\setminus(B\cup C)\subseteq(A\setminus B)\cap(A\setminus C)$.
+
+\emph{Step 5 ($\supseteq$: arbitrary element of the right side).} Let
+$x\in(A\setminus B)\cap(A\setminus C)$ be arbitrary. By the definition of
+intersection, $x\in A\setminus B$ and $x\in A\setminus C$, so $x\in A$,
+$x\notin B$, and $x\notin C$.
+
+\emph{Step 6 (rebuild the union).} Since $x\notin B$ and $x\notin C$,
+Step 1 gives $x\notin B\cup C$. Together with $x\in A$, this says
+$x\in A\setminus(B\cup C)$. So
+$(A\setminus B)\cap(A\setminus C)\subseteq A\setminus(B\cup C)$.
+
+\emph{Step 7 (conclude).} Both inclusions hold, so the sets are equal.
+\end{proof}
+\noindent\key{Why no cases here?} There is no ``or'' among the
+\emph{assumptions}. The only ``or'' is inside $x\notin B\cup C$, and
+negating it turns it into an ``and''. In Practice Problem 4 the ``or'' is
+an assumption, so you must split into cases.
 \end{ex}
 
 \subsection{Induction (HW1 P2, P3)}
@@ -182,9 +222,50 @@ both sides by $1+x$ without flipping the inequality:
 \]
 because $nx^2\ge 0$.
 \end{proof}
+
+\begin{proof}[Full proof, step by step]
+Fix $x\ge-1$. Let $P(n)$ be the statement $(1+x)^n\ge1+nx$. We prove $P(n)$
+for all $n\in\N$ by induction.
+
+\emph{Step 1 (base case $n=1$).} LHS $=(1+x)^1=1+x$ and RHS $=1+1\cdot x=1+x$.
+Since $1+x\ge1+x$, $P(1)$ holds. \checkmark
+
+\emph{Step 2 (write the target $P(n+1)$).}
+\[
+(1+x)^{n+1}\ge1+(n+1)x.
+\]
+
+\emph{Step 3 (peel off one factor).} Assume $P(n)$. Then
+$(1+x)^{n+1}=(1+x)^n\cdot(1+x)$.
+
+\emph{Step 4 (use the hypothesis $x\ge-1$).} Since $x\ge-1$, we have
+$1+x\ge0$. Multiplying both sides of $P(n)$ by the \emph{nonnegative}
+number $1+x$ keeps the direction of the inequality:
+\[
+(1+x)^n(1+x)\ge(1+nx)(1+x).
+\]
+
+\emph{Step 5 (expand).}
+\[
+(1+nx)(1+x)=1+x+nx+nx^2=1+(n+1)x+nx^2.
+\]
+
+\emph{Step 6 (drop the extra term).} Since $n\ge1$ and $x^2\ge0$, we have
+$nx^2\ge0$, so $1+(n+1)x+nx^2\ge1+(n+1)x$.
+
+\emph{Step 7 (chain and conclude).} Combining Steps 3--6,
+\[
+(1+x)^{n+1}=(1+x)^n(1+x)\ge(1+nx)(1+x)=1+(n+1)x+nx^2\ge1+(n+1)x,
+\]
+which is $P(n+1)$. By induction, $P(n)$ holds for all $n\in\N$.
+\end{proof}
 \noindent\key{Note:} the hypothesis $x\ge -1$ is used exactly once, to
 multiply an inequality by $1+x\ge0$. Look for where each hypothesis is
 used.
+
+\noindent\key{What goes wrong for $x<-1$?} Take $x=-4$, $n=3$:
+$(1-4)^3=-27$ but $1+3(-4)=-11$, and $-27<-11$. So the claim really can
+fail when $x<-1$, and Step 4 is exactly where the proof breaks.
 \end{ex}
 
 \begin{ex}[Product identity, HW1 P2 style]
@@ -511,18 +592,114 @@ By the Archimedean property, choose $n$ with $\frac1n<\eps$. Then
 $1-\frac1n>1-\eps$, and $1-\frac1n\in S$. By Theorem~\ref{thm:epssup},
 $\sup S=1$.
 \end{proof}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 ($\inf S=\min S=0$).} For every $n\in\N$, $n\ge1$, so
+$\frac1n\le1$ and $1-\frac1n\ge0$. Thus $0$ is a lower bound of $S$. Also
+$0=1-\frac11\in S$. A lower bound that belongs to the set is the minimum,
+so $\inf S=\min S=0$.
+
+\emph{Step 2 ($1$ is an upper bound).} For every $n\in\N$, $\frac1n>0$, so
+$1-\frac1n<1$. Hence $s\le1$ for all $s\in S$. This is part (i) of
+Theorem~\ref{thm:epssup}.
+
+\emph{Step 3 (start part (ii)).} Let $\eps>0$ be arbitrary. We must find
+an element of $S$ that is larger than $1-\eps$.
+
+\emph{Step 4 (scratch: what $n$ works?).}
+$1-\frac1n>1-\eps\iff\frac1n<\eps$. So we need $n$ with $\frac1n<\eps$.
+
+\emph{Step 5 (Archimedean property).} Such an $n\in\N$ exists by the
+Archimedean property. Fix one.
+
+\emph{Step 6 (verify).} Then $s:=1-\frac1n\in S$ and
+$s=1-\frac1n>1-\eps$.
+
+\emph{Step 7 (conclude).} Steps 2--6 verify (i) and (ii) of
+Theorem~\ref{thm:epssup}, so $\sup S=1$.
+
+\emph{Step 8 (not attained).} If $1\in S$ then $1=1-\frac1n$ for some $n$,
+so $\frac1n=0$, which is impossible. So $1\notin S$ and $S$ has no maximum.
+\end{proof}
 \end{ex}
 
 \begin{ex}[HW2 P2]
 $S_1=\{\frac1n\}$: $\sup=\max=1$, and $\inf=0$ is not attained.
 $S_2=\{\frac{(-1)^n}{n}\}$: split into odd and even $n$. Then
 $\sup S_2=\max=\frac12$ (at $n=2$) and $\inf S_2=\min=-1$ (at $n=1$).
+
+\begin{proof}[Full proof for $S_1$, step by step]
+\emph{Step 1 ($\sup S_1=\max S_1=1$).} For every $n\in\N$, $n\ge1$, so
+$\frac1n\le1$. So $1$ is an upper bound, and $1=\frac11\in S_1$. An upper
+bound that belongs to the set is the maximum, so $\sup S_1=\max S_1=1$.
+
+\emph{Step 2 ($0$ is a lower bound).} For every $n$, $\frac1n>0$. So
+$0\le s$ for all $s\in S_1$.
+
+\emph{Step 3 (the $\eps$ part of the inf).} Let $\eps>0$. By the
+Archimedean property there is $n\in\N$ with $\frac1n<\eps=0+\eps$, and
+$\frac1n\in S_1$. By Theorem~\ref{thm:epssup} (inf version), $\inf S_1=0$.
+
+\emph{Step 4 (not attained).} $\frac1n=0$ has no solution, so
+$0\notin S_1$ and $S_1$ has no minimum.
+\end{proof}
+
+\begin{proof}[Full proof for $S_2$, step by step]
+\emph{Step 1 (list and split).} The elements are
+$-1,\frac12,-\frac13,\frac14,-\frac15,\dots$.
+\begin{itemize}[nosep]
+  \item If $n$ is even, then $\frac{(-1)^n}{n}=\frac1n$, and $n\ge2$, so
+        $0<\frac1n\le\frac12$.
+  \item If $n$ is odd, then $\frac{(-1)^n}{n}=-\frac1n$, and $n\ge1$, so
+        $-1\le-\frac1n<0$.
+\end{itemize}
+
+\emph{Step 2 (upper bound $\frac12$).} Even terms are $\le\frac12$ by
+Step 1. Odd terms are $<0<\frac12$. So every element is $\le\frac12$.
+
+\emph{Step 3 (attained).} $n=2$ gives $\frac{(-1)^2}{2}=\frac12\in S_2$.
+So $\sup S_2=\max S_2=\frac12$.
+
+\emph{Step 4 (lower bound $-1$).} Odd terms are $\ge-1$ by Step 1. Even
+terms are $>0>-1$. So every element is $\ge-1$.
+
+\emph{Step 5 (attained).} $n=1$ gives $-1\in S_2$. So
+$\inf S_2=\min S_2=-1$.
+\end{proof}
+\noindent\key{Lesson:} when the candidate is attained, you never need
+$\eps$. ``Bound $+$ element of the set'' finishes it.
 \end{ex}
 
 \begin{ex}
 $S=(a,b)$: $\sup S=b$ and $\inf S=a$, and neither is attained. For (ii):
 given $\eps>0$ (with $\eps<b-a$ if needed), the point
 $x=b-\eps/2\in S$ satisfies $x>b-\eps$.
+
+\begin{proof}[Full proof that $\sup(a,b)=b$ (for $a<b$), step by step]
+\emph{Step 1 (upper bound).} If $x\in(a,b)$ then $a<x<b$, so $x\le b$.
+Thus $b$ is an upper bound.
+
+\emph{Step 2 (start part (ii)).} Let $\eps>0$ be arbitrary. We need
+$x\in(a,b)$ with $x>b-\eps$.
+
+\emph{Step 3 (handle large $\eps$).} The point $b-\frac\eps2$ might fall
+at or below $a$ when $\eps$ is large. To avoid this, let
+$\delta=\min\{\eps,\ b-a\}>0$, and set $x=b-\frac\delta2$.
+
+\emph{Step 4 ($x\in(a,b)$).} Since $\delta>0$, $x<b$. Since
+$\delta\le b-a$, we have $\frac\delta2<b-a$, so $x=b-\frac\delta2>b-(b-a)=a$.
+So $a<x<b$.
+
+\emph{Step 5 ($x>b-\eps$).} Since $\delta\le\eps$, we have
+$\frac\delta2<\eps$, so $x=b-\frac\delta2>b-\eps$.
+
+\emph{Step 6 (conclude).} By Theorem~\ref{thm:epssup}, $\sup(a,b)=b$.
+
+\emph{Step 7 (not attained).} $b\notin(a,b)$ since $b<b$ is false. So
+$(a,b)$ has no maximum.
+\end{proof}
+The proof that $\inf(a,b)=a$ is the mirror image: use
+$x=a+\frac\delta2$ with the same $\delta$.
 \end{ex}
 
 \subsection{Standard sup/inf proofs: templates}
@@ -531,6 +708,32 @@ $x=b-\eps/2\in S$ satisfies $x>b-\eps$.
 If $s\le t$ for all $s\in S$, $t\in T$: fix $t$. Then $t$ is an upper bound
 of $S$, so $\sup S\le t$. Since $t$ was arbitrary, $\sup S$ is a lower
 bound of $T$, so $\sup S\le\inf T$.
+
+\begin{proof}[Full proof, step by step]
+Let $S,T\subseteq\R$ be nonempty with $s\le t$ for all $s\in S$, $t\in T$.
+
+\emph{Step 1 ($\sup S$ exists).} $T\ne\emptyset$, so pick some $t_0\in T$.
+By hypothesis $s\le t_0$ for all $s\in S$, so $S$ is bounded above. Since
+$S\ne\emptyset$, the Completeness Axiom gives that $\sup S$ exists.
+Similarly, any $s_0\in S$ is a lower bound of $T$, so $\inf T$ exists.
+
+\emph{Step 2 (fix an arbitrary $t$).} Let $t\in T$ be arbitrary.
+
+\emph{Step 3 ($t$ is an upper bound of $S$).} By hypothesis $s\le t$ for
+every $s\in S$. That is the definition of ``$t$ is an upper bound of $S$''.
+
+\emph{Step 4 (``least'' upper bound).} $\sup S$ is less than or equal to
+\emph{every} upper bound of $S$. So $\sup S\le t$.
+
+\emph{Step 5 (turn it around).} Since $t\in T$ was arbitrary, Step 4 says
+$\sup S\le t$ for all $t\in T$. So $\sup S$ is a lower bound of $T$.
+
+\emph{Step 6 (``greatest'' lower bound).} $\inf T$ is greater than or
+equal to every lower bound of $T$. So $\sup S\le\inf T$.
+\end{proof}
+\noindent\key{Pattern:} ``fix one, bound, then let it vary'' is used
+twice. You apply the ``least'' property to $S$ and then the ``greatest''
+property to $T$.
 \end{ex}
 
 \begin{ex}[$\sup(A+B)=\sup A+\sup B$, HW2 P4]
@@ -538,6 +741,39 @@ bound of $T$, so $\sup S\le\inf T$.
 ($\ge$) Given $\eps>0$, pick $a>\sup A-\frac\eps2$ and
 $b>\sup B-\frac\eps2$. Then $a+b>\sup A+\sup B-\eps$.
 \key{Splitting $\eps$ into halves} is the standard trick.
+
+\begin{proof}[Full proof, step by step]
+Let $A,B$ be nonempty and bounded above, and
+$A+B=\{a+b:a\in A,\ b\in B\}$. Write $\alpha=\sup A$ and $\beta=\sup B$
+(these exist by completeness). We show $\sup(A+B)=\alpha+\beta$ using
+Theorem~\ref{thm:epssup}.
+
+\emph{Step 1 ($A+B$ is nonempty).} Pick $a_0\in A$ and $b_0\in B$. Then
+$a_0+b_0\in A+B$.
+
+\emph{Step 2 (upper bound).} Let $x\in A+B$ be arbitrary. Then $x=a+b$ for
+some $a\in A$, $b\in B$. Since $a\le\alpha$ and $b\le\beta$, adding gives
+$x=a+b\le\alpha+\beta$. So $\alpha+\beta$ is an upper bound of $A+B$. In
+particular $\sup(A+B)$ exists.
+
+\emph{Step 3 (start part (ii)).} Let $\eps>0$. We need some $x\in A+B$
+with $x>\alpha+\beta-\eps$.
+
+\emph{Step 4 (split $\eps$).} $\frac\eps2>0$, so $\alpha-\frac\eps2$ is not
+an upper bound of $A$. Hence there is $a\in A$ with $a>\alpha-\frac\eps2$.
+In the same way there is $b\in B$ with $b>\beta-\frac\eps2$.
+
+\emph{Step 5 (add).} Then $a+b\in A+B$ and
+\[
+a+b>\Bigl(\alpha-\frac\eps2\Bigr)+\Bigl(\beta-\frac\eps2\Bigr)=\alpha+\beta-\eps.
+\]
+
+\emph{Step 6 (conclude).} Steps 2 and 5 are (i) and (ii) of
+Theorem~\ref{thm:epssup}, so $\sup(A+B)=\alpha+\beta$.
+\end{proof}
+\noindent\key{Why $\frac\eps2$ and not $\eps$?} With $a>\alpha-\eps$ and
+$b>\beta-\eps$ you only get $a+b>\alpha+\beta-2\eps$, which is too weak.
+Each of the two pieces gets half of the budget.
 \end{ex}
 
 \begin{ex}[$\sup(cA)=c\sup A$ for $c>0$]
@@ -545,12 +781,73 @@ Let $\alpha=\sup A$. For $a\in A$, $ca\le c\alpha$, so $c\alpha$ is an
 upper bound of $cA$. Given $\eps>0$, pick $a\in A$ with
 $a>\alpha-\eps/c$. Then $ca>c\alpha-\eps$. \emph{(What changes if $c<0$?
 Then $\sup(cA)=c\inf A$.)}
+
+\begin{proof}[Full proof, step by step]
+Let $A$ be nonempty and bounded above, $c>0$, and
+$cA=\{ca:a\in A\}$. Let $\alpha=\sup A$.
+
+\emph{Step 1 (upper bound).} Let $x\in cA$, so $x=ca$ for some $a\in A$.
+Since $a\le\alpha$ and $c>0$, multiplying by $c$ keeps the inequality:
+$ca\le c\alpha$. So $c\alpha$ is an upper bound of $cA$.
+
+\emph{Step 2 (start part (ii)).} Let $\eps>0$. We want $x\in cA$ with
+$x>c\alpha-\eps$.
+
+\emph{Step 3 (scratch: rescale $\eps$).} If $x=ca$, then
+$ca>c\alpha-\eps\iff a>\alpha-\frac\eps c$ (divide by $c>0$). So we need
+an element of $A$ within $\frac\eps c$ of $\alpha$.
+
+\emph{Step 4 (use $\sup A$).} $\frac\eps c>0$, so
+$\alpha-\frac\eps c$ is not an upper bound of $A$. So there is $a\in A$
+with $a>\alpha-\frac\eps c$.
+
+\emph{Step 5 (multiply back).} Multiply by $c>0$:
+$ca>c\alpha-\eps$, and $ca\in cA$.
+
+\emph{Step 6 (conclude).} By Theorem~\ref{thm:epssup},
+$\sup(cA)=c\alpha=c\sup A$.
+\end{proof}
+\noindent\key{Where is $c>0$ used?} In Steps 1, 3 and 5, every time we
+multiply or divide an inequality by $c$. If $c<0$ each of those
+inequalities flips, upper bounds turn into lower bounds, and you get
+$\sup(cA)=c\inf A$ instead.
 \end{ex}
 
 \begin{ex}[$\inf S=-\sup(-S)$]
 $m\le s$ for all $s\in S$ $\iff$ $-s\le -m$ for all $s\in S$. So lower
 bounds of $S$ are exactly the negatives of upper bounds of $-S$, and the
 greatest lower bound corresponds to the least upper bound.
+
+\begin{proof}[Full proof, step by step]
+Let $S$ be nonempty and bounded below, and let $-S=\{-s:s\in S\}$.
+
+\emph{Step 1 (key equivalence).} For any real $m$:
+\begin{align*}
+m\text{ is a lower bound of }S
+&\iff m\le s\ \text{ for all } s\in S\\
+&\iff -s\le -m\ \text{ for all } s\in S\\
+&\iff -m\text{ is an upper bound of }-S.
+\end{align*}
+(Multiplying by $-1$ flips inequalities.)
+
+\emph{Step 2 ($\sup(-S)$ exists).} $S$ has some lower bound $m$, so by
+Step 1 $-m$ is an upper bound of $-S$. Also $-S\ne\emptyset$. By
+completeness, $\beta:=\sup(-S)$ exists.
+
+\emph{Step 3 ($-\beta$ is a lower bound of $S$).} $\beta$ is an upper
+bound of $-S$, i.e.\ $-(-\beta)$ is an upper bound of $-S$. By Step 1
+(with $m=-\beta$), $-\beta$ is a lower bound of $S$.
+
+\emph{Step 4 ($-\beta$ is the greatest).} Let $m$ be any lower bound of
+$S$. By Step 1, $-m$ is an upper bound of $-S$. Since $\beta$ is the
+\emph{least} upper bound, $\beta\le-m$, so $m\le-\beta$.
+
+\emph{Step 5 (conclude).} $-\beta$ is a lower bound of $S$ and every lower
+bound is $\le-\beta$. By definition, $\inf S=-\beta=-\sup(-S)$.
+\end{proof}
+\noindent\key{Use:} this lets you get every inf fact from the matching sup
+fact, and also shows that completeness for sups gives completeness for
+infs.
 \end{ex}
 
 \subsection{Monotonicity of sup}
@@ -593,6 +890,44 @@ Solve $|x-3|+|x-1|=3$. Break the line at the points $1$ and $3$:
   \item $1\le x<3$: $(3-x)+(x-1)=2\ne3$. No solution.
   \item $x\ge3$: $(x-3)+(x-1)=3\Rightarrow x=\frac72$. \checkmark
 \end{itemize}
+
+\begin{proof}[Full solution, step by step]
+\emph{Step 1 (find the break points).} $|x-3|$ changes formula at $x=3$,
+and $|x-1|$ changes formula at $x=1$. These points split $\R$ into
+$(-\infty,1)$, $[1,3)$ and $[3,\infty)$.
+
+\emph{Step 2 (sign table).} Use $|u|=u$ if $u\ge0$ and $|u|=-u$ if $u<0$:
+\begin{center}
+\begin{tabular}{c|c|c}
+ & $x-3$ & $x-1$\\ \hline
+$x<1$ & $<0$, so $|x-3|=3-x$ & $<0$, so $|x-1|=1-x$\\
+$1\le x<3$ & $<0$, so $|x-3|=3-x$ & $\ge0$, so $|x-1|=x-1$\\
+$x\ge3$ & $\ge0$, so $|x-3|=x-3$ & $>0$, so $|x-1|=x-1$
+\end{tabular}
+\end{center}
+
+\emph{Step 3 (case $x<1$).} The equation becomes $(3-x)+(1-x)=3$, i.e.\
+$4-2x=3$, so $x=\frac12$. Check that it lies in the case: $\frac12<1$.
+\checkmark
+
+\emph{Step 4 (case $1\le x<3$).} The equation becomes $(3-x)+(x-1)=3$,
+i.e.\ $2=3$. This is false, so there is no solution in this interval.
+
+\emph{Step 5 (case $x\ge3$).} The equation becomes $(x-3)+(x-1)=3$, i.e.\
+$2x-4=3$, so $x=\frac72$. Check: $\frac72\ge3$. \checkmark
+
+\emph{Step 6 (verify in the original equation).}
+$|\tfrac12-3|+|\tfrac12-1|=\tfrac52+\tfrac12=3$ and
+$|\tfrac72-3|+|\tfrac72-1|=\tfrac12+\tfrac52=3$.
+
+\emph{Step 7 (answer).} The solution set is $\{\frac12,\frac72\}$.
+\end{proof}
+\noindent\key{Always check that a case's answer lies in that case's
+interval.} If it doesn't, throw it away.
+
+\noindent\key{Geometric check:} $|x-3|+|x-1|$ is the total distance from
+$x$ to $1$ and to $3$. Between $1$ and $3$ this total is always $2$. You
+must move $\frac12$ outside the interval on either side to get $3$.
 \end{ex}
 
 % =====================================================================
@@ -627,11 +962,66 @@ We want $\frac1{9n}<\eps$, i.e.\ $n>\frac1{9\eps}$.
 Let $\eps>0$ and choose $N\in\N$ with $N>\frac{1}{9\eps}$. For $n\ge N$,
 $\left|\frac{n+2}{3n+5}-\frac13\right|=\frac1{9n+15}<\frac1{9n}\le\frac1{9N}<\eps$.
 \end{proof}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (simplify $|x_n-L|$, scratch).} Use the common denominator
+$3(3n+5)$:
+\[
+\frac{n+2}{3n+5}-\frac13=\frac{3(n+2)-(3n+5)}{3(3n+5)}=\frac{3n+6-3n-5}{9n+15}
+=\frac1{9n+15}.
+\]
+This is positive, so $\left|\frac{n+2}{3n+5}-\frac13\right|=\frac1{9n+15}$.
+
+\emph{Step 2 (overestimate, scratch).} Since $9n+15>9n>0$,
+$\frac1{9n+15}<\frac1{9n}$. (A smaller denominator gives a larger fraction.)
+
+\emph{Step 3 (solve for $n$, scratch).}
+$\frac1{9n}<\eps\iff9n\eps>1\iff n>\frac1{9\eps}$.
+
+\emph{Step 4 (the proof starts here: let $\eps>0$).} Let $\eps>0$ be
+arbitrary.
+
+\emph{Step 5 (choose $N$).} By the Archimedean property, choose
+$N\in\N$ with $N>\frac1{9\eps}$. Note that $N$ depends only on $\eps$.
+
+\emph{Step 6 (verify for every $n\ge N$).} Let $n\ge N$. Then
+$9n\ge9N>\frac1\eps$, so $\frac1{9n}\le\frac1{9N}<\eps$. Therefore
+\[
+\left|\frac{n+2}{3n+5}-\frac13\right|=\frac1{9n+15}<\frac1{9n}\le\frac1{9N}<\eps.
+\]
+
+\emph{Step 7 (conclude).} Since $\eps>0$ was arbitrary,
+$\frac{n+2}{3n+5}\to\frac13$ by definition.
+\end{proof}
 \end{ex}
 
 \begin{ex}[Lecture]
 $\frac{2n-1}{n+1}\to2$: $\left|\frac{2n-1}{n+1}-2\right|=\frac{3}{n+1}<\frac3n$.
 Choose $N>\frac3\eps$.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (simplify, scratch).}
+\[
+\frac{2n-1}{n+1}-2=\frac{2n-1-2(n+1)}{n+1}=\frac{-3}{n+1},
+\qquad\text{so}\qquad
+\left|\frac{2n-1}{n+1}-2\right|=\frac3{n+1}.
+\]
+
+\emph{Step 2 (overestimate, scratch).} $n+1>n$, so $\frac3{n+1}<\frac3n$.
+Then $\frac3n<\eps\iff n>\frac3\eps$.
+
+\emph{Step 3 (let $\eps>0$ and choose $N$).} Let $\eps>0$. By the
+Archimedean property choose $N\in\N$ with $N>\frac3\eps$.
+
+\emph{Step 4 (verify).} For $n\ge N$:
+\[
+\left|\frac{2n-1}{n+1}-2\right|=\frac3{n+1}<\frac3n\le\frac3N<\eps.
+\]
+
+\emph{Step 5 (conclude).} So $\frac{2n-1}{n+1}\to2$.
+\end{proof}
+\noindent\key{Watch the sign:} the difference is $\frac{-3}{n+1}$, which
+is negative. The absolute value removes the minus sign, so don't skip it.
 \end{ex}
 
 \begin{ex}[A numerator that needs bounding]
@@ -639,18 +1029,100 @@ $\frac{3n^2+n}{n^2+1}\to3$:
 $\left|\frac{3n^2+n}{n^2+1}-3\right|=\frac{|n-3|}{n^2+1}\le\frac{n+3}{n^2}\le\frac{4n}{n^2}=\frac4n$
 for $n\ge1$ (since $3\le 3n$). Choose $N>\frac4\eps$.
 \key{Bound the numerator above and the denominator below.}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (simplify, scratch).}
+\[
+\frac{3n^2+n}{n^2+1}-3=\frac{3n^2+n-3n^2-3}{n^2+1}=\frac{n-3}{n^2+1},
+\qquad\text{so}\qquad
+\left|\frac{3n^2+n}{n^2+1}-3\right|=\frac{|n-3|}{n^2+1}.
+\]
+
+\emph{Step 2 (numerator: bound above).} By the triangle inequality,
+$|n-3|\le|n|+|-3|=n+3$. Since $n\ge1$, $3\le3n$, so $n+3\le4n$.
+
+\emph{Step 3 (denominator: bound below).} $n^2+1>n^2$, so
+$\frac1{n^2+1}<\frac1{n^2}$.
+
+\emph{Step 4 (combine).}
+\[
+\frac{|n-3|}{n^2+1}<\frac{4n}{n^2}=\frac4n.
+\]
+(For $n=3$ the left side is $0$, which is still $<\frac4n$.)
+
+\emph{Step 5 (let $\eps>0$ and choose $N$).} Let $\eps>0$ and choose
+$N\in\N$ with $N>\frac4\eps$.
+
+\emph{Step 6 (verify).} For $n\ge N$:
+$\left|\frac{3n^2+n}{n^2+1}-3\right|<\frac4n\le\frac4N<\eps$.
+
+\emph{Step 7 (conclude).} So $\frac{3n^2+n}{n^2+1}\to3$.
+\end{proof}
+\noindent\key{Why not solve $\frac{|n-3|}{n^2+1}<\eps$ exactly?} You could,
+but it needs the quadratic formula and cases. Overestimating by $\frac4n$
+is valid and much faster. You only need \emph{some} $N$ that works, not
+the smallest one.
 \end{ex}
 
 \begin{ex}[Conjugate trick, lecture]
 $\frac{\sqrt{n^2+n}}{n}\to1$:
 $\frac{\sqrt{n^2+n}-n}{n}=\frac{n}{n(\sqrt{n^2+n}+n)}=\frac1{\sqrt{n^2+n}+n}<\frac1n$.
 Choose $N>\frac1\eps$. \key{Use $\sqrt a-\sqrt b=\frac{a-b}{\sqrt a+\sqrt b}$.}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (common denominator, scratch).}
+$\frac{\sqrt{n^2+n}}{n}-1=\frac{\sqrt{n^2+n}-n}{n}$.
+
+\emph{Step 2 (multiply by the conjugate).}
+\[
+\sqrt{n^2+n}-n=\frac{(\sqrt{n^2+n}-n)(\sqrt{n^2+n}+n)}{\sqrt{n^2+n}+n}
+=\frac{(n^2+n)-n^2}{\sqrt{n^2+n}+n}=\frac{n}{\sqrt{n^2+n}+n}.
+\]
+
+\emph{Step 3 (substitute and cancel).}
+\[
+\frac{\sqrt{n^2+n}-n}{n}=\frac{n}{n(\sqrt{n^2+n}+n)}=\frac1{\sqrt{n^2+n}+n}.
+\]
+This is positive, so it equals its absolute value.
+
+\emph{Step 4 (overestimate).} $\sqrt{n^2+n}>0$, so
+$\sqrt{n^2+n}+n>n$ and $\frac1{\sqrt{n^2+n}+n}<\frac1n$.
+
+\emph{Step 5 (let $\eps>0$ and choose $N$).} Let $\eps>0$ and choose
+$N\in\N$ with $N>\frac1\eps$.
+
+\emph{Step 6 (verify).} For $n\ge N$:
+\[
+\left|\frac{\sqrt{n^2+n}}{n}-1\right|=\frac1{\sqrt{n^2+n}+n}<\frac1n\le\frac1N<\eps.
+\]
+
+\emph{Step 7 (conclude).} So $\frac{\sqrt{n^2+n}}{n}\to1$.
+\end{proof}
+\noindent\key{Why the conjugate?} $\sqrt{n^2+n}-n$ is a difference of two
+large, nearly equal numbers, so you can't see its size. After multiplying
+by the conjugate, the $n^2$ terms cancel.
 \end{ex}
 
 \begin{ex}[Bounded over growing]
 $\frac{\sin n}{n}\to0$: $\left|\frac{\sin n}{n}\right|\le\frac1n<\eps$ when
 $n>\frac1\eps$. (You cannot use the quotient rule, because $\lim\sin n$ does
 not exist.)
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (the only fact about $\sin$).} $|\sin t|\le1$ for all real
+$t$. In particular $|\sin n|\le1$.
+
+\emph{Step 2 (bound the term).} For $n\in\N$:
+$\left|\frac{\sin n}{n}-0\right|=\frac{|\sin n|}{n}\le\frac1n$.
+
+\emph{Step 3 (let $\eps>0$ and choose $N$).} Let $\eps>0$ and choose
+$N\in\N$ with $N>\frac1\eps$.
+
+\emph{Step 4 (verify).} For $n\ge N$:
+$\left|\frac{\sin n}n-0\right|\le\frac1n\le\frac1N<\eps$.
+
+\emph{Step 5 (conclude).} So $\frac{\sin n}{n}\to0$.
+\end{proof}
 \end{ex}
 
 \begin{ex}[Proving divergence]
@@ -659,6 +1131,36 @@ $x_n=(-1)^n$ has no limit. Suppose $x_n\to L$. Take $\eps=\frac12$ and get
 $N$. Choose an even $n\ge N$ and an odd $m\ge N$. Then
 $|1-L|<\frac12$ and $|-1-L|<\frac12$, so
 $2=|1-(-1)|\le|1-L|+|L-(-1)|<1$, which is a contradiction.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (assume the opposite).} Suppose, for contradiction, that
+$(-1)^n\to L$ for some $L\in\R$.
+
+\emph{Step 2 (choose one specific $\eps$).} The definition holds for
+\emph{every} $\eps>0$, so it holds for $\eps=\frac12$. So there is
+$N\in\N$ with $|(-1)^n-L|<\frac12$ for all $n\ge N$.
+
+\emph{Step 3 (pick one even and one odd index past $N$).} Take $n=2N$
+(even) and $m=2N+1$ (odd). Both are $\ge N$.
+
+\emph{Step 4 (read off the two inequalities).} $(-1)^{2N}=1$ and
+$(-1)^{2N+1}=-1$, so
+\[
+|1-L|<\tfrac12\qquad\text{and}\qquad|-1-L|<\tfrac12.
+\]
+
+\emph{Step 5 (add and subtract $L$, then triangle inequality).}
+\[
+2=|1-(-1)|=|(1-L)+(L-(-1))|\le|1-L|+|L+1|<\tfrac12+\tfrac12=1.
+\]
+(Here $|L+1|=|-1-L|$.)
+
+\emph{Step 6 (contradiction).} Step 5 says $2<1$, which is false. So no
+such $L$ exists, and $(-1)^n$ diverges.
+\end{proof}
+\noindent\key{Why $\eps=\frac12$?} The terms $1$ and $-1$ are $2$ apart.
+Any $\eps\le1$ works, because two points within $\eps$ of $L$ are less
+than $2\eps\le2$ apart. $\eps=\frac12$ leaves some room.
 \end{ex}
 
 \subsection{Limits equal to $\pm\infty$}
@@ -676,12 +1178,63 @@ obviously, such as $g(n)=cn$. Then choose $N$ so that $g(n)>M$.
 $\frac{n^4-4n}{n^2}\to\infty$: for $n\ge2$, $n^4-4n\ge n^3$ (since
 $n^3(n-1)\ge n^3\ge 4n$ when $n\ge 2$), so $\frac{n^4-4n}{n^2}\ge n$. Given
 $M$, choose $N>\max(M,2)$.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (simplify).} $\frac{n^4-4n}{n^2}=n^2-\frac4n$. We'll work with
+the original form, since the lower bound is easy to see there.
+
+\emph{Step 2 (lower bound on the numerator, for $n\ge2$).} We claim
+$n^4-4n\ge n^3$, i.e.\ $n^4-n^3\ge4n$. Factor:
+$n^4-n^3=n^3(n-1)$. For $n\ge2$ we have $n-1\ge1$, so
+$n^3(n-1)\ge n^3=n\cdot n^2\ge n\cdot4=4n$ (since $n^2\ge4$).
+
+\emph{Step 3 (simpler lower bound for $x_n$).} Dividing Step 2 by
+$n^2>0$: for $n\ge2$, $\frac{n^4-4n}{n^2}\ge\frac{n^3}{n^2}=n$.
+
+\emph{Step 4 (let $M$ be arbitrary and choose $N$).} Let $M\in\R$. By the
+Archimedean property choose $N\in\N$ with $N>\max(M,2)$.
+
+\emph{Step 5 (verify).} Let $n\ge N$. Then $n\ge2$, so Step 3 applies, and
+$\frac{n^4-4n}{n^2}\ge n\ge N>M$.
+
+\emph{Step 6 (conclude).} For every $M$ there is such an $N$, so
+$\frac{n^4-4n}{n^2}\to\infty$.
+\end{proof}
+\noindent\key{Why the $\max$?} $N>M$ gives the size condition, and $N\ge2$
+makes Step 3 valid. Taking the $\max$ gets both at once.
 \end{ex}
 
 \begin{ex}[HW3 P3: $\infty+$bounded$=\infty$]
 Say $|y_n|\le B$. Then $x_n+y_n\ge x_n-B$. Given $K$, apply
 $x_n\to\infty$ with the \key{threshold $K+B$} to get $N$. For $n\ge N$,
 $x_n+y_n>K+B-B=K$.
+
+\begin{proof}[Full proof, step by step]
+Assume $x_n\to\infty$ and $(y_n)$ is bounded. We show $x_n+y_n\to\infty$.
+
+\emph{Step 1 (name the bound).} Since $(y_n)$ is bounded, there is $B>0$
+with $|y_n|\le B$ for all $n$. In particular $-B\le y_n$ for all $n$.
+
+\emph{Step 2 (lower bound for the sum).} Adding $x_n$ gives
+$x_n+y_n\ge x_n-B$ for all $n$.
+
+\emph{Step 3 (let $K$ be arbitrary).} Let $K\in\R$. We must find $N$ with
+$x_n+y_n>K$ for all $n\ge N$.
+
+\emph{Step 4 (scratch: what do we need from $x_n$?).} By Step 2, it is
+enough that $x_n-B>K$, i.e.\ $x_n>K+B$.
+
+\emph{Step 5 (apply $x_n\to\infty$ with threshold $K+B$).} The definition
+of $x_n\to\infty$ holds for every real threshold, in particular for
+$M=K+B$. So there is $N$ with $x_n>K+B$ for all $n\ge N$.
+
+\emph{Step 6 (verify).} For $n\ge N$:
+$x_n+y_n\ge x_n-B>(K+B)-B=K$.
+
+\emph{Step 7 (conclude).} $K$ was arbitrary, so $x_n+y_n\to\infty$.
+\end{proof}
+\noindent\key{Only the lower bound $y_n\ge-B$ is used.} So the result holds
+whenever $(y_n)$ is merely bounded \emph{below}.
 \end{ex}
 
 % =====================================================================
@@ -768,22 +1321,137 @@ Keep only the one term you need.
 \begin{ex}[$\frac{n}{2^n}\to0$]
 $2^n=(1+1)^n\ge\binom n2=\frac{n(n-1)}{2}$, so for $n\ge2$,
 $0<\frac n{2^n}\le\frac{2n}{n(n-1)}=\frac{2}{n-1}\to0$. Squeeze.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (binomial theorem).} For $n\ge2$,
+\[
+2^n=(1+1)^n=\sum_{k=0}^n\binom nk\ge\binom n2=\frac{n(n-1)}2,
+\]
+because every term of the sum is $\ge0$ and we kept only the $k=2$ term.
+
+\emph{Step 2 (bound the sequence).} For $n\ge2$, $n-1>0$, so taking
+reciprocals (both sides positive) gives $\frac1{2^n}\le\frac{2}{n(n-1)}$.
+Multiplying by $n>0$:
+\[
+0<\frac n{2^n}\le\frac{2n}{n(n-1)}=\frac2{n-1}.
+\]
+
+\emph{Step 3 ($\frac2{n-1}\to0$).} Let $\eps>0$ and choose $N\in\N$ with
+$N>1+\frac2\eps$ (also $N\ge2$). For $n\ge N$, $n-1\ge N-1>\frac2\eps$, so
+$0<\frac2{n-1}<\eps$.
+
+\emph{Step 4 (squeeze).} $0\le\frac n{2^n}\le\frac2{n-1}$ for $n\ge2$,
+and both outer sequences tend to $0$. By the Squeeze Theorem,
+$\frac n{2^n}\to0$. (Or directly: for $n\ge N$,
+$\left|\frac n{2^n}\right|\le\frac2{n-1}<\eps$.)
+\end{proof}
+\noindent\key{Why $\binom n2$ and not $1+n$?} Bernoulli gives
+$2^n\ge1+n$, so $\frac n{2^n}\le\frac n{n+1}$, which does \emph{not} go to
+$0$. You need a term of degree $2$ in $n$ to beat the $n$ on top.
 \end{ex}
 
 \begin{ex}[$a^{1/n}\to1$ for $a>1$]
 Let $d_n=a^{1/n}-1>0$. Then $a=(1+d_n)^n\ge1+nd_n$, so
 $0<d_n\le\frac{a-1}{n}\to0$. For $0<a<1$, apply this to $\frac1a$ and take
 reciprocals.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (define the error term).} Let $a>1$ and
+$d_n:=a^{1/n}-1$. Since $a>1$, $a^{1/n}>1$ (if $a^{1/n}\le1$ then
+$a=(a^{1/n})^n\le1$). So $d_n>0$.
+
+\emph{Step 2 (rewrite $a$).} $a^{1/n}=1+d_n$, so $a=(1+d_n)^n$.
+
+\emph{Step 3 (Bernoulli).} Since $d_n>0\ge-1$, Bernoulli's inequality
+gives $(1+d_n)^n\ge1+nd_n$. So $a\ge1+nd_n$.
+
+\emph{Step 4 (solve for $d_n$).} $nd_n\le a-1$, so
+$0<d_n\le\frac{a-1}n$.
+
+\emph{Step 5 ($\eps$--$N$).} Let $\eps>0$ and choose $N>\frac{a-1}\eps$.
+For $n\ge N$:
+$|a^{1/n}-1|=d_n\le\frac{a-1}n\le\frac{a-1}N<\eps$. So $a^{1/n}\to1$.
+
+\emph{Step 6 (the case $a=1$).} $1^{1/n}=1$ for all $n$, so the limit is $1$.
+
+\emph{Step 7 (the case $0<a<1$).} Then $b:=\frac1a>1$, so $b^{1/n}\to1$ by
+Step 5. Since $a^{1/n}=\frac1{b^{1/n}}$ and the limit $1\ne0$, the quotient
+rule gives $a^{1/n}\to\frac11=1$.
+\end{proof}
 \end{ex}
 
 \begin{ex}[$n^{1/n}\to1$]
 Let $d_n=n^{1/n}-1\ge0$. Then $n=(1+d_n)^n\ge\frac{n(n-1)}2d_n^2$, so
 $d_n^2\le\frac{2}{n-1}$ and $0\le d_n\le\sqrt{\frac2{n-1}}\to0$.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (error term).} Let $d_n:=n^{1/n}-1$. Since $n\ge1$,
+$n^{1/n}\ge1$ (as in Step 1 above), so $d_n\ge0$.
+
+\emph{Step 2 (binomial theorem, keep the $k=2$ term).} For $n\ge2$,
+\[
+n=(1+d_n)^n=\sum_{k=0}^n\binom nk d_n^k\ge\binom n2d_n^2=\frac{n(n-1)}2d_n^2,
+\]
+since every term is $\ge0$ (here $d_n\ge0$ is used).
+
+\emph{Step 3 (solve for $d_n$).} Divide by $\frac{n(n-1)}2>0$:
+$d_n^2\le\frac{2n}{n(n-1)}=\frac2{n-1}$. Since $d_n\ge0$, taking square
+roots gives $0\le d_n\le\sqrt{\frac2{n-1}}$.
+
+\emph{Step 4 (scratch).}
+$\sqrt{\frac2{n-1}}<\eps\iff\frac2{n-1}<\eps^2\iff n>1+\frac2{\eps^2}$.
+
+\emph{Step 5 ($\eps$--$N$).} Let $\eps>0$ and choose $N\in\N$ with
+$N>1+\frac2{\eps^2}$ (so also $N\ge2$). For $n\ge N$:
+\[
+|n^{1/n}-1|=d_n\le\sqrt{\frac2{n-1}}\le\sqrt{\frac2{N-1}}<\eps.
+\]
+
+\emph{Step 6 (conclude).} So $n^{1/n}\to1$.
+\end{proof}
+\noindent\key{Why not Bernoulli here?} It gives $n\ge1+nd_n$, i.e.\
+$d_n\le\frac{n-1}n$, which does not go to $0$. The $\binom n2$ term is
+needed because the base $n$ grows.
 \end{ex}
 
 \begin{ex}[$\frac{a^n}{n!}\to0$ for any $a$]
 Fix an integer $K\ge2|a|$. For $n>K$,
 $\frac{|a|^n}{n!}=\frac{|a|^K}{K!}\cdot\prod_{j=K+1}^n\frac{|a|}{j}\le\frac{|a|^K}{K!}\left(\tfrac12\right)^{n-K}\to0$.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (reduce to $|a|$).} $\left|\frac{a^n}{n!}-0\right|=\frac{|a|^n}{n!}$,
+so it is enough to show $\frac{|a|^n}{n!}\to0$. If $a=0$ every term is $0$,
+so assume $a\ne0$.
+
+\emph{Step 2 (fix a cutoff $K$).} By the Archimedean property choose an
+integer $K\ge1$ with $K\ge2|a|$. Then for every $j\ge K+1$,
+$j>2|a|$, so $\frac{|a|}{j}<\frac12$.
+
+\emph{Step 3 (split the product).} For $n>K$, write
+$|a|^n=|a|^K\cdot|a|^{n-K}$ and $n!=K!\cdot(K+1)(K+2)\cdots n$. So
+\[
+\frac{|a|^n}{n!}=\frac{|a|^K}{K!}\cdot\frac{|a|}{K+1}\cdot\frac{|a|}{K+2}\cdots\frac{|a|}{n}.
+\]
+There are exactly $n-K$ factors after the first.
+
+\emph{Step 4 (bound each tail factor).} By Step 2 each of those $n-K$
+factors is $<\frac12$. Let $C:=\frac{|a|^K}{K!}$, a constant (it does not
+depend on $n$). Then
+\[
+0<\frac{|a|^n}{n!}\le C\left(\tfrac12\right)^{n-K}=C\,2^K\left(\tfrac12\right)^n.
+\]
+
+\emph{Step 5 (the bound tends to $0$).} $\left(\frac12\right)^n\to0$ (basic
+limit, $|\frac12|<1$), so $C2^K\left(\frac12\right)^n\to0$ by the constant
+multiple rule.
+
+\emph{Step 6 (squeeze).} $0<\frac{|a|^n}{n!}\le C2^K(\frac12)^n$ for $n>K$.
+By the Squeeze Theorem (only large $n$ matter), $\frac{|a|^n}{n!}\to0$,
+and therefore $\frac{a^n}{n!}\to0$.
+\end{proof}
+\noindent\key{Idea:} the first $K$ factors can be large, but there are
+only finitely many of them, so they form a fixed constant $C$. After that,
+each new factor at least halves the term.
 \end{ex}
 
 \subsection{Basic limits to memorize}
@@ -855,6 +1523,42 @@ holds because $0<x_n<2$.
 $x_{n+1}^2=2+x_n$. Take limits using the product and sum laws:
 $L^2=2+L$, so $(L-2)(L+1)=0$. Since $L\ge1$, $L=2$.
 \end{proof}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (compute and guess).} $x_1=1$, $x_2=\sqrt3\approx1.73$,
+$x_3=\sqrt{2+\sqrt3}\approx1.93$. The terms increase, apparently toward
+$2$. (If $L=\sqrt{2+L}$ then $L=2$.)
+
+\emph{Step 2 (bound by induction: $0<x_n<2$ for all $n$).}
+Base: $0<x_1=1<2$. Inductive step: assume $0<x_n<2$. Then
+$2<2+x_n<4$, and since $\sqrt{\ }$ is increasing,
+$0<\sqrt2<\sqrt{2+x_n}<\sqrt4=2$, i.e.\ $0<x_{n+1}<2$.
+
+\emph{Step 3 (increasing).} Fix $n$. Both $x_n$ and $x_{n+1}$ are
+positive, so $x_{n+1}>x_n\iff x_{n+1}^2>x_n^2$. Since
+$x_{n+1}^2=2+x_n$:
+\[
+x_{n+1}>x_n\iff2+x_n-x_n^2>0\iff(2-x_n)(1+x_n)>0.
+\]
+By Step 2, $2-x_n>0$ and $1+x_n>0$, so the product is positive and
+$x_{n+1}>x_n$.
+
+\emph{Step 4 (MCT).} $(x_n)$ is increasing and bounded above by $2$, so by
+the Monotone Convergence Theorem it converges, say $x_n\to L$.
+
+\emph{Step 5 (bounds on $L$).} $1=x_1\le x_n<2$ for all $n$, so by the
+order property of limits $1\le L\le2$.
+
+\emph{Step 6 (pass to the limit).} The recursion gives
+$x_{n+1}^2=2+x_n$ for all $n$. The shifted sequence $(x_{n+1})$ also
+converges to $L$, so by the product rule $x_{n+1}^2\to L^2$. By the sum
+rule $2+x_n\to2+L$. By uniqueness of limits, $L^2=2+L$.
+
+\emph{Step 7 (solve and discard).} $L^2-L-2=(L-2)(L+1)=0$, so $L=2$ or
+$L=-1$. Step 5 rules out $-1$. Hence $x_n\to2$.
+\end{proof}
+\noindent\key{Order matters:} Step 6 is only valid \emph{after} Step 4.
+Without knowing the limit exists, ``$L=\sqrt{2+L}$'' is meaningless.
 \end{ex}
 
 \begin{ex}[A decreasing recursive sequence]
@@ -862,19 +1566,141 @@ $x_1=3$, $x_{n+1}=\sqrt{x_n+2}$. \emph{Bound:} $x_n>2$ by induction
 ($x_{n+1}>\sqrt4=2$). \emph{Decreasing:}
 $x_{n+1}<x_n\iff x_n+2<x_n^2\iff(x_n-2)(x_n+1)>0$, which holds. By MCT,
 $x_n\to L\ge2$ with $L^2=L+2$, so $L=2$.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (compute and guess).} $x_1=3$, $x_2=\sqrt5\approx2.24$,
+$x_3=\sqrt{2+\sqrt5}\approx2.06$. The terms decrease, apparently toward $2$.
+
+\emph{Step 2 (bound by induction: $x_n>2$ for all $n$).} Base: $x_1=3>2$.
+Inductive step: assume $x_n>2$. Then $x_n+2>4$, so
+$x_{n+1}=\sqrt{x_n+2}>\sqrt4=2$.
+
+\emph{Step 3 (decreasing).} Both $x_n,x_{n+1}>0$, so
+$x_{n+1}<x_n\iff x_{n+1}^2<x_n^2\iff x_n+2<x_n^2$, i.e.\
+\[
+x_n^2-x_n-2=(x_n-2)(x_n+1)>0.
+\]
+By Step 2, $x_n-2>0$ and $x_n+1>0$, so this holds. Thus $x_{n+1}<x_n$.
+
+\emph{Step 4 (MCT).} $(x_n)$ is decreasing and bounded below by $2$. By
+the Monotone Convergence Theorem (decreasing version: it converges to
+$\inf\{x_n\}$), $x_n\to L$ for some $L$.
+
+\emph{Step 5 (bounds on $L$).} $2<x_n\le3$ for all $n$, so by the order
+property $2\le L\le3$. (Strict $>$ becomes $\ge$ in the limit.)
+
+\emph{Step 6 (pass to the limit).} $x_{n+1}^2=x_n+2$. The left side tends
+to $L^2$ (shift and product rule). The right side tends to $L+2$. So
+$L^2=L+2$.
+
+\emph{Step 7 (solve and discard).} $(L-2)(L+1)=0$, so $L\in\{2,-1\}$, and
+Step 5 forces $L=2$.
+\end{proof}
+\noindent\key{Compare with the previous example.} Same recursion, but a
+different starting point. Starting above the fixed point $2$ gives a
+decreasing sequence, and starting below it gives an increasing one. The
+bound you prove by induction always points toward the fixed point.
 \end{ex}
 
-\begin{ex}[$e$ exists, idea only]
+\begin{ex}[$e$ exists]
 $a_n=\left(1+\frac1n\right)^n$ is increasing and bounded above by $3$
 (binomial expansion compared with $\sum\frac1{k!}\le1+\sum\frac1{2^{k-1}}$).
 So it converges, and its limit is called $e$. \key{MCT proves existence
 without knowing the value.}
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (expand with the binomial theorem).}
+\[
+a_n=\sum_{k=0}^n\binom nk\frac1{n^k}.
+\]
+For $k\ge1$,
+\[
+\binom nk\frac1{n^k}=\frac{n(n-1)\cdots(n-k+1)}{k!\,n^k}
+=\frac1{k!}\cdot\frac nn\cdot\frac{n-1}n\cdots\frac{n-k+1}n
+=\frac1{k!}\prod_{j=0}^{k-1}\Bigl(1-\frac jn\Bigr).
+\]
+So
+\[
+a_n=\sum_{k=0}^n\frac1{k!}\prod_{j=0}^{k-1}\Bigl(1-\frac jn\Bigr),
+\]
+where the empty product (for $k=0$) is $1$.
+
+\emph{Step 2 (compare $a_n$ with $a_{n+1}$ term by term).} Fix $k\le n$.
+For each $j\ge0$, $\frac j{n+1}\le\frac jn$, so
+$1-\frac j{n+1}\ge1-\frac jn\ge0$ (as $j\le k-1<n$). All factors are
+nonnegative, so the products compare the same way:
+\[
+\frac1{k!}\prod_{j=0}^{k-1}\Bigl(1-\frac j{n+1}\Bigr)
+\ge\frac1{k!}\prod_{j=0}^{k-1}\Bigl(1-\frac jn\Bigr).
+\]
+So term $k$ of $a_{n+1}$ is $\ge$ term $k$ of $a_n$, for each
+$k=0,\dots,n$.
+
+\emph{Step 3 (increasing).} $a_{n+1}$ also has one extra term ($k=n+1$),
+which is $\ge0$. Adding up Step 2 over $k=0,\dots,n$ gives
+$a_{n+1}\ge a_n$.
+
+\emph{Step 4 (drop the products).} Each factor
+$1-\frac jn\in[0,1]$, so each product is $\le1$ and
+$a_n\le\sum_{k=0}^n\frac1{k!}$.
+
+\emph{Step 5 ($k!\ge2^{k-1}$ for $k\ge1$).} By induction: $1!=1=2^0$, and
+if $k!\ge2^{k-1}$ then $(k+1)!=(k+1)k!\ge2\cdot2^{k-1}=2^k$ (since
+$k+1\ge2$).
+
+\emph{Step 6 (geometric bound).}
+\[
+a_n\le1+\sum_{k=1}^n\frac1{k!}\le1+\sum_{k=1}^n\frac1{2^{k-1}}
+=1+\frac{1-(1/2)^n}{1-1/2}=1+2\Bigl(1-\frac1{2^n}\Bigr)<3.
+\]
+
+\emph{Step 7 (MCT).} $(a_n)$ is increasing (Step 3) and bounded above by
+$3$ (Step 6). By the Monotone Convergence Theorem it converges. Its limit
+is \emph{defined} to be $e$, and $2=a_1\le e\le3$.
+\end{proof}
 \end{ex}
 
 \begin{ex}[HW3 P4, averages]
 If $(x_n)$ is increasing, then so is $y_n=\frac{x_1+\dots+x_n}{n}$. The
 numerator of $y_{n+1}-y_n$ is $nx_{n+1}-S_n\ge0$, because each
 $x_k\le x_{n+1}$. (Positivity is not actually needed.)
+
+\begin{proof}[Full proof, step by step]
+Let $S_n=x_1+\dots+x_n$, so $y_n=\frac{S_n}n$ and $S_{n+1}=S_n+x_{n+1}$.
+
+\emph{Step 1 (goal).} Show $y_{n+1}-y_n\ge0$ for every $n$.
+
+\emph{Step 2 (common denominator).}
+\[
+y_{n+1}-y_n=\frac{S_{n+1}}{n+1}-\frac{S_n}{n}
+=\frac{nS_{n+1}-(n+1)S_n}{n(n+1)}.
+\]
+
+\emph{Step 3 (simplify the numerator).} Substitute
+$S_{n+1}=S_n+x_{n+1}$:
+\[
+nS_{n+1}-(n+1)S_n=nS_n+nx_{n+1}-nS_n-S_n=nx_{n+1}-S_n.
+\]
+
+\emph{Step 4 (rewrite as a sum of differences).} $nx_{n+1}$ is $x_{n+1}$
+added $n$ times, and $S_n$ has $n$ terms, so
+\[
+nx_{n+1}-S_n=\sum_{k=1}^n\bigl(x_{n+1}-x_k\bigr).
+\]
+
+\emph{Step 5 (each difference is $\ge0$).} Since $(x_n)$ is increasing,
+$x_k\le x_{k+1}\le\dots\le x_{n+1}$ for each $k\le n$. (Formally, by
+chaining $x_k\le x_{k+1}$ repeatedly, or by induction on $n+1-k$.) So
+every term $x_{n+1}-x_k\ge0$, and the sum is $\ge0$.
+
+\emph{Step 6 (sign of the fraction).} The numerator is $\ge0$ (Step 5) and
+the denominator $n(n+1)>0$. So $y_{n+1}-y_n\ge0$.
+
+\emph{Step 7 (conclude).} $y_n\le y_{n+1}$ for all $n$, so $(y_n)$ is
+increasing.
+\end{proof}
+\noindent\key{Intuition:} adding a new value $x_{n+1}$ that is at least as
+large as every earlier value cannot lower the average.
 \end{ex}
 
 % =====================================================================
