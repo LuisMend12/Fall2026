@@ -102,6 +102,144 @@ $|x_{n_k}-L|<\eps$.
 different limits, it diverges. For example, $(-1)^n$ diverges because
 $x_{2k}\to 1$ and $x_{2k-1}\to -1$.
 
+% =====================================================================
+\subsection{Monotone subsequences}
+
+\begin{thm}[Monotone Subsequence Theorem]\label{thm:monosub}
+Every sequence $(x_n)$ of real numbers has a monotone subsequence.
+\end{thm}
+
+\subsubsection*{Proof design}
+
+\paragraph{Step 1: the key definition.}
+
+\begin{defn}[Peak]
+An index $m\in\N$ is a \textbf{peak} of $(x_n)$ if
+\[
+  x_m \ge x_n \quad \text{for all } n > m.
+\]
+\end{defn}
+
+\noindent Intuition: standing at position $m$ and looking right, nothing
+ahead is higher than $x_m$.
+
+\paragraph{Step 2: split into cases.}
+Either $(x_n)$ has infinitely many peaks or only finitely many. These cases
+are exhaustive, so handling both proves the theorem.
+
+\medskip
+\noindent\key{Case 1: infinitely many peaks $\Rightarrow$ decreasing
+subsequence.}
+List the peaks in increasing order, $m_1<m_2<m_3<\cdots$, and take
+$n_k=m_k$.
+\begin{itemize}[nosep]
+  \item \emph{Is it a subsequence?} Check the definition: the indices must
+        be strictly increasing.
+  \item \emph{Why is it monotone?} Compare $x_{m_k}$ and $x_{m_{k+1}}$.
+        What does ``$m_k$ is a peak'' say about every term after position
+        $m_k$? Is $m_{k+1}$ after $m_k$?
+\end{itemize}
+
+\medskip
+\noindent\key{Case 2: finitely many peaks $\Rightarrow$ increasing
+subsequence.}
+Choose $N$ larger than every peak, so no index $\ge N$ is a peak.
+\begin{itemize}[nosep]
+  \item Start with $n_1=N$.
+  \item $n_1$ is \emph{not} a peak. Negate the definition carefully: this
+        gives some $n_2>n_1$ satisfying what inequality?
+  \item $n_2>n_1\ge N$, so $n_2$ is not a peak either. Repeat.
+\end{itemize}
+This is a \textbf{recursive construction}: from $n_k$ (not a peak) we
+obtain $n_{k+1}>n_k$ with $x_{n_{k+1}}>x_{n_k}$. Check:
+\begin{enumerate}[nosep]
+  \item the indices are strictly increasing (where does that come from?);
+  \item the terms are increasing (strictly or non-strictly?).
+\end{enumerate}
+
+\paragraph{Step 3: things to check in the write-up.}
+\begin{itemize}[nosep]
+  \item \textbf{Negating ``peak'':} the negation of
+        ``$\forall n>m,\ x_m\ge x_n$'' is
+        ``$\exists n>m$ with $x_n>x_m$.'' Case~2 depends on this.
+  \item \textbf{$\ge$ vs.\ $>$:} if a peak is defined with $>$ instead,
+        Case~1 gives a \emph{strictly} decreasing subsequence and Case~2
+        only a \emph{non-decreasing} one. Either works if used consistently.
+  \item \textbf{Case~2 is an induction:} say explicitly that $n_{k+1}$ is
+        defined from $n_k$.
+\end{itemize}
+
+\paragraph{Why it matters.}
+Combined with the Monotone Convergence Theorem, this gives
+\textbf{Bolzano--Weierstrass}: a bounded sequence has a monotone
+subsequence (Theorem~\ref{thm:monosub}), which is bounded, hence converges.
+
+\subsubsection*{My proof}
+% Write your proof here.
+
+% =====================================================================
+\subsection{Bolzano--Weierstrass}
+
+\begin{thm}[Bolzano--Weierstrass]\label{thm:bw}
+Every bounded sequence of real numbers has a convergent subsequence.
+\end{thm}
+
+\subsubsection*{Proof setup}
+
+\paragraph{Hypothesis and goal.}
+\begin{itemize}[nosep]
+  \item \textbf{Given:} $(x_n)$ is bounded, i.e.\ there is $M>0$ with
+        $|x_n|\le M$ for all $n\in\N$.
+  \item \textbf{Want:} a strictly increasing sequence of indices
+        $(n_k)$ such that $(x_{n_k})$ converges.
+\end{itemize}
+
+\paragraph{Tools available.}
+\begin{itemize}[nosep]
+  \item \textbf{Theorem~\ref{thm:monosub}:} every sequence has a monotone
+        subsequence.
+  \item \textbf{Monotone Convergence Theorem (MCT):} a sequence that is
+        monotone \emph{and} bounded converges.
+\end{itemize}
+
+\paragraph{The chain of steps.}
+The proof links these two results. Fill in the justification for each step.
+\begin{enumerate}
+  \item \textbf{Get a monotone subsequence.} Apply
+        Theorem~\ref{thm:monosub} to $(x_n)$ to obtain a monotone
+        subsequence $(x_{n_k})$.
+        \emph{Did this step use boundedness?}
+  \item \textbf{Show the subsequence is bounded.} Why does
+        $|x_{n_k}|\le M$ hold for every $k$?
+        \emph{Hint: is $x_{n_k}$ a term of the original sequence?}
+  \item \textbf{Apply MCT.} Steps 1 and 2 verify both hypotheses of MCT
+        for $(x_{n_k})$. Conclude.
+  \item \textbf{Match the goal.} $(x_{n_k})$ is a subsequence of $(x_n)$
+        and it converges, which is exactly what the theorem asks for.
+\end{enumerate}
+
+\paragraph{Things to check.}
+\begin{itemize}[nosep]
+  \item \textbf{Where is boundedness used?} Only in Step~2. Without it,
+        the statement fails: $x_n=n$ has monotone subsequences, but none
+        of them converge.
+  \item \textbf{The limit need not be unique across subsequences.} For
+        $(-1)^n$, B--W guarantees \emph{some} convergent subsequence, but
+        different subsequences converge to $1$ and $-1$.
+  \item \textbf{Where does the limit live?} If $|x_n|\le M$, what can you
+        say about the limit $L$ of $(x_{n_k})$? (Is $|L|\le M$?)
+\end{itemize}
+
+\paragraph{Alternative approach (bisection).}
+Another standard proof avoids Theorem~\ref{thm:monosub}. Start with
+$[-M,M]$, split it in half, and keep a half that contains $x_n$ for
+\emph{infinitely many} $n$. Repeat to get nested intervals whose lengths
+go to $0$, and pick one index from each interval, choosing indices that
+increase. Worth comparing the two proofs once the first one is done.
+
+\subsubsection*{My proof}
+% Write your proof of Bolzano--Weierstrass here.
+
 
 \subsection{Notes}
 We need to use definitnos to set up our proofs.
