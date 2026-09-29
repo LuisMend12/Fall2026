@@ -1,0 +1,821 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{thm}[defn]{Theorem}
+\newtheorem{ex}[defn]{Example}
+\newtheorem{method}[defn]{Method}
+\newtheorem{prob}{Practice Problem}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\key}[1]{\textcolor{red!70!black}{\textbf{#1}}}
+
+\newenvironment{scratch}{\par\medskip\noindent\textit{Scratch work (not part of the proof):}\ }{\par\medskip}
+
+\title{MATH 3150 --- Quiz 1 Study Guide\\
+\large Methods, templates, worked examples, and practice problems\\
+\normalsize (Weeks 1--4: $\N,\Q,\R$, induction, sup/inf, completeness,
+absolute value, limits of sequences, monotone sequences)}
+\author{}
+\date{Quiz 1: Tuesday, September 29}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% =====================================================================
+\section{How to use this guide}
+
+Each section follows the same pattern: \textbf{definitions you must be able
+to state word for word}, then \textbf{the method}, then \textbf{worked
+examples}. Section~\ref{sec:practice} has practice problems, and their
+solutions are in Section~\ref{sec:solutions}. Try each problem on paper
+before you look at the solution.
+
+\medskip
+\noindent\key{Quiz scope (from the syllabus).}
+\begin{itemize}[nosep]
+  \item HW1: set identities, induction, rational/irrational arguments.
+  \item HW2: density of $\Q$ and of the irrationals, sup/inf, the
+        completeness axiom, $\sup(A+B)$.
+  \item HW3: triangle and reverse triangle inequality, $\eps$--$N$ limits,
+        $x_n\to\infty$, monotone sequences.
+  \item Week 4 lectures: limit laws, basic limits, limits equal to
+        $\pm\infty$, the Monotone Convergence Theorem.
+\end{itemize}
+
+\medskip
+\noindent\key{The single most important skill:} match the \emph{shape}
+of the claim to the proof technique.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{6cm}|p{8.5cm}|}
+\hline
+\textbf{Claim looks like\ldots} & \textbf{Reach for\ldots}\\ \hline
+$S=T$ (sets) & Double inclusion, element chasing \\ \hline
+``for all $n\ge n_0$'' & Induction \\ \hline
+``$x$ is irrational'', ``no such $\ldots$'' & Contradiction \\ \hline
+``is it always true?'' (suspect false) & One counterexample \\ \hline
+$M=\sup S$ & (i) $M$ is an upper bound, (ii) $\forall\eps>0\ \exists s\in S$, $s>M-\eps$ \\ \hline
+$\sup A \le$ something & Show that ``something'' is an upper bound of $A$ \\ \hline
+$\lim x_n = L$ & $\eps$--$N$: scratch work, then a forward write-up \\ \hline
+$\lim x_n=\infty$ & $\forall M\ \exists N$: $x_n>M$ for $n\ge N$ \\ \hline
+$x_n$ converges (limit unknown) & Monotone Convergence Theorem \\ \hline
+$|a|\le c$ & Show $-c\le a\le c$ \\ \hline
+\end{tabular}
+\end{center}
+
+\subsection*{Definitions cheat sheet (memorize word for word)}
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{|p{3.4cm}|p{11.2cm}|}
+\hline
+Upper bound & $M$ with $s\le M$ for all $s\in S$\\ \hline
+$\sup S$ & upper bound $M$ such that no $M'<M$ is an upper bound
+$\iff$ upper bound and $\forall\eps>0\ \exists s\in S:\ s>M-\eps$\\ \hline
+$\inf S$ & lower bound $m$ such that no $m'>m$ is a lower bound $\iff$
+lower bound and $\forall\eps>0\ \exists s\in S:\ s<m+\eps$\\ \hline
+Completeness & nonempty $+$ bounded above $\Rightarrow$ $\sup$ exists in $\R$\\ \hline
+Archimedean & $\forall x\in\R\ \exists n\in\N:\ n>x$; equivalently $\forall\eps>0\ \exists n:\ \frac1n<\eps$\\ \hline
+Density & $x<y\Rightarrow\exists r\in\Q$ and $\exists z\notin\Q$ with $x<r,z<y$\\ \hline
+$|x|\le a$ & $\iff -a\le x\le a$ (for $a\ge0$)\\ \hline
+$x_n\to L$ & $\forall\eps>0\ \exists N\ \forall n\ge N:\ |x_n-L|<\eps$\\ \hline
+$x_n\not\to L$ & $\exists\eps>0\ \forall N\ \exists n\ge N:\ |x_n-L|\ge\eps$\\ \hline
+$x_n\to\infty$ & $\forall M\ \exists N\ \forall n\ge N:\ x_n>M$\\ \hline
+Bounded seq. & $\exists M>0\ \forall n:\ |x_n|\le M$\\ \hline
+Increasing & $x_n\le x_{n+1}$ for all $n$ \quad (decreasing: $x_n\ge x_{n+1}$)\\ \hline
+MCT & bounded $+$ monotone $\Rightarrow$ convergent (to $\sup$ or $\inf$ of the terms)\\ \hline
+Cauchy & $\forall\eps>0\ \exists N\ \forall n,m\ge N:\ |x_n-x_m|<\eps$\\ \hline
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section{Logic and proof techniques}
+
+\subsection{The basic proof moves}
+\begin{itemize}[nosep]
+  \item \textbf{Direct:} assume the hypotheses and chain implications to
+        the conclusion.
+  \item \textbf{Contrapositive:} $P\Rightarrow Q$ is equivalent to
+        $\neg Q\Rightarrow\neg P$. Example: ``$n^2$ even $\Rightarrow$ $n$ even''
+        is easiest as ``$n$ odd $\Rightarrow$ $n^2$ odd''.
+  \item \textbf{Contradiction:} assume $\neg(\text{claim})$ and derive
+        something false.
+  \item \textbf{Proving ``$a\le b$'' via $\eps$:} if $a<b+\eps$ for every
+        $\eps>0$, then $a\le b$. (Otherwise take $\eps=a-b>0$.) Likewise,
+        if $|a-b|<\eps$ for every $\eps>0$, then $a=b$. \key{This is how
+        uniqueness of limits and many sup facts are proved.}
+  \item \textbf{``For every'' statements:} begin with ``Let \ldots\ be
+        arbitrary.'' \textbf{``There exists'' statements:} construct or
+        exhibit the object.
+\end{itemize}
+
+\subsection{Negating quantifiers}
+To negate a statement, swap $\forall\leftrightarrow\exists$ and negate the
+inner condition.
+\[
+\neg\bigl(\forall \eps>0\ \exists N\ \forall n\ge N:\ |x_n-L|<\eps\bigr)
+\iff
+\exists \eps>0\ \forall N\ \exists n\ge N:\ |x_n-L|\ge\eps .
+\]
+So ``$x_n\not\to L$'' means: \emph{some} $\eps$ is a bad tolerance, and
+the sequence keeps returning to distance $\ge\eps$ from $L$ no matter how
+far out you go. You use this to prove divergence (Example~\ref{ex:diverge}).
+
+\subsection{Double inclusion (HW1 P1)}
+\begin{method}
+To prove $S=T$, prove $S\subseteq T$ and $T\subseteq S$. For
+$S\subseteq T$: ``Let $x\in S$ be arbitrary. \ldots\ Therefore $x\in T$.''
+Split into cases wherever the definition involves ``or'' (a union) or
+``not (and)'' (a complement of an intersection).
+\end{method}
+
+\begin{ex}[De Morgan-type identity]
+$A\setminus(B\cup C)=(A\setminus B)\cap(A\setminus C)$.
+\begin{proof}
+($\subseteq$) Let $x\in A\setminus(B\cup C)$. Then $x\in A$ and
+$x\notin B\cup C$, so $x\notin B$ \emph{and} $x\notin C$. Hence
+$x\in A\setminus B$ and $x\in A\setminus C$.
+
+($\supseteq$) Let $x\in(A\setminus B)\cap(A\setminus C)$. Then $x\in A$,
+$x\notin B$, and $x\notin C$, so $x\notin B\cup C$. Hence
+$x\in A\setminus(B\cup C)$.
+\end{proof}
+\end{ex}
+
+\subsection{Induction (HW1 P2, P3)}
+\begin{method}
+\begin{enumerate}[nosep]
+  \item \textbf{Base case:} check $P(n_0)$ directly.
+  \item \textbf{Write out $P(n+1)$} by replacing every $n$ with $n+1$.
+        This is your target, so write it down first.
+  \item \textbf{Inductive step:} assume $P(n)$. Find the piece of
+        $P(n+1)$ that is exactly $P(n)$ and substitute the hypothesis.
+  \item Finish with algebra.
+\end{enumerate}
+If the \emph{starting} index of a sum also moves with $n$, add and
+subtract the boundary terms that don't match (HW1 P3 trick).
+\end{method}
+
+\begin{ex}[Bernoulli's inequality, used in Week 4]
+For $x\ge -1$ and $n\in\N$: $(1+x)^n\ge 1+nx$.
+\begin{proof}
+Base case $n=1$: $1+x\ge 1+x$. \checkmark
+
+Inductive step: assume $(1+x)^n\ge 1+nx$. Since $1+x\ge 0$, we may multiply
+both sides by $1+x$ without flipping the inequality:
+\[
+(1+x)^{n+1}\ge(1+nx)(1+x)=1+(n+1)x+nx^2\ge 1+(n+1)x,
+\]
+because $nx^2\ge 0$.
+\end{proof}
+\noindent\key{Note:} the hypothesis $x\ge -1$ is used exactly once, to
+multiply an inequality by $1+x\ge0$. Look for where each hypothesis is
+used.
+\end{ex}
+
+\begin{ex}[Product identity, HW1 P2 style]
+For $n\ge 2$: $\displaystyle\prod_{k=2}^{n}\Bigl(1-\frac1{k^2}\Bigr)=\frac{n+1}{2n}$.
+
+\noindent\emph{Key step:}
+$\frac{n+1}{2n}\cdot\frac{(n+1)^2-1}{(n+1)^2}
+=\frac{n+1}{2n}\cdot\frac{n(n+2)}{(n+1)^2}=\frac{n+2}{2(n+1)}$, using
+$(n+1)^2-1=n(n+2)$ (difference of squares).
+\end{ex}
+
+\subsection{Contradiction and irrationality (HW1 P4, Week 2)}
+\begin{method}
+Assume the opposite. Solve for the piece you know is irrational. Closure
+of $\Q$ under $+,-,\times,\div$ then forces that piece to be rational,
+which is a contradiction.
+\end{method}
+
+\begin{ex}[$\sqrt2\notin\Q$, from lecture: know this proof cold]
+Suppose $\sqrt2=p/q$ in lowest terms. Then $p^2=2q^2$, so $p^2$ is even.
+If $p=2k+1$ were odd, then $p^2=2(2k^2+2k)+1$ would be odd. So $p$ is even,
+$p=2k$. Then $4k^2=2q^2$, so $q^2=2k^2$ and $q$ is even too. This
+contradicts lowest terms.
+\end{ex}
+
+\begin{ex}[rational $\pm$ irrational]
+If $r\in\Q$ and $y\notin\Q$, then $r+y\notin\Q$, and if also $r\ne0$,
+then $ry\notin\Q$. (If $r+y=z\in\Q$, then $y=z-r\in\Q$, contradiction.
+If $ry=w\in\Q$, then $y=w/r\in\Q$, contradiction.)
+
+\noindent\key{Counterexample question:} is irrational $+$ irrational
+always irrational? No: $\sqrt2+(-\sqrt2)=0$. Is irrational $\times$
+irrational always irrational? No: $\sqrt2\cdot\sqrt2=2$.
+\end{ex}
+
+% =====================================================================
+\section{Supremum, infimum, completeness}
+
+\subsection{Definitions (state these exactly)}
+\begin{defn}
+Let $S\subseteq\R$ be nonempty.
+\begin{itemize}[nosep]
+  \item $M$ is an \textbf{upper bound} of $S$ if $s\le M$ for all $s\in S$.
+  \item $M=\sup S$ if $M$ is an upper bound of $S$ and no $M'<M$ is an
+        upper bound of $S$. (It is the \emph{least} upper bound.)
+  \item $m=\inf S$ if $m$ is a lower bound of $S$ and no $m'>m$ is a lower
+        bound of $S$.
+  \item $\max S$ is an upper bound that \emph{belongs to} $S$. If
+        $\max S$ exists, then $\sup S=\max S$.
+\end{itemize}
+\end{defn}
+
+\begin{thm}[Completeness Axiom]
+Every nonempty subset of $\R$ that is bounded above has a supremum in
+$\R$. (It follows that every nonempty set bounded below has an infimum.)
+\end{thm}
+
+\begin{thm}[$\eps$-characterization of sup, the workhorse]
+\label{thm:epssup}
+$M=\sup S$ if and only if
+\begin{enumerate}[nosep,label=(\roman*)]
+  \item $s\le M$ for all $s\in S$, and
+  \item for every $\eps>0$ there is $s\in S$ with $s>M-\eps$.
+\end{enumerate}
+The same holds for inf with the inequalities flipped: (ii) becomes
+$\forall\eps>0\ \exists s\in S$ with $s<m+\eps$.
+\end{thm}
+
+\noindent\key{Two facts used constantly:}
+\begin{itemize}[nosep]
+  \item If $t$ is \emph{any} upper bound of $S$, then $\sup S\le t$.
+        (This is the ``least'' part.)
+  \item $\sup S-\eps$ is \emph{not} an upper bound, so some element of $S$
+        exceeds it.
+\end{itemize}
+
+\subsection{Archimedean property and density}
+\begin{thm}[Archimedean property]
+For any $x\in\R$ there is $n\in\N$ with $n>x$. Equivalently: for any
+$\eps>0$ there is $n\in\N$ with $1/n<\eps$.
+\end{thm}
+\noindent\emph{Proof idea (contradiction plus completeness):} if $\N$
+were bounded above, let $M=\sup\N$. Then $M-1$ is not an upper bound, so
+some $n>M-1$. But then $n+1>M$ with $n+1\in\N$, contradiction.
+
+\begin{thm}[Density]
+If $x<y$, there is $r\in\Q$ with $x<r<y$, and there is an irrational $z$
+with $x<z<y$.
+\end{thm}
+\noindent\emph{Proof idea for $\Q$:} pick $n$ with $1/n<y-x$. Let
+$m=\lfloor nx\rfloor+1$. Then $nx<m\le nx+1<ny$, so $x<m/n<y$.
+
+\noindent\emph{Proof idea for irrationals (HW2 P1):} either take rationals
+$x<r_1<r_2<y$ and $z=r_1+\frac{r_2-r_1}{\sqrt2}$, or apply density of $\Q$
+to $x/\sqrt2<r<y/\sqrt2$ with $r\ne0$ and take $z=r\sqrt2$.
+
+\subsection{Computing sup and inf of explicit sets}
+\begin{method}
+\begin{enumerate}[nosep]
+  \item List the first few elements to guess the sup and inf.
+  \item If the candidate is \emph{attained} (it is an element of $S$),
+        show it is a bound. It is then the max or min, and you are done.
+  \item If it is \emph{not attained}, show it is a bound, then use
+        Theorem~\ref{thm:epssup}(ii) together with the Archimedean property.
+\end{enumerate}
+\end{method}
+
+\begin{ex}
+$S=\{1-\frac1n:n\in\N\}=\{0,\tfrac12,\tfrac23,\dots\}$. Then $\inf S=\min S=0$
+(at $n=1$) and $\sup S=1$ (not attained).
+\begin{proof}[Proof that $\sup S=1$]
+(i) $1-\frac1n<1$ for all $n$, so $1$ is an upper bound. (ii) Let $\eps>0$.
+By the Archimedean property, choose $n$ with $\frac1n<\eps$. Then
+$1-\frac1n>1-\eps$, and $1-\frac1n\in S$. By Theorem~\ref{thm:epssup},
+$\sup S=1$.
+\end{proof}
+\end{ex}
+
+\begin{ex}[HW2 P2]
+$S_1=\{\frac1n\}$: $\sup=\max=1$, and $\inf=0$ is not attained.
+$S_2=\{\frac{(-1)^n}{n}\}$: split into odd and even $n$. Then
+$\sup S_2=\max=\frac12$ (at $n=2$) and $\inf S_2=\min=-1$ (at $n=1$).
+\end{ex}
+
+\begin{ex}
+$S=(a,b)$: $\sup S=b$ and $\inf S=a$, and neither is attained. For (ii):
+given $\eps>0$ (with $\eps<b-a$ if needed), the point
+$x=b-\eps/2\in S$ satisfies $x>b-\eps$.
+\end{ex}
+
+\subsection{Standard sup/inf proofs: templates}
+
+\begin{ex}[$\sup S\le\inf T$, HW2 P3]
+If $s\le t$ for all $s\in S$, $t\in T$: fix $t$. Then $t$ is an upper bound
+of $S$, so $\sup S\le t$. Since $t$ was arbitrary, $\sup S$ is a lower
+bound of $T$, so $\sup S\le\inf T$.
+\end{ex}
+
+\begin{ex}[$\sup(A+B)=\sup A+\sup B$, HW2 P4]
+($\le$) Since $a+b\le\sup A+\sup B$, the right side is an upper bound.
+($\ge$) Given $\eps>0$, pick $a>\sup A-\frac\eps2$ and
+$b>\sup B-\frac\eps2$. Then $a+b>\sup A+\sup B-\eps$.
+\key{Splitting $\eps$ into halves} is the standard trick.
+\end{ex}
+
+\begin{ex}[$\sup(cA)=c\sup A$ for $c>0$]
+Let $\alpha=\sup A$. For $a\in A$, $ca\le c\alpha$, so $c\alpha$ is an
+upper bound of $cA$. Given $\eps>0$, pick $a\in A$ with
+$a>\alpha-\eps/c$. Then $ca>c\alpha-\eps$. \emph{(What changes if $c<0$?
+Then $\sup(cA)=c\inf A$.)}
+\end{ex}
+
+\begin{ex}[$\inf S=-\sup(-S)$]
+$m\le s$ for all $s\in S$ $\iff$ $-s\le -m$ for all $s\in S$. So lower
+bounds of $S$ are exactly the negatives of upper bounds of $-S$, and the
+greatest lower bound corresponds to the least upper bound.
+\end{ex}
+
+\subsection{Monotonicity of sup}
+If $A\subseteq B$, then $\sup A\le\sup B$ and $\inf A\ge\inf B$.
+(Any upper bound of $B$ is an upper bound of $A$.)
+
+% =====================================================================
+\section{Absolute value}
+
+\begin{thm}[Properties]\
+\begin{enumerate}[nosep]
+  \item $|xy|=|x||y|$ and $|-x|=|x|$.
+  \item For $a\ge0$: $|x|\le a\iff -a\le x\le a$. \key{(Most useful fact.)}
+  \item Triangle inequality: $|x+y|\le|x|+|y|$.
+  \item Reverse triangle inequality: $\bigl||x|-|y|\bigr|\le|x-y|$.
+  \item $|x-a|<\delta\iff a-\delta<x<a+\delta$.
+\end{enumerate}
+\end{thm}
+
+\begin{method}[Proving the triangle inequality]
+Add $-|x|\le x\le|x|$ and $-|y|\le y\le|y|$ to get
+$-(|x|+|y|)\le x+y\le|x|+|y|$, then apply property 2.
+\end{method}
+
+\begin{method}[Reverse triangle inequality, HW3 P1]
+Write $x=(x-y)+y$, so $|x|\le|x-y|+|y|$, i.e.\ $|x|-|y|\le|x-y|$. Swap
+$x$ and $y$ to get $-(|x|-|y|)\le|x-y|$. Then property 2 gives the result.
+\end{method}
+
+\begin{method}[The add-and-subtract trick]
+To compare $a$ and $b$ through $c$, write $a-b=(a-c)+(c-b)$ and apply the
+triangle inequality. This is how uniqueness of limits and the product rule
+are proved.
+\end{method}
+
+\begin{ex}[Solving equations with absolute values]
+Solve $|x-3|+|x-1|=3$. Break the line at the points $1$ and $3$:
+\begin{itemize}[nosep]
+  \item $x<1$: $(3-x)+(1-x)=3\Rightarrow x=\frac12$. \checkmark
+  \item $1\le x<3$: $(3-x)+(x-1)=2\ne3$. No solution.
+  \item $x\ge3$: $(x-3)+(x-1)=3\Rightarrow x=\frac72$. \checkmark
+\end{itemize}
+\end{ex}
+
+% =====================================================================
+\section{Limits of sequences: the $\eps$--$N$ definition}
+
+\begin{defn}
+$x_n\to L$ means: for every $\eps>0$ there exists $N\in\N$ such that
+$|x_n-L|<\eps$ for all $n\ge N$.
+\end{defn}
+
+\begin{method}[The $\eps$--$N$ recipe]
+\begin{enumerate}[nosep]
+  \item \textbf{Guess $L$} (leading terms, or intuition from calculus).
+  \item \textbf{Scratch work:} simplify $|x_n-L|$ to a single fraction.
+  \item \textbf{Overestimate} it by something simpler, such as $\frac{C}{n}$.
+        You make a fraction larger by making the denominator smaller or the
+        numerator larger. You only need an upper bound.
+  \item Solve $\frac{C}{n}<\eps$, which gives $n>\frac{C}{\eps}$, so
+        $N>\frac{C}{\eps}$ (Archimedean).
+  \item \textbf{Write it forwards:} ``Let $\eps>0$. Choose $N>\ldots$.
+        Then for $n\ge N$: $|x_n-L|=\cdots\le\cdots<\eps$.''
+\end{enumerate}
+\end{method}
+
+\begin{ex}[HW3 P2]
+$\frac{n+2}{3n+5}\to\frac13$.
+\begin{scratch}
+$\left|\frac{n+2}{3n+5}-\frac13\right|=\frac{1}{3(3n+5)}=\frac1{9n+15}<\frac1{9n}$.
+We want $\frac1{9n}<\eps$, i.e.\ $n>\frac1{9\eps}$.
+\end{scratch}
+\begin{proof}
+Let $\eps>0$ and choose $N\in\N$ with $N>\frac{1}{9\eps}$. For $n\ge N$,
+$\left|\frac{n+2}{3n+5}-\frac13\right|=\frac1{9n+15}<\frac1{9n}\le\frac1{9N}<\eps$.
+\end{proof}
+\end{ex}
+
+\begin{ex}[Lecture]
+$\frac{2n-1}{n+1}\to2$: $\left|\frac{2n-1}{n+1}-2\right|=\frac{3}{n+1}<\frac3n$.
+Choose $N>\frac3\eps$.
+\end{ex}
+
+\begin{ex}[A numerator that needs bounding]
+$\frac{3n^2+n}{n^2+1}\to3$:
+$\left|\frac{3n^2+n}{n^2+1}-3\right|=\frac{|n-3|}{n^2+1}\le\frac{n+3}{n^2}\le\frac{4n}{n^2}=\frac4n$
+for $n\ge1$ (since $3\le 3n$). Choose $N>\frac4\eps$.
+\key{Bound the numerator above and the denominator below.}
+\end{ex}
+
+\begin{ex}[Conjugate trick, lecture]
+$\frac{\sqrt{n^2+n}}{n}\to1$:
+$\frac{\sqrt{n^2+n}-n}{n}=\frac{n}{n(\sqrt{n^2+n}+n)}=\frac1{\sqrt{n^2+n}+n}<\frac1n$.
+Choose $N>\frac1\eps$. \key{Use $\sqrt a-\sqrt b=\frac{a-b}{\sqrt a+\sqrt b}$.}
+\end{ex}
+
+\begin{ex}[Bounded over growing]
+$\frac{\sin n}{n}\to0$: $\left|\frac{\sin n}{n}\right|\le\frac1n<\eps$ when
+$n>\frac1\eps$. (You cannot use the quotient rule, because $\lim\sin n$ does
+not exist.)
+\end{ex}
+
+\begin{ex}[Proving divergence]
+\label{ex:diverge}
+$x_n=(-1)^n$ has no limit. Suppose $x_n\to L$. Take $\eps=\frac12$ and get
+$N$. Choose an even $n\ge N$ and an odd $m\ge N$. Then
+$|1-L|<\frac12$ and $|-1-L|<\frac12$, so
+$2=|1-(-1)|\le|1-L|+|L-(-1)|<1$, which is a contradiction.
+\end{ex}
+
+\subsection{Limits equal to $\pm\infty$}
+\begin{defn}
+$x_n\to\infty$ means: for every $M$ there is $N$ such that $x_n>M$ for all
+$n\ge N$. Also, $x_n\to-\infty$ means $-x_n\to\infty$.
+\end{defn}
+
+\begin{method}
+Find a \emph{simpler lower bound} $x_n\ge g(n)$ with $g(n)\to\infty$
+obviously, such as $g(n)=cn$. Then choose $N$ so that $g(n)>M$.
+\end{method}
+
+\begin{ex}[Lecture]
+$\frac{n^4-4n}{n^2}\to\infty$: for $n\ge2$, $n^4-4n\ge n^3$ (since
+$n^3(n-1)\ge n^3\ge 4n$ when $n\ge 2$), so $\frac{n^4-4n}{n^2}\ge n$. Given
+$M$, choose $N>\max(M,2)$.
+\end{ex}
+
+\begin{ex}[HW3 P3: $\infty+$bounded$=\infty$]
+Say $|y_n|\le B$. Then $x_n+y_n\ge x_n-B$. Given $K$, apply
+$x_n\to\infty$ with the \key{threshold $K+B$} to get $N$. For $n\ge N$,
+$x_n+y_n>K+B-B=K$.
+\end{ex}
+
+% =====================================================================
+\section{Limit theorems (Week 3--4)}
+
+\begin{thm}
+Suppose $x_n\to x$ and $y_n\to y$. Then:
+\begin{enumerate}[nosep]
+  \item \textbf{Uniqueness:} limits are unique.
+  \item \textbf{Bounded:} a convergent sequence is bounded.
+  \item $ax_n+by_n\to ax+by$.
+  \item $x_ny_n\to xy$.
+  \item $x_n/y_n\to x/y$ if $y\ne0$.
+  \item \textbf{Squeeze:} if $a_n\le z_n\le b_n$ and $a_n,b_n\to L$, then
+        $z_n\to L$.
+  \item \textbf{Order:} if $x_n\le y_n$ for all $n$ (large), then
+        $x\le y$. In particular, $x_n\ge0\Rightarrow x\ge0$.
+        \key{Strict inequality is not preserved:} $\frac1n>0$ but the limit
+        is $0$.
+\end{enumerate}
+\end{thm}
+
+\noindent\key{Proofs to know (short ones are quiz favorites):}
+\begin{itemize}
+  \item \emph{Uniqueness:} $|x-x'|\le|x-x_n|+|x_n-x'|<2\eps$ for every
+        $\eps$, so $x=x'$.
+  \item \emph{Bounded:} with $\eps=1$, $|x_n|<|x|+1$ for $n\ge N$. Take
+        $M=\max\{|x_1|,\dots,|x_{N-1}|,|x|+1\}$.
+  \item \emph{Sum:} $|(x_n+y_n)-(x+y)|\le|x_n-x|+|y_n-y|<\frac\eps2+\frac\eps2$,
+        using $N=\max(N_1,N_2)$.
+  \item \emph{Product:} $|x_ny_n-xy|=|(x_n-x)y_n+x(y_n-y)|\le M|x_n-x|+|x||y_n-y|$,
+        where $|y_n|\le M$ because convergent sequences are bounded.
+  \item \emph{Squeeze:} $L-\eps<a_n\le z_n\le b_n<L+\eps$.
+  \item \emph{Order, by contradiction:} if $x_n\ge0$ and $x<0$, take
+        $\eps=-x/2$. Then $x_n<x+\eps=x/2<0$ for large $n$, contradiction.
+\end{itemize}
+
+\subsection{Basic limits to memorize}
+\begin{enumerate}[nosep]
+  \item $\frac1{n^p}\to0$ for $p>0$.
+  \item \textbf{Ratio of polynomials of equal degree:} the limit is the
+        ratio of leading coefficients. (Divide the top and bottom by $n^k$.)
+        If the top has lower degree, the limit is $0$. If the top has higher
+        degree, the limit is $\pm\infty$.
+  \item $a^n\to0$ if $|a|<1$. (Proof: write $\frac1{|a|}=1+x$ and use
+        Bernoulli: $|a|^n\le\frac{1}{1+nx}\to0$.)
+  \item $1+a+\dots+a^n=\frac{1-a^{n+1}}{1-a}\to\frac1{1-a}$ if $|a|<1$.
+  \item $\frac{\text{bounded}}{\to\infty}\to0$, e.g.\ $\frac{\sin n}{n}$ and
+        $\frac{(-1)^n}{n}$.
+  \item If $x_n\to L$ then $|x_n|\to|L|$ (reverse triangle inequality).
+\end{enumerate}
+
+% =====================================================================
+\section{Monotone sequences and the Monotone Convergence Theorem}
+
+\begin{defn}
+$(x_n)$ is \textbf{increasing} if $x_n\le x_{n+1}$ for all $n$,
+\textbf{decreasing} if $x_n\ge x_{n+1}$ for all $n$, and
+\textbf{monotone} if it is one of the two.
+\end{defn}
+
+\begin{method}[Showing monotonicity: three tools]
+\begin{enumerate}[nosep]
+  \item Show $x_{n+1}-x_n\ge0$ (HW3 P4: common denominator, then check the
+        sign).
+  \item If $x_n>0$, show $\frac{x_{n+1}}{x_n}\ge1$.
+  \item For recursive sequences, use induction: $x_n\le x_{n+1}\Rightarrow x_{n+1}\le x_{n+2}$.
+\end{enumerate}
+\end{method}
+
+\begin{thm}[Monotone Convergence Theorem]
+A bounded monotone sequence converges. If it is increasing and bounded
+above, then $x_n\to\sup\{x_n\}$.
+\end{thm}
+\begin{proof}
+Let $L=\sup\{x_n\}$, which exists by completeness. Let $\eps>0$. Since
+$L-\eps$ is not an upper bound, there is $N$ with $x_N>L-\eps$. For
+$n\ge N$: $L-\eps<x_N\le x_n\le L<L+\eps$, so $|x_n-L|<\eps$.
+\end{proof}
+\noindent\key{This proof is short and is exactly Theorem~\ref{thm:epssup}(ii)
+plus monotonicity. Be able to reproduce it.}
+
+\begin{method}[Recursive sequences: the 4-step routine]
+\begin{enumerate}[nosep]
+  \item Compute $x_1,x_2,x_3$ to guess the direction and the limit.
+  \item Prove a bound by induction.
+  \item Prove monotonicity (often by induction, or using the bound).
+  \item By MCT, $x_n\to L$. Pass to the limit in the recursion using the
+        limit laws, and \emph{also} $x_{n+1}\to L$ (it is the same sequence
+        shifted). Solve for $L$ and use the bounds to discard wrong roots.
+\end{enumerate}
+\end{method}
+
+\begin{ex}
+$x_1=1$, $x_{n+1}=\sqrt{2+x_n}$. Then $x_n\to2$.
+\begin{proof}
+\emph{Bounded:} $0<x_n<2$ by induction. Indeed $x_1=1$, and if
+$0<x_n<2$ then $0<x_{n+1}=\sqrt{2+x_n}<\sqrt4=2$.
+
+\emph{Increasing:} $x_{n+1}>x_n\iff 2+x_n>x_n^2\iff(2-x_n)(1+x_n)>0$, which
+holds because $0<x_n<2$.
+
+\emph{Limit:} by MCT, $x_n\to L$ with $1\le L\le2$. Square the recursion:
+$x_{n+1}^2=2+x_n$. Take limits using the product and sum laws:
+$L^2=2+L$, so $(L-2)(L+1)=0$. Since $L\ge1$, $L=2$.
+\end{proof}
+\end{ex}
+
+\begin{ex}[HW3 P4, averages]
+If $(x_n)$ is increasing, then so is $y_n=\frac{x_1+\dots+x_n}{n}$. The
+numerator of $y_{n+1}-y_n$ is $nx_{n+1}-S_n\ge0$, because each
+$x_k\le x_{n+1}$. (Positivity is not actually needed.)
+\end{ex}
+
+% =====================================================================
+\section{Preview: subsequences and Bolzano--Weierstrass (Week 5)}
+These may not be on Quiz 1, but you should know the statements.
+\begin{itemize}[nosep]
+  \item A \textbf{subsequence} is $(x_{n_k})_k$ with $n_1<n_2<\cdots$.
+  \item If $x_n\to L$ then every subsequence $\to L$. \key{So two
+        subsequences with different limits imply divergence}, e.g.\
+        $(-1)^n$ with its even and odd terms.
+  \item Every sequence has a monotone subsequence.
+  \item \textbf{Bolzano--Weierstrass:} every bounded sequence has a
+        convergent subsequence.
+  \item \textbf{Cauchy:} $\forall\eps\ \exists N$: $|x_n-x_m|<\eps$ for all
+        $n,m\ge N$. In $\R$, Cauchy $\iff$ convergent.
+\end{itemize}
+
+% =====================================================================
+\section{Common mistakes that cost points}
+\begin{enumerate}
+  \item \textbf{Writing $\eps$--$N$ proofs backwards.} Scratch work goes
+        from the goal to $N$. The proof must go from ``Let $\eps>0$'' to
+        ``$<\eps$''.
+  \item \textbf{Choosing $N$ that depends on $n$.} $N$ may depend only on
+        $\eps$ (and fixed constants).
+  \item \textbf{Forgetting to show that the sup is an upper bound.} Both
+        parts (i) and (ii) are needed.
+  \item \textbf{Assuming the sup is in the set.} $\sup(0,1)=1\notin(0,1)$.
+  \item \textbf{Using limit laws when a limit doesn't exist}, e.g.\
+        splitting $\frac{\sin n}{n}$ as $\lim\sin n\cdot\lim\frac1n$.
+  \item \textbf{Passing to the limit before proving convergence} in
+        recursive sequences. MCT comes first, then solve $L=f(L)$.
+  \item \textbf{Multiplying an inequality by something that might be
+        negative.}
+  \item \textbf{Induction without writing $P(n+1)$ first}, and then
+        ``proving'' the wrong target.
+  \item \textbf{Strict vs.\ non-strict:} limits preserve $\le$ but not $<$.
+\end{enumerate}
+
+% =====================================================================
+\newpage
+\section{Practice problems}
+\label{sec:practice}
+Try these under quiz conditions. Solutions are in the next section.
+
+\begin{prob}
+Prove by induction: $1+3+5+\dots+(2n-1)=n^2$ for all $n\in\N$.
+\end{prob}
+
+\begin{prob}
+Prove by induction: $2^n\ge n+1$ for all $n\in\N$.
+\end{prob}
+
+\begin{prob}
+Prove that $\sqrt3$ is irrational.
+\end{prob}
+
+\begin{prob}
+Prove $A\cap(B\cup C)=(A\cap B)\cup(A\cap C)$.
+\end{prob}
+
+\begin{prob}
+Find $\sup$ and $\inf$ of $S=\left\{(-1)^n\left(1-\frac1n\right):n\in\N\right\}$,
+say whether each is attained, and prove your claim about the sup.
+\end{prob}
+
+\begin{prob}
+Find $\sup$ and $\inf$ of $T=\left\{\frac{n}{n+1}:n\in\N\right\}$ with
+proof.
+\end{prob}
+
+\begin{prob}
+Let $A$ be nonempty and bounded above, and $c>0$. Prove
+$\sup(cA)=c\sup A$.
+\end{prob}
+
+\begin{prob}
+Let $A\subseteq B$ be nonempty and bounded. Prove $\inf B\le\inf A\le\sup A\le\sup B$.
+\end{prob}
+
+\begin{prob}
+Use the definition to prove $\displaystyle\lim_{n\to\infty}\frac{2n^2+1}{n^2+3}=2$.
+\end{prob}
+
+\begin{prob}
+Use the definition to prove $\displaystyle\lim_{n\to\infty}\bigl(\sqrt{n+1}-\sqrt n\bigr)=0$.
+\end{prob}
+
+\begin{prob}
+Prove $\displaystyle\lim_{n\to\infty}\frac{n^2}{n+1}=\infty$ from the
+definition.
+\end{prob}
+
+\begin{prob}
+Prove that if $x_n\to L$ then $|x_n|\to|L|$. Is the converse true?
+\end{prob}
+
+\begin{prob}
+Prove that $x_n=\frac{(-1)^n n}{n+1}$ diverges.
+\end{prob}
+
+\begin{prob}
+Prove: if $x_n\to L$ and $x_n\ge 0$ for all $n$, then $L\ge0$.
+\end{prob}
+
+\begin{prob}
+Let $x_1=2$ and $x_{n+1}=\frac{x_n+3}{2}$. Prove that $(x_n)$ converges and
+find its limit.
+\end{prob}
+
+\begin{prob}
+Compute (limit laws allowed):
+(a) $\lim\frac{5n^3-n}{2n^3+7}$ \quad
+(b) $\lim\frac{n+1}{n^2+1}$ \quad
+(c) $\lim\left(\frac23\right)^n$ \quad
+(d) $\lim\sum_{k=0}^n\frac1{2^k}$ \quad
+(e) $\lim\frac{\cos(n^2)}{\sqrt n}$.
+\end{prob}
+
+\begin{prob}[True or false: justify or give a counterexample]\
+\begin{enumerate}[label=(\alph*),nosep]
+  \item If $x_n>0$ for all $n$ and $x_n\to L$, then $L>0$.
+  \item Every bounded sequence converges.
+  \item Every convergent sequence is bounded.
+  \item If $x_ny_n\to0$ then $x_n\to0$ or $y_n\to0$.
+  \item If $(x_n)$ and $(y_n)$ both diverge, then $(x_n+y_n)$ diverges.
+  \item Every nonempty subset of $\Q$ that is bounded above has a sup in $\Q$.
+  \item If $\sup S$ exists and $\sup S\in S$, then $S$ has a maximum.
+\end{enumerate}
+\end{prob}
+
+% =====================================================================
+\newpage
+\section{Solutions}
+\label{sec:solutions}
+
+\paragraph{1.} Base case: $1=1^2$. Target $P(n+1)$:
+$1+3+\dots+(2n-1)+(2n+1)=(n+1)^2$. By the hypothesis the left side is
+$n^2+2n+1=(n+1)^2$. \qed
+
+\paragraph{2.} Base case: $2\ge2$. Assume $2^n\ge n+1$. Then
+$2^{n+1}=2\cdot2^n\ge2(n+1)=2n+2\ge n+2$. \qed
+
+\paragraph{3.} Suppose $\sqrt3=p/q$ in lowest terms, so $p^2=3q^2$. If
+$3\nmid p$, then $p=3k\pm1$ and $p^2=9k^2\pm6k+1=3(3k^2\pm2k)+1$ is not a
+multiple of 3, a contradiction. So $p=3k$, which gives $9k^2=3q^2$,
+$q^2=3k^2$, and so $3\mid q$. This contradicts lowest terms. \qed
+
+\paragraph{4.} ($\subseteq$) Let $x\in A\cap(B\cup C)$. Then $x\in A$, and
+$x\in B$ or $x\in C$. Case $x\in B$: $x\in A\cap B$. Case $x\in C$:
+$x\in A\cap C$. Either way $x$ is in the union.
+($\supseteq$) If $x\in A\cap B$, then $x\in A$ and $x\in B\subseteq B\cup C$.
+The case $x\in A\cap C$ is the same. \qed
+
+\paragraph{5.} The elements are $0,\frac12,-\frac23,\frac34,-\frac45,\dots$.
+Even $n$ gives $1-\frac1n\in[\frac12,1)$. Odd $n$ gives
+$-(1-\frac1n)\in(-1,0]$. So $\sup S=1$ and $\inf S=-1$, and \emph{neither
+is attained}.
+
+\emph{Proof that $\sup S=1$:} every element satisfies
+$(-1)^n(1-\frac1n)\le1-\frac1n<1$, so $1$ is an upper bound. Given
+$\eps>0$, choose an even $n$ with $\frac1n<\eps$ (Archimedean; if $n$ is
+odd, use $n+1$). Then $1-\frac1n\in S$ and $1-\frac1n>1-\eps$. \qed
+(The inf is symmetric, using odd $n$.)
+
+\paragraph{6.} $\frac{n}{n+1}=1-\frac1{n+1}$, which is increasing. So
+$\inf T=\min T=\frac12$ (at $n=1$), and $\sup T=1$ is not attained.
+Upper bound: $\frac n{n+1}<1$. Given $\eps>0$, pick $n$ with
+$\frac1{n+1}<\eps$. Then $\frac{n}{n+1}>1-\eps$. \qed
+
+\paragraph{7.} Let $\alpha=\sup A$. For $a\in A$: $a\le\alpha$, so
+$ca\le c\alpha$ (as $c>0$), and $c\alpha$ is an upper bound of $cA$. Given
+$\eps>0$, $\frac\eps c>0$, so there is $a\in A$ with $a>\alpha-\frac\eps c$.
+Then $ca\in cA$ and $ca>c\alpha-\eps$. By Theorem~\ref{thm:epssup},
+$\sup(cA)=c\alpha$. \qed
+
+\paragraph{8.} Middle: pick any $a\in A$, so $\inf A\le a\le\sup A$.
+Right: $\sup B$ is an upper bound of $B\supseteq A$, so it is an upper bound
+of $A$. Hence $\sup A\le\sup B$ (sup is the \emph{least} upper bound).
+Left: the same argument with lower bounds. \qed
+
+\paragraph{9.}
+$\left|\frac{2n^2+1}{n^2+3}-2\right|=\left|\frac{2n^2+1-2n^2-6}{n^2+3}\right|=\frac5{n^2+3}<\frac5{n^2}\le\frac5n$.
+Let $\eps>0$ and choose $N>\frac5\eps$. For $n\ge N$:
+$\left|\frac{2n^2+1}{n^2+3}-2\right|<\frac5n\le\frac5N<\eps$. \qed
+
+\paragraph{10.}
+$\sqrt{n+1}-\sqrt n=\frac{1}{\sqrt{n+1}+\sqrt n}<\frac1{\sqrt n}$. We want
+$\frac1{\sqrt n}<\eps\iff n>\frac1{\eps^2}$. Let $\eps>0$ and choose
+$N>\frac1{\eps^2}$. For $n\ge N$:
+$|\sqrt{n+1}-\sqrt n-0|<\frac1{\sqrt n}\le\frac1{\sqrt N}<\eps$. \qed
+
+\paragraph{11.} For $n\ge1$, $n+1\le2n$, so $\frac{n^2}{n+1}\ge\frac{n^2}{2n}=\frac n2$.
+Given $M$, choose $N>2M$. For $n\ge N$: $\frac{n^2}{n+1}\ge\frac n2\ge\frac N2>M$. \qed
+
+\paragraph{12.} By the reverse triangle inequality,
+$\bigl||x_n|-|L|\bigr|\le|x_n-L|<\eps$ for $n\ge N$, with the same $N$ that
+works for $x_n\to L$. The converse is \emph{false}: $x_n=(-1)^n$ has
+$|x_n|\to1$ but diverges. (It is true when $L=0$, since $|x_n-0|=||x_n|-0|$.) \qed
+
+\paragraph{13.} Suppose $x_n\to L$. The even terms are
+$\frac{n}{n+1}\to1$ and the odd terms are $-\frac n{n+1}\to-1$. Directly:
+take $\eps=\frac12$. For $n\ge N$ large, even $n$ gives $x_n>\frac12$ and
+odd $n$ gives $x_n<-\frac12$, so these terms are more than $1$ apart. But
+$|x_n-x_m|\le|x_n-L|+|L-x_m|<1$, a contradiction. (Or: two subsequences
+with different limits.) \qed
+
+\paragraph{14.} Suppose $L<0$. Take $\eps=-\frac L2>0$. For large $n$,
+$x_n<L+\eps=\frac L2<0$, which contradicts $x_n\ge0$. \qed
+
+\paragraph{15.} The terms are $x_1=2$, $x_2=2.5$, $x_3=2.75$, so the guess
+is increasing with limit $3$.
+\emph{Bound $x_n<3$:} true for $n=1$; if $x_n<3$ then $x_{n+1}<\frac{3+3}2=3$.
+\emph{Increasing:} $x_{n+1}-x_n=\frac{3-x_n}{2}>0$ by the bound.
+By MCT, $x_n\to L$. Taking limits in $x_{n+1}=\frac{x_n+3}2$ gives
+$L=\frac{L+3}2$, so $L=3$. \qed
+
+\paragraph{16.} (a) $\frac52$ \quad (b) $0$ (lower degree on top) \quad
+(c) $0$ since $|\frac23|<1$ \quad (d) $\frac1{1-1/2}=2$ \quad
+(e) $0$, since $\left|\frac{\cos(n^2)}{\sqrt n}\right|\le\frac1{\sqrt n}\to0$ (squeeze).
+
+\paragraph{17.}
+\begin{enumerate}[label=(\alph*),nosep]
+  \item False: $\frac1n>0$ but $\frac1n\to0$. (You only get $L\ge0$.)
+  \item False: $(-1)^n$. (It \emph{does} have a convergent subsequence, by B--W.)
+  \item True: the ``convergent $\Rightarrow$ bounded'' theorem.
+  \item False: $x_n=1,0,1,0,\dots$ and $y_n=0,1,0,1,\dots$ have $x_ny_n=0$,
+        but neither converges to $0$.
+  \item False: $x_n=(-1)^n$ and $y_n=-(-1)^n$ sum to $0$.
+  \item False: $\{q\in\Q:q^2<2\}$ has no sup in $\Q$, since the sup would be
+        $\sqrt2$. This is exactly why $\R$ needs the completeness axiom.
+  \item True: $\sup S$ is an upper bound in $S$, which is the definition of
+        a maximum.
+\end{enumerate}
+
+\end{document}
