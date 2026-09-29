@@ -1,0 +1,109 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{thm}[defn]{Theorem}
+\newtheorem{lem}[defn]{Lemma}
+\newtheorem{ex}[defn]{Example}
+\newtheorem{rem}[defn]{Remark}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\key}[1]{\textcolor{red!70!black}{\textbf{#1}}}
+
+\title{MATH 3150 --- Notes}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+% =====================================================================
+\section{Subsequences}
+
+\begin{defn}[Subsequence]
+Let $(x_n)_{n=1}^\infty$ be a sequence of real numbers, and let
+$(n_k)_{k=1}^\infty$ be a sequence of natural numbers that is
+\key{strictly increasing}:
+\[
+  n_1 < n_2 < n_3 < \cdots .
+\]
+The sequence $(x_{n_k})_{k=1}^\infty = (x_{n_1}, x_{n_2}, x_{n_3}, \dots)$
+is called a \textbf{subsequence} of $(x_n)$.
+\end{defn}
+
+Equivalently, a subsequence is $x \circ \varphi$, where
+$x:\N\to\R$ is the sequence and $\varphi:\N\to\N$, $\varphi(k)=n_k$,
+is strictly increasing.
+
+\begin{rem}
+\leavevmode
+\begin{itemize}[nosep]
+  \item The \emph{index} of a subsequence is $k$, not $n$. The $k$-th term
+        of the subsequence is $x_{n_k}$.
+  \item A subsequence keeps terms \textbf{in their original order} and
+        never repeats an index. You may skip terms, but you may not reorder
+        them or reuse them.
+  \item Every sequence is a subsequence of itself (take $n_k=k$).
+\end{itemize}
+\end{rem}
+
+\begin{lem}\label{lem:nk}
+If $(n_k)$ is a strictly increasing sequence in $\N$, then $n_k \ge k$ for
+all $k\in\N$.
+\end{lem}
+
+\begin{proof}
+Induction on $k$. For $k=1$: $n_1\in\N$, so $n_1\ge 1$. If $n_k\ge k$, then
+$n_{k+1}>n_k\ge k$, and since $n_{k+1}$ is an integer, $n_{k+1}\ge k+1$.
+\end{proof}
+
+\begin{ex}
+Let $x_n = (-1)^n$. Then
+\begin{itemize}[nosep]
+  \item $n_k = 2k$ gives the subsequence $x_{2k} = 1,1,1,\dots$;
+  \item $n_k = 2k-1$ gives the subsequence $x_{2k-1} = -1,-1,-1,\dots$.
+\end{itemize}
+\end{ex}
+
+\begin{ex}
+Let $x_n = \tfrac{1}{n}$. With $n_k = k^2$, the subsequence is
+$x_{k^2} = \tfrac{1}{k^2}$, i.e.\ $1, \tfrac14, \tfrac19, \dots$.
+\end{ex}
+
+\begin{ex}[Non-examples]
+For $x_n=\tfrac1n$:
+\begin{itemize}[nosep]
+  \item $(\tfrac12, 1, \tfrac14, \tfrac13, \dots)$ is \emph{not} a
+        subsequence, because the terms are out of order ($n_1=2>n_2=1$).
+  \item $(1, 1, \tfrac12, \tfrac12, \dots)$ is \emph{not} a subsequence,
+        because indices repeat ($n_1=n_2=1$).
+\end{itemize}
+\end{ex}
+
+\begin{thm}
+If $x_n \to L$, then every subsequence $(x_{n_k})$ also converges to $L$.
+\end{thm}
+
+\begin{proof}
+Let $\eps>0$. Since $x_n\to L$, there is $N$ with $|x_n-L|<\eps$ for all
+$n\ge N$. If $k\ge N$, then $n_k\ge k\ge N$ by Lemma~\ref{lem:nk}, so
+$|x_{n_k}-L|<\eps$.
+\end{proof}
+
+\noindent\key{Consequence.} If a sequence has two subsequences with
+different limits, it diverges. For example, $(-1)^n$ diverges because
+$x_{2k}\to 1$ and $x_{2k-1}\to -1$.
+
+
+\subsection{Notes}
+We need to use definitnos to set up our proofs.
+
+\end{document}
