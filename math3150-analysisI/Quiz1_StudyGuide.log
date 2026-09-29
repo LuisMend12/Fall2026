@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  29 SEP 2026 09:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.4.14)  29 SEP 2026 11:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -402,53 +402,53 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 [1
 
 {C:/Users/Luis Mendez/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-[2] [3] [4] [5] [6] [7]
-Overfull \hbox (1.58786pt too wide) in paragraph at lines 426--428
+[2] [3] [4] [5] [6] [7] [8]
+Overfull \hbox (1.58786pt too wide) in paragraph at lines 500--502
 []\OT1/cmr/m/n/10.95 If it is \OT1/cmr/m/it/10.95 not at-tained\OT1/cmr/m/n/10.
 95 , show it is a bound, then use The-o-rem [][]3.3[][](ii) to-gether with the 
 Archimedean
  []
 
-[8]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 525.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\varepsilon' on input line 525.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 525.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 525.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 525.
-
 [9]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 590.
+(hyperref)                removing `math shift' on input line 599.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\pm' on input line 590.
+(hyperref)                removing `\varepsilon' on input line 599.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\infty' on input line 590.
+(hyperref)                removing `math shift' on input line 599.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 590.
+(hyperref)                removing `math shift' on input line 599.
 
-[10] [11] [12] [13] [14]
-Overfull \hbox (39.42853pt too wide) in paragraph at lines 936--938
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 599.
+
+[10]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 664.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\pm' on input line 664.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\infty' on input line 664.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 664.
+
+[11] [12] [13] [14] [15]
+Overfull \hbox (39.42853pt too wide) in paragraph at lines 1010--1012
 [][]\OT1/cmr/bx/n/10.95 Practice Prob-lem 18. []\OT1/cmr/m/n/10.95 Let $\OML/cm
 m/m/it/10.95 A; B$ \OT1/cmr/m/n/10.95 be nonempty and bounded above. Prove $[](
 \OML/cmm/m/it/10.95 A \OMS/cmsy/m/n/10.95 [ \OML/cmm/m/it/10.95 B\OT1/cmr/m/n/1
@@ -456,7 +456,7 @@ m/m/it/10.95 A; B$ \OT1/cmr/m/n/10.95 be nonempty and bounded above. Prove $[](
 95 g$\OT1/cmr/m/n/10.95 . 
  []
 
-[15] [16] [17] [18] [19] (Quiz1_StudyGuide.aux)
+[16] [17] [18] [19] [20] (Quiz1_StudyGuide.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
@@ -465,13 +465,13 @@ Package rerunfilecheck Info: File `Quiz1_StudyGuide.out' has not changed.
 (rerunfilecheck)             Checksum: 0648404F1D1CA573F6C8A1CAA9664682;5507.
  ) 
 Here is how much of TeX's memory you used:
- 10994 strings out of 467871
- 163540 string characters out of 5428423
+ 10995 strings out of 467871
+ 163547 string characters out of 5428423
  613067 words of memory out of 5000000
  39542 multiletter control sequences out of 15000+600000
  639066 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,16n,79p,555b,720s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,16n,79p,555b,721s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\Luis Mendez\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
 0\tcrm1095.pk><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pf
 b><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Progra
@@ -490,9 +490,9 @@ iKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files/MiKTeX/fonts/
 type1/public/amsfonts/latxfont/line10.pfb><C:/Program Files/MiKTeX/fonts/type1/
 public/amsfonts/symbols/msam10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/
 amsfonts/symbols/msbm10.pfb>
-Output written on Quiz1_StudyGuide.pdf (19 pages, 365569 bytes).
+Output written on Quiz1_StudyGuide.pdf (20 pages, 371109 bytes).
 PDF statistics:
- 537 PDF objects out of 1000 (max. 8388607)
- 216 named destinations out of 1000 (max. 500000)
+ 545 PDF objects out of 1000 (max. 8388607)
+ 217 named destinations out of 1000 (max. 500000)
  209 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -284,6 +284,80 @@ Suppose $\sqrt2=p/q$ in lowest terms. Then $p^2=2q^2$, so $p^2$ is even.
 If $p=2k+1$ were odd, then $p^2=2(2k^2+2k)+1$ would be odd. So $p$ is even,
 $p=2k$. Then $4k^2=2q^2$, so $q^2=2k^2$ and $q$ is even too. This
 contradicts lowest terms.
+
+\medskip
+\noindent\key{Lemma used twice.} For an integer $m$: if $m^2$ is even,
+then $m$ is even.
+
+\noindent\emph{Proof (contrapositive).} Suppose $m$ is odd, so $m=2k+1$
+for some $k\in\Z$. Then
+\[
+m^2=(2k+1)^2=4k^2+4k+1=2(2k^2+2k)+1,
+\]
+which is $2\cdot(\text{integer})+1$, so $m^2$ is odd. Hence ``$m$ odd
+$\Rightarrow$ $m^2$ odd'', which is equivalent to ``$m^2$ even
+$\Rightarrow$ $m$ even''. $\square$
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (assume the opposite).} Suppose, for contradiction, that
+$\sqrt2\in\Q$.
+
+\emph{Step 2 (write it in lowest terms).} Then $\sqrt2=\frac pq$ with
+$p,q\in\Z$ and $q\ne0$. By cancelling common factors we may assume the
+fraction is in lowest terms, i.e.\ $p$ and $q$ have \emph{no common factor
+greater than $1$}. (Every fraction can be reduced, for example
+$\frac{6}{4}=\frac32$.) This extra assumption is what we will contradict.
+
+\emph{Step 3 (clear the square root).} Square both sides and multiply by
+$q^2$:
+\[
+2=\frac{p^2}{q^2}\quad\Longrightarrow\quad p^2=2q^2.
+\]
+
+\emph{Step 4 ($p$ is even).} $p^2=2q^2$ is $2\cdot(\text{integer})$, so
+$p^2$ is even. By the Lemma, $p$ is even.
+
+\emph{Step 5 (substitute $p=2k$).} Since $p$ is even, $p=2k$ for some
+$k\in\Z$. Plug into $p^2=2q^2$:
+\[
+(2k)^2=2q^2\quad\Longrightarrow\quad 4k^2=2q^2
+\quad\Longrightarrow\quad q^2=2k^2.
+\]
+
+\emph{Step 6 ($q$ is even).} $q^2=2k^2$ is $2\cdot(\text{integer})$, so
+$q^2$ is even. By the Lemma again, $q$ is even.
+
+\emph{Step 7 (contradiction).} Now $2$ divides both $p$ and $q$, so they
+share the common factor $2$. This contradicts Step 2 (lowest terms).
+
+\emph{Step 8 (conclude).} The assumption in Step 1 is false, so
+$\sqrt2\notin\Q$.
+\end{proof}
+
+\noindent\key{Why lowest terms?} Without it there is no contradiction.
+Finding that $p$ and $q$ are both even would just mean the fraction could
+be reduced. Lowest terms is the ``trap'' that the evenness argument springs.
+
+\noindent\key{Common point-losers:}
+\begin{itemize}[nosep]
+  \item Saying ``$p^2$ even, so $p$ even'' with no justification. Prove the
+        Lemma, or at least cite it.
+  \item Forgetting to say $q\ne0$ and to assume lowest terms at the start.
+  \item Concluding ``$p$ even'' from ``$p^2=2q^2$'' without first noting
+        that $p^2$ is even.
+\end{itemize}
+
+\noindent\key{Sanity check: why doesn't this ``prove'' $\sqrt4\notin\Q$?}
+Run the same steps: $p^2=4q^2$, so $p$ is even, $p=2k$. Then $4k^2=4q^2$,
+so $q^2=k^2$. This says \emph{nothing} about $q$ being even, so no
+contradiction arises, which is correct because $\sqrt4=2\in\Q$. The factor
+$2$ appearing exactly once in $p^2=2q^2$ is what makes Step 6 work.
+
+\noindent\key{Same template for $\sqrt3$:} replace ``even/odd'' with
+``divisible by $3$ or not.'' If $3\nmid m$, then $m=3k+1$ or $m=3k+2$, and
+in both cases $m^2$ leaves remainder $1$ when divided by $3$. So
+$3\mid m^2\Rightarrow 3\mid m$, and the rest of the proof goes through
+unchanged.
 \end{ex}
 
 \begin{ex}[rational $\pm$ irrational]
