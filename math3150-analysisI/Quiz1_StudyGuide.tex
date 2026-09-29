@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath, amssymb, amsthm}
+\usepackage{cancel}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -193,6 +194,82 @@ For $n\ge 2$: $\displaystyle\prod_{k=2}^{n}\Bigl(1-\frac1{k^2}\Bigr)=\frac{n+1}{
 $\frac{n+1}{2n}\cdot\frac{(n+1)^2-1}{(n+1)^2}
 =\frac{n+1}{2n}\cdot\frac{n(n+2)}{(n+1)^2}=\frac{n+2}{2(n+1)}$, using
 $(n+1)^2-1=n(n+2)$ (difference of squares).
+
+\begin{proof}[Full proof, step by step]
+Let $P(n)$ be the statement
+$\displaystyle\prod_{k=2}^{n}\Bigl(1-\frac1{k^2}\Bigr)=\frac{n+1}{2n}$.
+We prove $P(n)$ for all $n\ge2$ by induction.
+
+\emph{Step 1 (base case $n=2$).} The product has a single factor,
+$k=2$:
+\[
+\text{LHS}=1-\frac1{2^2}=1-\frac14=\frac34,\qquad
+\text{RHS}=\frac{2+1}{2\cdot2}=\frac34. \checkmark
+\]
+
+\emph{Step 2 (write the target $P(n+1)$).} Replace every $n$ by $n+1$:
+\[
+\prod_{k=2}^{n+1}\Bigl(1-\frac1{k^2}\Bigr)=\frac{(n+1)+1}{2(n+1)}
+=\frac{n+2}{2(n+1)}.
+\]
+This is what we must reach.
+
+\emph{Step 3 (peel off the last factor).} Assume $P(n)$. The product up to
+$n+1$ is the product up to $n$, times the $k=n+1$ factor:
+\[
+\prod_{k=2}^{n+1}\Bigl(1-\frac1{k^2}\Bigr)
+=\underbrace{\prod_{k=2}^{n}\Bigl(1-\frac1{k^2}\Bigr)}_{\text{this is }P(n)}
+\cdot\Bigl(1-\frac1{(n+1)^2}\Bigr).
+\]
+
+\emph{Step 4 (substitute the inductive hypothesis).}
+\[
+=\frac{n+1}{2n}\cdot\Bigl(1-\frac1{(n+1)^2}\Bigr).
+\]
+
+\emph{Step 5 (common denominator in the last factor).}
+\[
+1-\frac1{(n+1)^2}=\frac{(n+1)^2}{(n+1)^2}-\frac1{(n+1)^2}
+=\frac{(n+1)^2-1}{(n+1)^2}.
+\]
+
+\emph{Step 6 (factor the numerator).} Use $a^2-b^2=(a-b)(a+b)$ with
+$a=n+1$, $b=1$:
+\[
+(n+1)^2-1=\bigl((n+1)-1\bigr)\bigl((n+1)+1\bigr)=n(n+2).
+\]
+(Check by expanding: $(n+1)^2-1=n^2+2n+1-1=n^2+2n=n(n+2)$.)
+
+\emph{Step 7 (multiply and cancel).}
+\[
+\frac{n+1}{2n}\cdot\frac{n(n+2)}{(n+1)^2}
+=\frac{(n+1)\,n\,(n+2)}{2n\,(n+1)^2}
+=\frac{\cancel{n}\,\cancel{(n+1)}\,(n+2)}{2\cancel{n}\,(n+1)^{\cancel{2}}}
+=\frac{n+2}{2(n+1)}.
+\]
+Cancelling is allowed because $n\ne0$ and $n+1\ne0$ (as $n\ge2$).
+
+\emph{Step 8 (conclude).} This is exactly the target from Step 2, so
+$P(n)\Rightarrow P(n+1)$. Together with the base case, $P(n)$ holds for
+all $n\ge2$.
+\end{proof}
+
+\noindent\key{Sanity check $n=3$:}
+$\bigl(1-\frac14\bigr)\bigl(1-\frac19\bigr)=\frac34\cdot\frac89=\frac{24}{36}=\frac23$,
+and $\frac{3+1}{2\cdot3}=\frac46=\frac23$. \checkmark
+
+\noindent\key{Where does $\frac{n+1}{2n}$ come from? (telescoping)}
+Each factor splits as
+$1-\frac1{k^2}=\frac{k^2-1}{k^2}=\frac{k-1}{k}\cdot\frac{k+1}{k}$, so
+\[
+\prod_{k=2}^{n}\Bigl(1-\frac1{k^2}\Bigr)
+=\Bigl(\frac12\cdot\frac23\cdots\frac{n-1}{n}\Bigr)
+\Bigl(\frac32\cdot\frac43\cdots\frac{n+1}{n}\Bigr)
+=\frac1n\cdot\frac{n+1}2=\frac{n+1}{2n}.
+\]
+Almost everything cancels in each bracket. This is a good way to
+\emph{guess} the formula. The induction proof above is what makes it
+rigorous.
 \end{ex}
 
 \subsection{Contradiction and irrationality (HW1 P4, Week 2)}
