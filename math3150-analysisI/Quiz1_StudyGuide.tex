@@ -508,6 +508,73 @@ Suppose $x_n\to x$ and $y_n\to y$. Then:
         $\eps=-x/2$. Then $x_n<x+\eps=x/2<0$ for large $n$, contradiction.
 \end{itemize}
 
+\subsection{The quotient rule and the ``bounded away from zero'' lemma}
+\begin{thm}[Lemma]
+If $y_n\to y\ne0$, then there is $N_0$ such that $|y_n|>\frac{|y|}{2}$ for
+all $n\ge N_0$.
+\end{thm}
+\begin{proof}
+Apply the definition with $\eps=\frac{|y|}2$. Then
+$|y_n|\ge|y|-|y-y_n|>|y|-\frac{|y|}2=\frac{|y|}2$ by the reverse triangle
+inequality.
+\end{proof}
+\noindent\emph{Quotient rule sketch:} by the product rule, it suffices to
+show $\frac1{y_n}\to\frac1y$. For $n\ge N_0$,
+\[
+\left|\frac1{y_n}-\frac1y\right|=\frac{|y-y_n|}{|y_n||y|}<\frac{2}{|y|^2}|y_n-y|,
+\]
+which can be made $<\eps$ by choosing $N$ with $|y_n-y|<\frac{|y|^2\eps}{2}$.
+
+\subsection{More limit tools}
+\begin{itemize}
+  \item \textbf{Zero times bounded:} if $x_n\to0$ and $|y_n|\le M$, then
+        $x_ny_n\to0$, because $|x_ny_n|\le M|x_n|$. (This does \emph{not}
+        need $y_n$ to converge.)
+  \item \textbf{Shifts don't matter:} $x_n\to L\iff x_{n+1}\to L\iff x_{n+k}\to L$.
+        Changing finitely many terms doesn't change the limit.
+  \item \textbf{Reciprocals and infinity:} if $x_n\to\infty$, then
+        $\frac1{x_n}\to0$. If $x_n>0$ and $x_n\to0$, then $\frac1{x_n}\to\infty$.
+  \item \textbf{Infinity arithmetic:} $x_n\to\infty$ and $y_n\ge c>0$
+        eventually $\Rightarrow x_ny_n\to\infty$. $x_n\to\infty$ and
+        $y_n$ bounded below $\Rightarrow x_n+y_n\to\infty$.
+        \key{$\infty-\infty$, $0\cdot\infty$ and $\frac\infty\infty$ are
+        indeterminate:} for example $n-n=0$, $(n+1)-n=1$, and $n^2-n\to\infty$.
+  \item \textbf{Comparison for infinity:} if $x_n\le y_n$ and
+        $x_n\to\infty$, then $y_n\to\infty$.
+  \item \textbf{The ``max of the $N$'s'':} when you need two conditions at
+        once, take $N=\max(N_1,N_2)$.
+  \item \textbf{$\eps$-splitting:} to get a total of $<\eps$ from two pieces,
+        make each piece $<\frac\eps2$. With a constant $C$ in front, make the
+        piece $<\frac{\eps}{C}$.
+\end{itemize}
+
+\subsection{Binomial-theorem estimates (Week 4 style)}
+For $x\ge0$ and $n\ge2$:
+$(1+x)^n=\sum_{k=0}^n\binom nk x^k\ge 1+nx$ and also
+$(1+x)^n\ge\binom n2x^2=\frac{n(n-1)}2x^2$.
+Keep only the one term you need.
+
+\begin{ex}[$\frac{n}{2^n}\to0$]
+$2^n=(1+1)^n\ge\binom n2=\frac{n(n-1)}{2}$, so for $n\ge2$,
+$0<\frac n{2^n}\le\frac{2n}{n(n-1)}=\frac{2}{n-1}\to0$. Squeeze.
+\end{ex}
+
+\begin{ex}[$a^{1/n}\to1$ for $a>1$]
+Let $d_n=a^{1/n}-1>0$. Then $a=(1+d_n)^n\ge1+nd_n$, so
+$0<d_n\le\frac{a-1}{n}\to0$. For $0<a<1$, apply this to $\frac1a$ and take
+reciprocals.
+\end{ex}
+
+\begin{ex}[$n^{1/n}\to1$]
+Let $d_n=n^{1/n}-1\ge0$. Then $n=(1+d_n)^n\ge\frac{n(n-1)}2d_n^2$, so
+$d_n^2\le\frac{2}{n-1}$ and $0\le d_n\le\sqrt{\frac2{n-1}}\to0$.
+\end{ex}
+
+\begin{ex}[$\frac{a^n}{n!}\to0$ for any $a$]
+Fix an integer $K\ge2|a|$. For $n>K$,
+$\frac{|a|^n}{n!}=\frac{|a|^K}{K!}\cdot\prod_{j=K+1}^n\frac{|a|}{j}\le\frac{|a|^K}{K!}\left(\tfrac12\right)^{n-K}\to0$.
+\end{ex}
+
 \subsection{Basic limits to memorize}
 \begin{enumerate}[nosep]
   \item $\frac1{n^p}\to0$ for $p>0$.
@@ -577,6 +644,20 @@ holds because $0<x_n<2$.
 $x_{n+1}^2=2+x_n$. Take limits using the product and sum laws:
 $L^2=2+L$, so $(L-2)(L+1)=0$. Since $L\ge1$, $L=2$.
 \end{proof}
+\end{ex}
+
+\begin{ex}[A decreasing recursive sequence]
+$x_1=3$, $x_{n+1}=\sqrt{x_n+2}$. \emph{Bound:} $x_n>2$ by induction
+($x_{n+1}>\sqrt4=2$). \emph{Decreasing:}
+$x_{n+1}<x_n\iff x_n+2<x_n^2\iff(x_n-2)(x_n+1)>0$, which holds. By MCT,
+$x_n\to L\ge2$ with $L^2=L+2$, so $L=2$.
+\end{ex}
+
+\begin{ex}[$e$ exists, idea only]
+$a_n=\left(1+\frac1n\right)^n$ is increasing and bounded above by $3$
+(binomial expansion compared with $\sum\frac1{k!}\le1+\sum\frac1{2^{k-1}}$).
+So it converges, and its limit is called $e$. \key{MCT proves existence
+without knowing the value.}
 \end{ex}
 
 \begin{ex}[HW3 P4, averages]
@@ -714,6 +795,46 @@ Compute (limit laws allowed):
 \end{enumerate}
 \end{prob}
 
+\begin{prob}
+Let $A,B$ be nonempty and bounded above. Prove
+$\sup(A\cup B)=\max\{\sup A,\sup B\}$.
+\end{prob}
+
+\begin{prob}
+Find $\sup$ and $\inf$ of $\left\{\frac1n+\frac1m:n,m\in\N\right\}$.
+\end{prob}
+
+\begin{prob}
+Prove that if $x_n\to0$ and $(y_n)$ is bounded, then $x_ny_n\to0$. Use it
+to find $\lim\frac{(-1)^n n}{n^2+1}$.
+\end{prob}
+
+\begin{prob}
+Prove that if $x_n\to\infty$ then $\frac1{x_n}\to0$ (from the definitions).
+\end{prob}
+
+\begin{prob}
+Use the definition to prove $\displaystyle\lim_{n\to\infty}\frac{3n+1}{n-2}=3$
+(consider $n\ge3$).
+\end{prob}
+
+\begin{prob}
+Prove that $\frac{n}{2^n}\to0$.
+\end{prob}
+
+\begin{prob}
+Solve $|2x-1|<|x+2|$.
+\end{prob}
+
+\begin{prob}
+Prove: if $x_n\to L>0$, then $x_n>\frac L2$ for all sufficiently large $n$.
+\end{prob}
+
+\begin{prob}
+Show that $S=\{x\in\R:x^2<5\}$ is bounded above, explain why $\sup S$
+exists without knowing its value, and identify $\sup S$.
+\end{prob}
+
 % =====================================================================
 \newpage
 \section{Solutions}
@@ -817,5 +938,50 @@ $L=\frac{L+3}2$, so $L=3$. \qed
   \item True: $\sup S$ is an upper bound in $S$, which is the definition of
         a maximum.
 \end{enumerate}
+
+\paragraph{18.} Let $\alpha=\sup A$, $\beta=\sup B$, $M=\max\{\alpha,\beta\}$.
+\emph{Upper bound:} if $x\in A\cup B$, then $x\le\alpha\le M$ or
+$x\le\beta\le M$. \emph{Least:} say $M=\alpha$. Given $\eps>0$, there is
+$a\in A\subseteq A\cup B$ with $a>\alpha-\eps=M-\eps$. \qed
+
+\paragraph{19.} $\sup=\max=2$ (at $n=m=1$), since $\frac1n+\frac1m\le1+1$.
+$\inf=0$, not attained: $0$ is a lower bound since every element is $>0$.
+Given $\eps>0$, pick $n$ with $\frac1n<\frac\eps2$. Then
+$\frac1n+\frac1n<\eps$, with $m=n$. \qed
+
+\paragraph{20.} Let $|y_n|\le M$ with $M>0$. Given $\eps>0$, choose $N$ with
+$|x_n|<\frac\eps M$ for $n\ge N$. Then $|x_ny_n|\le M|x_n|<\eps$.
+Application: $\frac{(-1)^nn}{n^2+1}=(-1)^n\cdot\frac{n}{n^2+1}$, where
+$(-1)^n$ is bounded and $0<\frac n{n^2+1}<\frac1n\to0$. So the limit is
+$0$. \qed
+
+\paragraph{21.} Let $\eps>0$. Apply $x_n\to\infty$ with $M=\frac1\eps$:
+there is $N$ with $x_n>\frac1\eps>0$ for $n\ge N$. Then
+$0<\frac1{x_n}<\eps$, so $\left|\frac1{x_n}-0\right|<\eps$. \qed
+
+\paragraph{22.} $\frac{3n+1}{n-2}-3=\frac{7}{n-2}>0$ for $n\ge3$. For
+$n\ge3$ we have $n-2\ge\frac n3$ (equivalent to $\frac{2n}{3}\ge2$), so
+$\frac7{n-2}\le\frac{21}n$. Given $\eps>0$, choose $N>\max\{3,\frac{21}\eps\}$.
+For $n\ge N$: $\left|\frac{3n+1}{n-2}-3\right|\le\frac{21}n\le\frac{21}N<\eps$. \qed
+
+\paragraph{23.} By the binomial theorem, $2^n\ge\binom n2=\frac{n(n-1)}2$ for
+$n\ge2$, so $0<\frac n{2^n}\le\frac2{n-1}$. Given $\eps>0$, choose
+$N>1+\frac2\eps$. For $n\ge N$: $\frac n{2^n}\le\frac2{n-1}<\eps$. \qed
+
+\paragraph{24.} Both sides are $\ge0$, so the inequality is equivalent to
+comparing squares:
+$(2x-1)^2<(x+2)^2\iff3x^2-8x-3<0\iff(3x+1)(x-3)<0\iff-\frac13<x<3$.
+(Alternatively, split into cases at $x=\frac12$ and $x=-2$.)
+
+\paragraph{25.} Take $\eps=\frac L2>0$. There is $N$ with
+$|x_n-L|<\frac L2$ for $n\ge N$, so
+$x_n>L-\frac L2=\frac L2$. \key{This is the ``eventually positive'' lemma,
+used in the quotient rule.} \qed
+
+\paragraph{26.} If $x\ge3$ then $x^2\ge9>5$, so every $x\in S$ satisfies
+$x<3$, and $3$ is an upper bound. $S\ne\emptyset$ since $0\in S$. By the
+Completeness Axiom, $\sup S$ exists, even though we haven't computed it.
+In fact $\sup S=\sqrt5$, whose existence was proved in lecture by exactly
+this sup argument for $\sqrt2$.
 
 \end{document}
