@@ -314,34 +314,54 @@ absorbed into these):
 
 \subsection*{(b) Gibbs distribution as a pairwise MN (6 points)}
 
+A pairwise Markov network has one factor per edge (and optionally one
+per node), even for edges that lie inside a triangle. Using the 8 edges:
 \[
-  P(A,B,C,D,E,F) = \frac{1}{Z}\,\todo{product of pairwise factors},
-  \qquad
-  Z = \todo{}
+  P(A,B,C,D,E,F) = \frac{1}{Z}\,
+  \phi(A,B)\,\phi(A,D)\,\phi(B,C)\,\phi(B,E)\,\phi(B,F)\,\phi(C,F)\,\phi(D,E)\,\phi(E,F),
 \]
+\[
+  Z = \sum_{a,b,c,d,e,f}
+  \phi(a,b)\,\phi(a,d)\,\phi(b,c)\,\phi(b,e)\,\phi(b,f)\,\phi(c,f)\,\phi(d,e)\,\phi(e,f).
+\]
+Unlike in (a), the triangles $\{B,E,F\}$ and $\{B,C,F\}$ are not given their
+own 3-variable factors; each is represented only through its three
+pairwise edge factors.
 
 \subsection*{(c) Local Markov independencies (6 points)}
+
+In a Markov network, each node is independent of all other nodes given its
+neighbors (its Markov blanket):
+$X \indep \bigl(\mathcal{X} \setminus (\{X\} \cup \mathrm{MB}(X))\bigr) \mid \mathrm{MB}(X)$.
 
 \begin{center}
 \begin{tabular}{c|c|l}
   \toprule
   Node & Neighbors (Markov blanket) & Local independence \\
   \midrule
-  $A$ & \blank & \todo{} \\
-  $B$ & \blank & \todo{} \\
-  $C$ & \blank & \todo{} \\
-  $D$ & \blank & \todo{} \\
-  $E$ & \blank & \todo{} \\
-  $F$ & \blank & \todo{} \\
+  $A$ & $\{B, D\}$       & $A \indep \{C, E, F\} \mid \{B, D\}$ \\
+  $B$ & $\{A, C, E, F\}$ & $B \indep \{D\} \mid \{A, C, E, F\}$ \\
+  $C$ & $\{B, F\}$       & $C \indep \{A, D, E\} \mid \{B, F\}$ \\
+  $D$ & $\{A, E\}$       & $D \indep \{B, C, F\} \mid \{A, E\}$ \\
+  $E$ & $\{B, D, F\}$    & $E \indep \{A, C\} \mid \{B, D, F\}$ \\
+  $F$ & $\{B, C, E\}$    & $F \indep \{A, D\} \mid \{B, C, E\}$ \\
   \bottomrule
 \end{tabular}
 \end{center}
 
 \subsection*{(d) Is $A \indep F \mid \{D, C\}$? (2 points)}
 
-\todo{Answer yes/no, and justify with separation: either exhibit an active
-  path from $A$ to $F$ that avoids $\{D,C\}$, or argue that every path passes
-  through $\{D,C\}$.}
+\textbf{No.} In a Markov network, $A \indep F \mid \{D, C\}$ holds only if
+every path from $A$ to $F$ passes through an observed node in $\{D, C\}$
+(separation). The path
+\[
+  A - B - F
+\]
+uses only the unobserved node $B$, so it is active. ($A - B - E - F$ is
+another active path.) Hence $A$ and $F$ are not separated by $\{D, C\}$,
+and they are not independent given $D$ and $C$. Observing $D$ and $C$ blocks
+only the paths $A - D - E - F$ and $A - B - C - F$, not the route through
+$B$.
 
 % ============================================================
 \section*{Problem 5: Tree-structured CPD (10 points)}
@@ -373,20 +393,59 @@ Leaves list $(P(e^0), P(e^1))$.
 \end{tikzpicture}
 \end{center}
 
+To read the tree CPD, start at the root and follow the branch matching
+each observed value until a leaf is reached. Variables not on that path do
+not affect the result.
+
 \subsection*{(a) $P(E=e^0 \mid a^0, b^1, c^1, d^1)$}
-Path through the tree: \todo{} \qquad Answer: \blank
+Path: $A \xrightarrow{a^0} B \xrightarrow{b^1} (0.5, 0.5)$. The values of
+$C$ and $D$ are irrelevant in this context.
+\[
+  P(E = e^0 \mid a^0, b^1, c^1, d^1) = \boxed{0.5}
+\]
 
 \subsection*{(b) $P(E=e^1 \mid a^1, b^1, c^1, d^1)$}
-Path through the tree: \todo{} \qquad Answer: \blank
+Path: $A \xrightarrow{a^1} C \xrightarrow{c^1} (0.3, 0.7)$. The values of
+$B$ and $D$ are irrelevant in this context.
+\[
+  P(E = e^1 \mid a^1, b^1, c^1, d^1) = \boxed{0.7}
+\]
 
 \subsection*{(c) $P(E=e^1 \mid a^0, b^0, c^0, d^0)$}
-Path through the tree: \todo{} \qquad Answer: \blank
+Path: $A \xrightarrow{a^0} B \xrightarrow{b^0} D \xrightarrow{d^0} (0.2, 0.8)$.
+The value of $C$ is irrelevant in this context.
+\[
+  P(E = e^1 \mid a^0, b^0, c^0, d^0) = \boxed{0.8}
+\]
 
 \subsection*{(d) Is $E \indep_c B \mid a^0$?}
-\todo{Yes/no + justification using the tree.}
+\textbf{No.} In the context $a^0$, the tree splits on $B$, and the two
+branches lead to different distributions over $E$:
+\[
+  P(E \mid a^0, b^1) = (0.5, 0.5),
+  \qquad
+  P(E \mid a^0, b^0, d^0) = (0.2, 0.8),
+  \qquad
+  P(E \mid a^0, b^0, d^1) = (0.6, 0.4).
+\]
+For example, with $d^0$, changing $B$ from $b^1$ to $b^0$ changes
+$P(e^1)$ from $0.5$ to $0.8$. So $P(E \mid a^0, B, \cdot)$ depends on $B$,
+and $E$ is not context-specifically independent of $B$ given $a^0$.
 
 \subsection*{(e) Is $E \indep_c C \mid d^1$?}
-\todo{Yes/no + justification using the tree.}
+\textbf{No.} The context $d^1$ fixes only $D$, and $D$ appears only in the
+$a^0, b^0$ subtree. It does not affect the $a^1$ branch, where the tree
+splits on $C$:
+\[
+  P(E \mid a^1, c^0, d^1) = (0.1, 0.9),
+  \qquad
+  P(E \mid a^1, c^1, d^1) = (0.3, 0.7).
+\]
+So with $A = a^1$, changing $C$ changes the distribution of $E$ even when
+$d^1$ is fixed. (Under $a^0$, $C$ is irrelevant, but context-specific
+independence must hold for every value of the remaining variables, and it
+fails when $A = a^1$.) Hence $E$ is not context-specifically independent of
+$C$ given $d^1$.
 
 
 \subsection*{Use of Ai}
