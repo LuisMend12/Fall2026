@@ -284,14 +284,32 @@ independent of the rest of the network given its neighbors.
 
 \subsection*{(a) All factors that factorize over the graph (6 points)}
 
-\textbf{Edges:} \todo{list them}
+\textbf{Edges:} $A$--$B$, $A$--$D$, $B$--$C$, $B$--$E$, $B$--$F$, $C$--$F$,
+$D$--$E$, $E$--$F$ \quad (8 edges).
 
-\textbf{Cliques:} \todo{list every clique (single nodes, edges, triangles, \dots)}
+\textbf{Cliques} (every pair of nodes in the set must be joined by an edge):
+\begin{itemize}
+  \item Single nodes: $\{A\}, \{B\}, \{C\}, \{D\}, \{E\}, \{F\}$.
+  \item Edges: the 8 edges listed above.
+  \item Triangles: $\{B,E,F\}$ (edges $B$--$E$, $E$--$F$, $B$--$F$) and
+        $\{B,C,F\}$ (edges $B$--$C$, $C$--$F$, $B$--$F$).
+  \item No 4-cliques: e.g.\ $\{A,B,D,E\}$ is missing $A$--$E$ and $B$--$D$,
+        and $\{B,C,E,F\}$ is missing $C$--$E$.
+\end{itemize}
 
-\textbf{Maximal cliques:} \todo{}
+\textbf{Maximal cliques:} the two triangles $\{B,E,F\}$ and $\{B,C,F\}$, plus
+the edges not contained in either triangle: $\{A,B\}$, $\{A,D\}$, $\{D,E\}$.
 
+A distribution factorizes over this graph if it can be written as a product
+of factors over its maximal cliques (factors over smaller cliques can be
+absorbed into these):
 \[
-  P(A,B,C,D,E,F) = \frac{1}{Z}\,\todo{product of factors}
+  P(A,B,C,D,E,F) = \frac{1}{Z}\,
+  \phi_1(A,B)\,\phi_2(A,D)\,\phi_3(D,E)\,\phi_4(B,E,F)\,\phi_5(B,C,F),
+\]
+\[
+  Z = \sum_{a,b,c,d,e,f}
+  \phi_1(a,b)\,\phi_2(a,d)\,\phi_3(d,e)\,\phi_4(b,e,f)\,\phi_5(b,c,f).
 \]
 
 \subsection*{(b) Gibbs distribution as a pairwise MN (6 points)}
