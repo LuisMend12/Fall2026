@@ -209,16 +209,53 @@ their sum, $0.16 + 0.16 + 0.1 + 0.1 = 0.52$.
 
 \subsection*{(b) Conditionals in terms of $\phi$ (8 points)}
 
-\todo{Show the derivation once in full for $p(x_1 \mid x_2, x_4)$ (write the
-  conditional as a ratio of joints, then cancel), then use the same pattern
-  for the rest.}
+\textbf{General method.} Write the conditional as a ratio of the joint to
+its sum over the queried variable. The partition function $Z$ cancels, and
+any factor that does not contain the queried variable takes the same value in
+the numerator and in every term of the denominator, so it cancels too. Only
+the factors touching the queried variable (that is, the edges to its two
+neighbors) remain.
 
-\begin{align*}
-  p(x_1 \mid x_2, x_4) &= \todo{} \\[4pt]
-  p(x_2 \mid x_1, x_3) &= \todo{} \\[4pt]
-  p(x_3 \mid x_2, x_4) &= \todo{} \\[4pt]
-  p(x_4 \mid x_1, x_3) &= \todo{}
-\end{align*}
+\paragraph{$p(x_1 \mid x_2, x_4)$.}
+\[
+  p(x_1 \mid x_2, x_4)
+  = \frac{\tfrac1Z\,\phi(x_1,x_2)\,\phi(x_2,x_3)\,\phi(x_3,x_4)\,\phi(x_4,x_1)}
+         {\sum_{x_1'}\tfrac1Z\,\phi(x_1',x_2)\,\phi(x_2,x_3)\,\phi(x_3,x_4)\,\phi(x_4,x_1')} .
+\]
+The factors $\phi(x_2,x_3)$ and $\phi(x_3,x_4)$ do not contain $x_1$, so they
+cancel along with $\tfrac1Z$:
+\[
+  p(x_1 \mid x_2, x_4)
+  = \frac{\phi(x_1,x_2)\,\phi(x_4,x_1)}{\sum_{x_1'}\phi(x_1',x_2)\,\phi(x_4,x_1')} .
+\]
+
+\paragraph{$p(x_2 \mid x_1, x_3)$.}
+The factors containing $x_2$ are $\phi(x_1,x_2)$ and $\phi(x_2,x_3)$; the
+factors $\phi(x_3,x_4)$ and $\phi(x_4,x_1)$ cancel.
+\[
+  p(x_2 \mid x_1, x_3)
+  = \frac{\phi(x_1,x_2)\,\phi(x_2,x_3)}{\sum_{x_2'}\phi(x_1,x_2')\,\phi(x_2',x_3)} .
+\]
+
+\paragraph{$p(x_3 \mid x_2, x_4)$.}
+The factors containing $x_3$ are $\phi(x_2,x_3)$ and $\phi(x_3,x_4)$; the
+factors $\phi(x_1,x_2)$ and $\phi(x_4,x_1)$ cancel.
+\[
+  p(x_3 \mid x_2, x_4)
+  = \frac{\phi(x_2,x_3)\,\phi(x_3,x_4)}{\sum_{x_3'}\phi(x_2,x_3')\,\phi(x_3',x_4)} .
+\]
+
+\paragraph{$p(x_4 \mid x_1, x_3)$.}
+The factors containing $x_4$ are $\phi(x_3,x_4)$ and $\phi(x_4,x_1)$; the
+factors $\phi(x_1,x_2)$ and $\phi(x_2,x_3)$ cancel.
+\[
+  p(x_4 \mid x_1, x_3)
+  = \frac{\phi(x_3,x_4)\,\phi(x_4,x_1)}{\sum_{x_4'}\phi(x_3,x_4')\,\phi(x_4',x_1)} .
+\]
+
+\textbf{Observation.} Each conditional depends only on the variable's two
+neighbors in the cycle. This is the local Markov property: a node is
+independent of the rest of the network given its neighbors.
 
 % ============================================================
 \section*{Problem 4: Markov network structure (20 points)}
