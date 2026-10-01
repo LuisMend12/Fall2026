@@ -147,32 +147,37 @@ Given factors:
   \toprule
   $X$ & $Y$ & $Z$ & $\phi_1(X,Y)\cdot\phi_2(Y,Z)$ & $\psi(X,Y,Z)$ \\
   \midrule
-  1 & 1 & 1 & \blank $\cdot$ \blank & \blank \\
-  1 & 1 & 2 & \blank $\cdot$ \blank & \blank \\
-  1 & 2 & 1 & \blank $\cdot$ \blank & \blank \\
-  1 & 2 & 2 & \blank $\cdot$ \blank & \blank \\
-  2 & 1 & 1 & \blank $\cdot$ \blank & \blank \\
-  2 & 1 & 2 & \blank $\cdot$ \blank & \blank \\
-  2 & 2 & 1 & \blank $\cdot$ \blank & \blank \\
-  2 & 2 & 2 & \blank $\cdot$ \blank & \blank \\
+  1 & 1 & 1 & $0.8 \cdot 0.2$ & 0.16 \\
+  1 & 1 & 2 & $0.8 \cdot 0.2$ & 0.16 \\
+  1 & 2 & 1 & $0.5 \cdot 0.9$ & 0.45 \\
+  1 & 2 & 2 & $0.5 \cdot 1.0$ & 0.5 \\
+  2 & 1 & 1 & $0.5 \cdot 0.2$ & 0.1 \\
+  2 & 1 & 2 & $0.5 \cdot 0.2$ & 0.1 \\
+  2 & 2 & 1 & $0.6 \cdot 0.9$ & 0.54 \\
+  2 & 2 & 2 & $0.6 \cdot 1.0$ & 0.6 \\
   \bottomrule
 \end{tabular}
 \end{center}
 
 \subsection*{(b) $\psi(X,Z \mid Y=1)$ (5 points)}
 
-\todo{Explain in one or two sentences what operation you are applying
-  (factor reduction to the context $Y=1$) and whether you normalize.}
+This is a factor reduction to the context $Y = 1$: keep only the rows of
+$\psi(X,Y,Z)$ from (a) with $Y = 1$ and drop the $Y$ column. Reduction alone
+does not normalize, so the unnormalized values are shown first. To read
+$\psi(X,Z \mid Y=1)$ as a conditional distribution, divide each entry by
+their sum, $0.16 + 0.16 + 0.1 + 0.1 = 0.52$.
 
 \begin{center}
-\begin{tabular}{cc|c}
+\begin{tabular}{cc|c|c}
   \toprule
-  $X$ & $Z$ & $\psi(X,Z \mid Y=1)$ \\
+  $X$ & $Z$ & $\psi[Y=1]$ (reduced) & $\psi(X,Z \mid Y=1)$ (normalized) \\
   \midrule
-  1 & 1 & \blank \\
-  1 & 2 & \blank \\
-  2 & 1 & \blank \\
-  2 & 2 & \blank \\
+  1 & 1 & 0.16 & $0.16/0.52 \approx 0.308$ \\
+  1 & 2 & 0.16 & $0.16/0.52 \approx 0.308$ \\
+  2 & 1 & 0.1  & $0.1/0.52 \approx 0.192$ \\
+  2 & 2 & 0.1  & $0.1/0.52 \approx 0.192$ \\
+  \midrule
+  \multicolumn{2}{c|}{Sum} & 0.52 & 1 \\
   \bottomrule
 \end{tabular}
 \end{center}
