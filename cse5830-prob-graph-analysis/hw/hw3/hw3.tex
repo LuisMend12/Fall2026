@@ -32,28 +32,85 @@ $(\lambda_0, \lambda_1, \dots, \lambda_K)$.
 \subsection*{(a) Expression for $P(Y=0 \mid X_1, \dots, X_K)$ (10 points)}
 
 \textbf{Setup / convention.}
-\todo{State what $\lambda_i$ and $\lambda_0$ mean in your model (in words), and
-  draw or describe the auxiliary variables $Z_i$ if you use them.}
+Noisy-AND is the De Morgan dual of noisy-OR. In a deterministic AND gate, a
+single input $X_i = 0$ is enough to force $Y = 0$, and $Y = 1$ happens in
+only one way: every input equals 1.
+\begin{center}
+\begin{tabular}{cc|c}
+  \toprule
+  $X_1$ & $X_2$ & $Y = X_1 \land X_2$ \\
+  \midrule
+  0 & 0 & 0 \\
+  0 & 1 & 0 \\
+  1 & 0 & 0 \\
+  1 & 1 & 1 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+For each parent, introduce an independent mechanism variable $Z_i$, where
+$Z_i = 1$ means ``$X_i$ forces $Y = 0$''. An input that is present can never
+force an AND gate to 0, so
+\[
+  P(Z_i = 1 \mid X_i = 1) = 0, \qquad
+  P(Z_i = 1 \mid X_i = 0) = \lambda_i .
+\]
+That is, $\lambda_i$ is the probability that an absent input ($X_i = 0$)
+succeeds in forcing $Y = 0$. The leak $Z_0$ is always active, with
+$P(Z_0 = 1) = \lambda_0$: the probability that $Y = 0$ even when every input
+is 1. Then $Y = 1$ if and only if $Z_0 = Z_1 = \cdots = Z_K = 0$.
 
 \textbf{Derivation.}
-\todo{Derive the expression step by step.}
-
+Since $Y = 1$ requires that no mechanism fires, and the mechanisms are
+independent (independence of the causal mechanisms),
 \[
-  P(Y = 0 \mid X_1, \dots, X_K) = \todo{final expression}
+  P(Y = 1 \mid X_1, \dots, X_K)
+  = P(Z_0 = 0) \prod_{i=1}^{K} P(Z_i = 0 \mid X_i).
 \]
+Each factor is
+\[
+  P(Z_i = 0 \mid X_i) =
+  \begin{cases}
+    1, & X_i = 1, \\
+    1 - \lambda_i, & X_i = 0,
+  \end{cases}
+\]
+so parents with $X_i = 1$ contribute a factor of 1 and drop out. Hence
+\[
+  P(Y = 1 \mid X_1, \dots, X_K) = (1 - \lambda_0) \prod_{i \,:\, X_i = 0} (1 - \lambda_i),
+\]
+and taking the complement,
+\[
+  \boxed{\,P(Y = 0 \mid X_1, \dots, X_K)
+  = 1 - (1 - \lambda_0) \prod_{i \,:\, X_i = 0} (1 - \lambda_i)\,}
+\]
+
+\textbf{Sanity check.} With no leak ($\lambda_0 = 0$) and $\lambda_i = 1$ for
+all $i$: if every $X_i = 1$, the product is empty (equal to 1), so
+$P(Y = 0) = 0$; if any $X_i = 0$, the product contains a factor $1 - 1 = 0$,
+so $P(Y = 0) = 1$. This is exactly the deterministic AND gate.
 
 \subsection*{(b) Numerical case (5 points)}
 
 $K = 4$, \quad $\lambda_0 = 0,\ \lambda_1 = 0.9,\ \lambda_2 = 0.75,\
 \lambda_3 = 0.8,\ \lambda_4 = 0.85$.
 
-\[
+Only $X_2$ and $X_3$ are off, so only $\lambda_2$ and $\lambda_3$ enter the
+product; $X_1 = X_4 = 1$ contribute factors of 1. With no leak,
+$1 - \lambda_0 = 1$. Using the formula from (a):
+\begin{align*}
   P(Y = 0 \mid X_1 = 1, X_2 = 0, X_3 = 0, X_4 = 1)
-  = \todo{substitute into (a)}
-  = \blank
-\]
+  &= 1 - (1 - \lambda_0)(1 - \lambda_2)(1 - \lambda_3) \\
+  &= 1 - (1 - 0)(1 - 0.75)(1 - 0.8) \\
+  &= 1 - (1)(0.25)(0.2) \\
+  &= 1 - 0.05 \\
+  &= \boxed{0.95}
+\end{align*}
 
-\todo{One sentence: does the number make sense? (sanity check)}
+\textbf{Sanity check.} Two inputs are off, and each has a high chance
+($0.75$ and $0.8$) of forcing $Y = 0$. So $Y = 1$ requires both of those
+mechanisms to fail, which happens with probability only
+$0.25 \times 0.2 = 0.05$. A value of $P(Y = 0)$ close to, but below, 1 is what
+we expect.
 
 % ============================================================
 \section*{Problem 2: Factor product (15 points)}
@@ -270,5 +327,5 @@ Path through the tree: \todo{} \qquad Answer: \blank
 
 
 \subsection*{Use of Ai}
-In this assignment, I used Ai to help me understand the assignment give me hints for each question as well as helping whenever I got stuck in a question.
+In this assignment, I used Ai to help me understand the assignment give me hints for each question as well as helping whenever I got stuck in a question. Also used AI to write and debug my tex code. However, I solved all the question of the assignment on my own.
 \end{document}
