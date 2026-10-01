@@ -12,7 +12,9 @@
 \newtheorem{thm}[defn]{Theorem}
 \newtheorem{ex}[defn]{Example}
 \newtheorem{method}[defn]{Method}
+\newtheorem{lem}[defn]{Lemma}
 \newtheorem{prob}{Practice Problem}
+\newtheorem{mprob}{Exam Problem}
 
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
@@ -23,12 +25,13 @@
 
 \newenvironment{scratch}{\par\medskip\noindent\textit{Scratch work (not part of the proof):}\ }{\par\medskip}
 
-\title{MATH 3150 --- Quiz 1 Study Guide\\
+\title{MATH 3150 --- Exam 1 Study Guide\\
 \large Methods, templates, worked examples, and practice problems\\
-\normalsize (Weeks 1--4: $\N,\Q,\R$, induction, sup/inf, completeness,
-absolute value, limits of sequences, monotone sequences)}
+\normalsize (Weeks 1--5: $\N,\Q,\R$, induction, sup/inf, completeness,
+absolute value, limits of sequences, monotone sequences, subsequences,
+Cauchy sequences)}
 \author{}
-\date{Quiz 1: Tuesday, September 29}
+\date{Exam 1: Tuesday, October 13, in class (12:30--1:45, MONT 225)}
 
 \begin{document}
 \maketitle
@@ -45,16 +48,32 @@ solutions are in Section~\ref{sec:solutions}. Try each problem on paper
 before you look at the solution.
 
 \medskip
-\noindent\key{Quiz scope (from the syllabus).}
+\noindent\key{Exam 1 scope.} The syllabus says Weeks 1--4, as tested in
+HW1--HW4. \textbf{Cauchy sequences will also be tested}, so
+Section~\ref{sec:cauchy} covers them in full, along with the subsequence
+facts that the Cauchy proofs need.
 \begin{itemize}[nosep]
   \item HW1: set identities, induction, rational/irrational arguments.
   \item HW2: density of $\Q$ and of the irrationals, sup/inf, the
         completeness axiom, $\sup(A+B)$.
   \item HW3: triangle and reverse triangle inequality, $\eps$--$N$ limits,
         $x_n\to\infty$, monotone sequences.
-  \item Week 4 lectures: limit laws, basic limits, limits equal to
+  \item HW4 and Week 4 lectures: limit laws, basic limits, limits equal to
         $\pm\infty$, the Monotone Convergence Theorem.
+  \item Quiz 1: $\sup\{xy\}=\sup A\cdot\sup B$ for positive sets
+        (worked in full in Example~\ref{ex:quiz1}).
+  \item Week 5: subsequences, Bolzano--Weierstrass, \textbf{Cauchy
+        sequences}, and the \textbf{Nested Interval Theorem}
+        (Section~\ref{sec:nit}).
+  \item Not tested: the Week 6 topology material.
 \end{itemize}
+
+\medskip
+\noindent\key{Exam vs.\ quiz.} The quiz was one proof in 20 minutes. The
+exam is 75 minutes and will probably have several problems: expect one
+or two definitions or statements, a sup/inf proof, an $\eps$--$N$ proof,
+a monotone or recursive sequence, and a Cauchy question.
+Section~\ref{sec:mock} is a practice exam in that format.
 
 \medskip
 \noindent\key{The single most important skill:} match the \emph{shape}
@@ -99,6 +118,11 @@ Bounded seq. & $\exists M>0\ \forall n:\ |x_n|\le M$\\ \hline
 Increasing & $x_n\le x_{n+1}$ for all $n$ \quad (decreasing: $x_n\ge x_{n+1}$)\\ \hline
 MCT & bounded $+$ monotone $\Rightarrow$ convergent (to $\sup$ or $\inf$ of the terms)\\ \hline
 Cauchy & $\forall\eps>0\ \exists N\ \forall n,m\ge N:\ |x_n-x_m|<\eps$\\ \hline
+Not Cauchy & $\exists\eps>0\ \forall N\ \exists n,m\ge N:\ |x_n-x_m|\ge\eps$\\ \hline
+Subsequence & $(x_{n_k})_k$ with $n_1<n_2<n_3<\cdots$ (so $n_k\ge k$)\\ \hline
+Cauchy criterion & in $\R$: $(x_n)$ converges $\iff$ $(x_n)$ is Cauchy\\ \hline
+B--W & every bounded sequence has a convergent subsequence\\ \hline
+NIT & closed, bounded, nested $[a_n,b_n]$ $\Rightarrow$ $\bigcap_n[a_n,b_n]\ne\emptyset$; a single point if $b_n-a_n\to0$\\ \hline
 \end{tabular}
 \end{center}
 
@@ -813,6 +837,51 @@ inequalities flips, upper bounds turn into lower bounds, and you get
 $\sup(cA)=c\inf A$ instead.
 \end{ex}
 
+\begin{ex}[Quiz 1: $\sup(AB)=\sup A\cdot\sup B$ for positive sets]\label{ex:quiz1}
+Let $A,B\subseteq(0,\infty)$ be nonempty and bounded, with $\alpha=\sup A$,
+$\beta=\sup B$, and $C=\{xy:x\in A,\ y\in B\}$. Prove $\sup C=\alpha\beta$.
+
+\smallskip\noindent\textbf{Idea.} ($\le$) is the usual ``upper bound''
+step. For ($\ge$), the instructor's solution avoids $\eps$: it
+\key{divides by one variable to turn the problem into a sup of $A$}, then
+does the same for $B$. This is ``fix one, bound, let it vary'' from the
+$\sup S\le\inf T$ template, done twice.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 ($\alpha\beta$ is an upper bound of $C$).} Let $z\in C$, so
+$z=xy$ with $x\in A$, $y\in B$. Then $0<x\le\alpha$ and $0<y\le\beta$.
+Multiplying inequalities between \emph{positive} numbers,
+$xy\le\alpha y\le\alpha\beta$. So $\alpha\beta$ is an upper bound of $C$,
+$\sup C$ exists by completeness ($C\ne\emptyset$), and
+$\sup C\le\alpha\beta$.
+
+\emph{Step 2 (fix $y$, bound $A$).} Fix $y\in B$. For every $x\in A$,
+$xy\in C$, so $xy\le\sup C$. Since $y>0$, $x\le\frac{\sup C}{y}$. So
+$\frac{\sup C}{y}$ is an upper bound of $A$, and since $\alpha$ is the
+\emph{least} upper bound, $\alpha\le\frac{\sup C}{y}$.
+
+\emph{Step 3 (let $y$ vary, bound $B$).} Step 2 gives
+$y\le\frac{\sup C}{\alpha}$ for every $y\in B$ (here $\alpha>0$ because
+$A$ contains a positive number). So $\frac{\sup C}{\alpha}$ is an upper
+bound of $B$, and therefore $\beta\le\frac{\sup C}{\alpha}$, i.e.\
+$\alpha\beta\le\sup C$.
+
+\emph{Step 4.} Steps 1 and 3 give $\sup C=\alpha\beta$.
+\end{proof}
+\noindent\key{Where is positivity used?} In every multiplication or
+division (Steps 1, 2, 3). Without it the result fails: for
+$A=B=\{-1,-2\}$ we get $\sup A=\sup B=-1$, but $C=\{1,2,4\}$ and
+$\sup C=4\ne1$.
+
+\noindent\key{$\eps$ version (harder).} You can also pick $x>\alpha-\delta$,
+$y>\beta-\delta$ and expand
+$(\alpha-\delta)(\beta-\delta)>\alpha\beta-\delta(\alpha+\beta)$, but you
+then have to choose $\delta$ small enough to keep both factors positive.
+The division trick above is cleaner. \textbf{Expect a variation on the
+exam}, e.g.\ $\sup\{1/x:x\in A\}=1/\inf A$ (Practice exam,
+Problem~\ref{mock:recip}).
+\end{ex}
+
 \begin{ex}[$\inf S=-\sup(-S)$]
 $m\le s$ for all $s\in S$ $\iff$ $-s\le -m$ for all $s\in S$. So lower
 bounds of $S$ are exactly the negatives of upper bounds of $-S$, and the
@@ -1257,7 +1326,7 @@ Suppose $x_n\to x$ and $y_n\to y$. Then:
 \end{enumerate}
 \end{thm}
 
-\noindent\key{Proofs to know (short ones are quiz favorites):}
+\noindent\key{Proofs to know (short ones are exam favorites):}
 \begin{itemize}
   \item \emph{Uniqueness:} $|x-x'|\le|x-x_n|+|x_n-x'|<2\eps$ for every
         $\eps$, so $x=x'$.
@@ -1704,19 +1773,681 @@ large as every earlier value cannot lower the average.
 \end{ex}
 
 % =====================================================================
-\section{Preview: subsequences and Bolzano--Weierstrass (Week 5)}
-These may not be on Quiz 1, but you should know the statements.
+\section{Subsequences and Cauchy sequences (Week 5)}
+\label{sec:cauchy}
+
+\subsection{Subsequence facts you need}
 \begin{itemize}[nosep]
   \item A \textbf{subsequence} is $(x_{n_k})_k$ with $n_1<n_2<\cdots$.
+        Its index is $k$, and \key{$n_k\ge k$ for every $k$}
+        (Lemma~\ref{lem:nkk}).
   \item If $x_n\to L$ then every subsequence $\to L$. \key{So two
         subsequences with different limits imply divergence}, e.g.\
         $(-1)^n$ with its even and odd terms.
-  \item Every sequence has a monotone subsequence.
+  \item Every sequence has a monotone subsequence
+        (Lemma~\ref{lem:monosub}).
   \item \textbf{Bolzano--Weierstrass:} every bounded sequence has a
-        convergent subsequence.
-  \item \textbf{Cauchy:} $\forall\eps\ \exists N$: $|x_n-x_m|<\eps$ for all
-        $n,m\ge N$. In $\R$, Cauchy $\iff$ convergent.
+        convergent subsequence (Lemma~\ref{lem:bw}).
 \end{itemize}
+
+\subsection{Definition and intuition}
+
+\begin{defn}[Cauchy sequence]
+$(x_n)$ is \textbf{Cauchy} if for every $\eps>0$ there is $N\in\N$ such that
+\[
+|x_n-x_m|<\eps\qquad\text{for all } n,m\ge N.
+\]
+(The lecture notes write $n,m>N$. The two versions are equivalent: replace
+$N$ by $N+1$.)
+\end{defn}
+
+\noindent\key{Lecture wording (Week 5, Definition 6) --- memorize this.}
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{A sequence $(x_n)_n$ of real numbers is called
+\textbf{Cauchy} if for any $\eps>0$ there exists $N$ so that
+$|x_n-x_m|<\eps$ for all $n,m>N$.}}
+\end{center}
+
+\noindent\key{In symbols.}
+\[
+(x_n)\text{ is Cauchy}\iff
+\forall\eps>0\ \ \exists N\in\N\ \ \forall n,m\ge N:\ \ |x_n-x_m|<\eps.
+\]
+
+\noindent\key{Reading the quantifiers in order.}
+\begin{itemize}[nosep]
+  \item $\forall\eps>0$: the challenger names any tolerance, however
+        small.
+  \item $\exists N$: you answer with a cutoff. \textbf{$N$ may depend on
+        $\eps$}, but not on $n$ or $m$.
+  \item $\forall n,m\ge N$: \emph{every} pair of terms past the cutoff,
+        not just neighbors and not just $m=n+1$.
+  \item $|x_n-x_m|<\eps$: those two terms are within $\eps$ of each other.
+\end{itemize}
+
+\noindent\key{Side by side with convergence.}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|l|l|}
+\hline
+$x_n\to L$ & $\forall\eps>0\ \exists N\ \forall n\ge N:\ |x_n-L|<\eps$\\ \hline
+$(x_n)$ Cauchy & $\forall\eps>0\ \exists N\ \forall n,m\ge N:\ |x_n-x_m|<\eps$\\ \hline
+\end{tabular}
+\end{center}
+The only change: the fixed target $L$ is replaced by a second term
+$x_m$. That is why the Cauchy condition can be checked without knowing
+$L$.
+
+\noindent\key{Equivalent form.} Writing $m=n+p$: $(x_n)$ is Cauchy iff
+$\forall\eps>0\ \exists N$ such that $|x_{n+p}-x_n|<\eps$ for all
+$n\ge N$ and \emph{all} $p\in\N$. The ``all $p$'' is essential. Fixing
+$p=1$ gives the weaker condition in the Warning below.
+
+\noindent\key{Proof skeleton (copy this shape).}
+\begin{quote}
+Let $\eps>0$. Choose $N=\ldots$ \emph{(from scratch work)}. Let
+$n,m\ge N$; without loss of generality $m>n$. Then
+$|x_m-x_n|\le\ldots\le\ldots<\eps$. Hence $(x_n)$ is Cauchy.
+\end{quote}
+Example~\ref{ex:cdirect} below fills this in for $x_n=\frac n{n+1}$.
+
+\noindent\key{Intuition.} Convergent means ``the terms get close to
+\emph{a number $L$}.'' Cauchy means ``the terms get close to \emph{each
+other}.'' \textbf{No $L$ appears in the definition.} That is the whole
+point: you can prove a sequence converges without knowing or guessing its
+limit, even if it is not monotone (so MCT does not apply).
+
+\medskip
+\noindent\key{Negation (you need this to prove ``not Cauchy'').}
+\[
+(x_n)\text{ is not Cauchy}\iff
+\exists\eps>0\ \forall N\ \exists n,m\ge N:\ |x_n-x_m|\ge\eps.
+\]
+In words: some fixed gap $\eps$ keeps appearing between pairs of terms
+arbitrarily far out.
+
+\medskip
+\noindent\key{Warning.} Cauchy is \emph{not} the same as
+$|x_{n+1}-x_n|\to0$. The definition controls \emph{all} pairs $n,m\ge N$,
+not only neighbors. See Example~\ref{ex:sqrtn}.
+
+\subsection{Methods}
+
+\begin{method}[Proving Cauchy directly]\label{meth:cauchy}
+\leavevmode
+\begin{enumerate}[nosep]
+  \item By symmetry assume $m>n$ (if $m=n$ the difference is $0$).
+  \item \textbf{Scratch work:} simplify or estimate $|x_m-x_n|$ by an
+        expression that \key{depends only on $n$} (not on $m$) and goes to
+        $0$, e.g.\ $\frac Cn$ or $Cr^n$.
+  \item Choose $N$ so that this expression is $<\eps$ when $n\ge N$.
+  \item Write the forward proof: ``Let $\eps>0$. Choose $N=\ldots$. Let
+        $m>n\ge N$. Then $|x_m-x_n|\le\ldots<\eps$.''
+\end{enumerate}
+\end{method}
+
+\begin{method}[Telescoping and geometric sums]\label{meth:geom}
+If $|x_{k+1}-x_k|\le Cr^k$ for all $k$, with $0<r<1$, then for $m>n$
+\[
+|x_m-x_n|
+=\Bigl|\sum_{k=n}^{m-1}(x_{k+1}-x_k)\Bigr|
+\le\sum_{k=n}^{m-1}|x_{k+1}-x_k|
+\le C\sum_{k=n}^{m-1}r^k
+< C\,\frac{r^n}{1-r}.
+\]
+Since $r^n\to0$, this is $<\eps$ for large $n$, so $(x_n)$ is Cauchy. Use
+this for recursive sequences that oscillate, where MCT fails
+(Example~\ref{ex:golden}).
+\end{method}
+
+\begin{method}[Proving not Cauchy]
+Find one $\eps$ and, for each $N$, a specific pair $n,m\ge N$ with
+$|x_n-x_m|\ge\eps$. Good pairs to try: $m=n+1$ (oscillating sequences),
+$m=2n$ (sums and slowly growing sequences).
+\end{method}
+
+\begin{method}[Which tool?]
+\begin{itemize}[nosep]
+  \item You know or can guess $L$: $\eps$--$N$.
+  \item You can't guess $L$, but the sequence is monotone and bounded: MCT.
+  \item You can't guess $L$ and the sequence is not monotone: \textbf{show
+        it is Cauchy}.
+  \item To show divergence: two subsequences with different limits, or
+        show it is not Cauchy, or show it is unbounded.
+\end{itemize}
+\end{method}
+
+\subsection{Worked examples}
+
+\begin{ex}[A direct Cauchy proof]\label{ex:cdirect}
+Prove that $x_n=\dfrac{n}{n+1}$ is Cauchy.
+
+\begin{scratch}
+$x_n=1-\frac1{n+1}$. For $m>n$:
+$|x_m-x_n|=\bigl|\frac1{n+1}-\frac1{m+1}\bigr|=\frac1{n+1}-\frac1{m+1}<\frac1{n+1}<\frac1n$.
+This depends only on $n$. Need $\frac1n<\eps$, i.e.\ $n>\frac1\eps$.
+\end{scratch}
+
+\begin{proof}
+Let $\eps>0$. By the Archimedean property choose $N\in\N$ with
+$N>\frac1\eps$. Let $n,m\ge N$; by symmetry assume $m>n$ (if $m=n$ there
+is nothing to prove). Since $x_k=1-\frac1{k+1}$,
+\[
+|x_m-x_n|=\frac1{n+1}-\frac1{m+1}<\frac1{n+1}<\frac1n\le\frac1N<\eps.
+\]
+So $(x_n)$ is Cauchy.
+\end{proof}
+\end{ex}
+
+\begin{ex}[Partial sums of $\sum\frac1{k^2}$ are Cauchy]\label{ex:sumsq}
+Let $s_n=\sum_{k=1}^n\frac1{k^2}$. Prove $(s_n)$ is Cauchy.
+
+\begin{scratch}
+For $m>n$, $s_m-s_n=\sum_{k=n+1}^m\frac1{k^2}$. We can't sum this exactly,
+but $\frac1{k^2}\le\frac1{k(k-1)}=\frac1{k-1}-\frac1k$ for $k\ge2$, which
+telescopes.
+\end{scratch}
+
+\begin{proof}
+Let $m>n\ge1$. Every $k$ in the sum satisfies $k\ge n+1\ge2$, so
+$k^2\ge k(k-1)>0$ and
+\[
+0<s_m-s_n=\sum_{k=n+1}^m\frac1{k^2}\le\sum_{k=n+1}^m\Bigl(\frac1{k-1}-\frac1k\Bigr)
+=\frac1n-\frac1m<\frac1n.
+\]
+Let $\eps>0$ and choose $N>\frac1\eps$. For $m>n\ge N$:
+$|s_m-s_n|<\frac1n\le\frac1N<\eps$. So $(s_n)$ is Cauchy, and therefore
+converges, even though we never found its limit. (It is
+$\frac{\pi^2}{6}$, which you would not be expected to know.)
+\end{proof}
+\noindent Here MCT would also work ($s_n$ is increasing and $s_n<2$), but
+the Cauchy proof doesn't need monotonicity, so it also handles
+$\sum\frac{(-1)^k}{k^2}$ or $\sum\frac{\cos k}{k^2}$ with the same estimate.
+\end{ex}
+
+\begin{ex}[The harmonic sum is not Cauchy]\label{ex:harm}
+Let $h_n=\sum_{k=1}^n\frac1k$. Prove $(h_n)$ is not Cauchy, so it diverges.
+
+\begin{proof}
+Take $\eps=\frac12$. Let $N\in\N$ be arbitrary, and set $n=N$, $m=2N$, so
+$n,m\ge N$. The sum $h_{2N}-h_N=\sum_{k=N+1}^{2N}\frac1k$ has $N$ terms,
+each $\ge\frac1{2N}$ (because $k\le2N$). So
+\[
+|h_{2N}-h_N|\ge N\cdot\frac1{2N}=\frac12=\eps.
+\]
+This is the negation of Cauchy. So $(h_n)$ is not Cauchy and hence not
+convergent. (Since it is increasing and not convergent, MCT forces it to
+be unbounded, so in fact $h_n\to\infty$.)
+\end{proof}
+\end{ex}
+
+\begin{ex}[Neighbors close $\not\Rightarrow$ Cauchy]\label{ex:sqrtn}
+Let $x_n=\sqrt n$. Then
+$x_{n+1}-x_n=\frac1{\sqrt{n+1}+\sqrt n}\to0$, but $(x_n)$ is not Cauchy.
+
+\begin{proof}
+Take $\eps=1$. Given $N$, let $n=N$ and $m=4N$. Then
+$|x_m-x_n|=2\sqrt N-\sqrt N=\sqrt N\ge1=\eps$.
+\end{proof}
+\noindent \key{Lesson:} consecutive differences can shrink while the
+terms still drift off to $\infty$. On a true/false question,
+``$x_{n+1}-x_n\to0\Rightarrow$ Cauchy'' is \textbf{false}.
+\end{ex}
+
+\begin{ex}[$(-1)^n$ is not Cauchy]
+Take $\eps=2$ (or anything $\le2$). For any $N$, $n=N$ and $m=N+1$ give
+$|x_m-x_n|=|(-1)^{N+1}-(-1)^N|=2$. So $(-1)^n$ is bounded but not
+Cauchy, which shows that \textbf{bounded $\not\Rightarrow$ Cauchy}.
+\end{ex}
+
+\begin{ex}[An oscillating recursive sequence: Cauchy beats MCT]\label{ex:golden}
+Let $x_1=1$ and $x_{n+1}=1+\dfrac1{x_n}$. Prove $(x_n)$ converges and find
+the limit.
+
+\smallskip\noindent\textbf{Why MCT fails.} The terms are
+$1,\ 2,\ \frac32,\ \frac53,\ \frac85,\ \dots$, which go up, down, up,
+down. The sequence is not monotone.
+
+\begin{proof}
+\emph{Step 1 ($x_n\ge1$ for all $n$).} Induction: $x_1=1$. If $x_n\ge1$,
+then $\frac1{x_n}>0$, so $x_{n+1}=1+\frac1{x_n}>1$.
+
+\emph{Step 2 (products of neighbors are $\ge2$).} For $n\ge2$,
+$x_nx_{n-1}=\bigl(1+\frac1{x_{n-1}}\bigr)x_{n-1}=x_{n-1}+1\ge2$ by Step 1.
+
+\emph{Step 3 (contraction).} For $n\ge2$,
+\[
+|x_{n+1}-x_n|=\Bigl|\frac1{x_n}-\frac1{x_{n-1}}\Bigr|
+=\frac{|x_{n-1}-x_n|}{x_nx_{n-1}}\le\frac12|x_n-x_{n-1}|.
+\]
+
+\emph{Step 4 (geometric bound).} Since $|x_2-x_1|=1$, induction on Step 3
+gives $|x_{k+1}-x_k|\le\bigl(\frac12\bigr)^{k-1}$ for all $k\ge1$.
+
+\emph{Step 5 (Cauchy).} For $m>n$, by Method~\ref{meth:geom},
+\[
+|x_m-x_n|\le\sum_{k=n}^{m-1}\Bigl(\frac12\Bigr)^{k-1}
+=\Bigl(\frac12\Bigr)^{n-1}\cdot\frac{1-(1/2)^{m-n}}{1/2}
+<\Bigl(\frac12\Bigr)^{n-2}=\frac4{2^n}\le\frac4n
+\]
+(using $2^n\ge n$). Given $\eps>0$, choose $N>\frac4\eps$. Then
+$|x_m-x_n|<\eps$ for $m>n\ge N$. So $(x_n)$ is Cauchy.
+
+\emph{Step 6 (find the limit).} By the Cauchy criterion, $x_n\to L$ for
+some $L$, and $L\ge1$ by Step 1 (limits preserve $\ge$). In particular
+$L\ne0$, so the quotient rule applies to $x_{n+1}=1+\frac1{x_n}$. Taking
+limits on both sides (note $x_{n+1}\to L$ too) gives $L=1+\frac1L$, i.e.\
+$L^2-L-1=0$, so $L=\frac{1\pm\sqrt5}2$. Since $L\ge1$,
+$L=\frac{1+\sqrt5}2$.
+\end{proof}
+\end{ex}
+
+\begin{ex}[Sums and products of Cauchy sequences]\label{ex:sumprod}
+Let $(x_n)$ and $(y_n)$ be Cauchy. Prove directly from the definition
+(without the Cauchy criterion) that $(x_n+y_n)$ and $(x_ny_n)$ are Cauchy.
+
+\begin{proof}
+\emph{Sum.} Let $\eps>0$. Choose $N_1$ with $|x_n-x_m|<\frac\eps2$ for
+$n,m\ge N_1$, and $N_2$ with $|y_n-y_m|<\frac\eps2$ for $n,m\ge N_2$. Let
+$N=\max\{N_1,N_2\}$. For $n,m\ge N$,
+\[
+|(x_n+y_n)-(x_m+y_m)|\le|x_n-x_m|+|y_n-y_m|<\tfrac\eps2+\tfrac\eps2=\eps.
+\]
+
+\emph{Product.} Cauchy sequences are bounded (Lemma~\ref{lem:cbdd}), so
+there is $M>0$ with $|x_n|\le M$ and $|y_n|\le M$ for all $n$. Add and
+subtract $x_ny_m$:
+\[
+|x_ny_n-x_my_m|=|x_n(y_n-y_m)+y_m(x_n-x_m)|\le M|y_n-y_m|+M|x_n-x_m|.
+\]
+Let $\eps>0$ and choose $N$ so that $|x_n-x_m|<\frac\eps{2M}$ and
+$|y_n-y_m|<\frac\eps{2M}$ for $n,m\ge N$. Then
+$|x_ny_n-x_my_m|<\frac\eps2+\frac\eps2=\eps$.
+\end{proof}
+\end{ex}
+
+\begin{ex}[Why completeness matters: Cauchy in $\Q$]
+Let $q_1=1$, $q_2=1.4$, $q_3=1.41$, $q_4=1.414,\dots$ be the decimal
+truncations of $\sqrt2$. Each $q_n\in\Q$ and $|q_m-q_n|<10^{-(n-1)}$ for
+$m>n$, so $(q_n)$ is Cauchy. Its limit in $\R$ is $\sqrt2\notin\Q$. So
+\textbf{in $\Q$ a Cauchy sequence need not converge}. The proof of the
+Cauchy criterion below has to use the Completeness Axiom somewhere. It
+enters through MCT, which needs the existence of $\sup$.
+\end{ex}
+
+% ---------------------------------------------------------------------
+\subsection{The long proof: the Cauchy criterion, every step}
+
+\begin{thm}[Cauchy criterion]\label{thm:cauchy}
+A sequence $(x_n)$ of real numbers converges if and only if it is Cauchy.
+\end{thm}
+
+\noindent\key{Proof map.} ($\Rightarrow$) is a short triangle-inequality
+argument. ($\Leftarrow$) is built from a chain of lemmas:
+\begin{align*}
+\text{Cauchy}
+&\xrightarrow{\ \text{Lem.~\ref{lem:cbdd}}\ }\text{bounded}
+\xrightarrow{\ \text{Lem.~\ref{lem:monosub}}\ }\text{bounded monotone subsequence}\\
+&\xrightarrow{\ \text{MCT}\ }\text{convergent subsequence}
+\xrightarrow{\ \text{Lem.~\ref{lem:csub}}\ }\text{convergent}.
+\end{align*}
+Lemmas~\ref{lem:monosub} and~\ref{lem:bw} together are
+Bolzano--Weierstrass. Each lemma below is proved in full.
+
+\subsubsection*{Part I: convergent $\Rightarrow$ Cauchy}
+
+\begin{proof}[Proof of ($\Rightarrow$)]
+\emph{Step 1 (setup).} Suppose $x_n\to L$. We must show: for every
+$\eps>0$ there is $N$ such that $|x_n-x_m|<\eps$ for all $n,m\ge N$.
+
+\emph{Step 2 (scratch: how to compare two terms).} We know nothing directly
+about $x_n-x_m$, but we know both terms are close to $L$. Insert $L$:
+$x_n-x_m=(x_n-L)+(L-x_m)$. Each piece will get half of the budget $\eps$.
+
+\emph{Step 3 (use convergence with $\frac\eps2$).} Let $\eps>0$. Then
+$\frac\eps2>0$, so by the definition of $x_n\to L$ there is $N\in\N$ with
+\[
+|x_k-L|<\frac\eps2\qquad\text{for all }k\ge N.
+\]
+
+\emph{Step 4 (apply it twice).} Let $n,m\ge N$. Applying Step 3 with $k=n$
+and with $k=m$ gives $|x_n-L|<\frac\eps2$ and $|x_m-L|<\frac\eps2$.
+
+\emph{Step 5 (triangle inequality).}
+\[
+|x_n-x_m|=|(x_n-L)+(L-x_m)|\le|x_n-L|+|L-x_m|<\frac\eps2+\frac\eps2=\eps.
+\]
+
+\emph{Step 6 (conclude).} $\eps>0$ was arbitrary, and the $N$ from Step 3
+works for all $n,m\ge N$. So $(x_n)$ is Cauchy.
+\end{proof}
+
+\subsubsection*{Part II: Cauchy $\Rightarrow$ convergent}
+
+\begin{lem}[Cauchy sequences are bounded]\label{lem:cbdd}
+If $(x_n)$ is Cauchy, there is $M>0$ with $|x_n|\le M$ for all $n\in\N$.
+\end{lem}
+
+\begin{proof}
+\emph{Step 1 (pick a specific $\eps$).} Boundedness doesn't involve any
+$\eps$, so we may use the Cauchy property with any fixed tolerance we
+like. Take $\eps=1$: there is $N\in\N$ with $|x_n-x_m|<1$ for all
+$n,m\ge N$.
+
+\emph{Step 2 (anchor at $x_N$).} Fix $m=N$. For every $n\ge N$ we get
+$|x_n-x_N|<1$.
+
+\emph{Step 3 (bound the tail).} For $n\ge N$, by the triangle inequality,
+\[
+|x_n|=|(x_n-x_N)+x_N|\le|x_n-x_N|+|x_N|<1+|x_N|.
+\]
+
+\emph{Step 4 (handle the finitely many early terms).} The terms
+$x_1,\dots,x_{N-1}$ are finitely many real numbers, so they have a largest
+absolute value. Define
+\[
+M=\max\bigl\{|x_1|,\ |x_2|,\ \dots,\ |x_{N-1}|,\ 1+|x_N|\bigr\}.
+\]
+(If $N=1$ the list is just $1+|x_1|$.) Then $M\ge1>0$.
+
+\emph{Step 5 (check every $n$).} If $n<N$, then $|x_n|$ is one of the
+numbers in the max, so $|x_n|\le M$. If $n\ge N$, then
+$|x_n|<1+|x_N|\le M$ by Step 3. So $|x_n|\le M$ for all $n$.
+\end{proof}
+\noindent\key{Why the max?} The Cauchy condition only controls the tail
+$n\ge N$. A finite list can always be bounded by its maximum, but an
+infinite list can't. That's why the proof splits into ``early'' and
+``tail'' terms. The same trick proves ``convergent $\Rightarrow$
+bounded.''
+
+\begin{lem}[Indices of a subsequence]\label{lem:nkk}
+If $n_1<n_2<\cdots$ are natural numbers, then $n_k\ge k$ for all
+$k\in\N$.
+\end{lem}
+
+\begin{proof}
+Induction on $k$. \emph{Base:} $n_1\in\N$, so $n_1\ge1$.
+\emph{Step:} assume $n_k\ge k$. Then $n_{k+1}>n_k\ge k$, so
+$n_{k+1}>k$. Since $n_{k+1}$ and $k$ are integers, $n_{k+1}\ge k+1$.
+\end{proof}
+
+\begin{lem}[Monotone Subsequence Theorem]\label{lem:monosub}
+Every sequence $(x_n)$ of real numbers has a monotone subsequence.
+\end{lem}
+
+\begin{proof}
+\emph{Step 1 (key definition).} Call an index $p\in\N$ a \textbf{peak} if
+$x_p\ge x_n$ for every $n>p$. Think of standing at position $p$ and
+looking right: nothing ahead is higher than $x_p$.
+
+\emph{Step 2 (two exhaustive cases).} Either there are infinitely many
+peaks, or there are finitely many (possibly none). We find a monotone
+subsequence in each case.
+
+\emph{Step 3 (Case 1: infinitely many peaks).} List the peaks in
+increasing order, $p_1<p_2<p_3<\cdots$. (Any infinite subset of $\N$ can
+be listed this way by repeatedly taking the smallest remaining element,
+using well-ordering.) Set $n_k=p_k$.
+\begin{itemize}[nosep]
+  \item \emph{Subsequence:} $n_1<n_2<\cdots$ by construction.
+  \item \emph{Monotone:} fix $k$. Since $p_k$ is a peak, $x_{p_k}\ge x_n$
+        for every $n>p_k$. In particular $p_{k+1}>p_k$, so
+        $x_{p_k}\ge x_{p_{k+1}}$.
+\end{itemize}
+So $(x_{n_k})$ is \textbf{decreasing}.
+
+\emph{Step 4 (Case 2: finitely many peaks; setup).} Choose $N_0\in\N$
+larger than every peak (if there are no peaks, take $N_0=1$). Then
+\key{no index $n\ge N_0$ is a peak}.
+
+\emph{Step 5 (negate ``peak'').} ``$p$ is a peak'' means
+$\forall n>p:\ x_p\ge x_n$. So ``$p$ is \emph{not} a peak'' means
+\[
+\exists n>p\ \text{ with }\ x_n>x_p.
+\]
+
+\emph{Step 6 (recursive construction).} Let $n_1=N_0$. Suppose
+$n_k\ge N_0$ has been chosen. Then $n_k$ is not a peak, so by Step 5 the
+set $\{n>n_k: x_n>x_{n_k}\}$ is nonempty. Let $n_{k+1}$ be its smallest
+element (well-ordering makes the choice definite). Then
+\[
+n_{k+1}>n_k\qquad\text{and}\qquad x_{n_{k+1}}>x_{n_k}.
+\]
+Also $n_{k+1}>n_k\ge N_0$, so $n_{k+1}$ is again not a peak, and the
+construction continues. By induction, $n_k$ is defined for every $k$.
+
+\emph{Step 7 (check).} The indices are strictly increasing, so
+$(x_{n_k})$ is a subsequence, and $x_{n_1}<x_{n_2}<\cdots$, so it is
+(strictly) \textbf{increasing}.
+
+\emph{Step 8 (conclude).} In both cases $(x_n)$ has a monotone
+subsequence.
+\end{proof}
+
+\begin{lem}[Bolzano--Weierstrass]\label{lem:bw}
+Every bounded sequence has a convergent subsequence.
+\end{lem}
+
+\begin{proof}
+\emph{Step 1.} Let $|x_n|\le M$ for all $n$. By
+Lemma~\ref{lem:monosub}, $(x_n)$ has a monotone subsequence $(x_{n_k})$.
+(Boundedness has not been used yet.)
+
+\emph{Step 2 (the subsequence is bounded).} Each $x_{n_k}$ is a term of
+the original sequence, so $|x_{n_k}|\le M$ for all $k$.
+
+\emph{Step 3 (MCT).} $(x_{n_k})$ is monotone and bounded, so by the
+Monotone Convergence Theorem it converges. \key{This is where
+completeness enters}: MCT says the limit is the sup (or inf) of the
+terms, and that sup exists by the Completeness Axiom.
+\end{proof}
+
+\begin{lem}[A Cauchy sequence follows its convergent subsequence]\label{lem:csub}
+If $(x_n)$ is Cauchy and some subsequence $x_{n_k}\to L$, then
+$x_n\to L$.
+\end{lem}
+
+\begin{proof}
+\emph{Step 1 (goal).} Let $\eps>0$. We need $N$ with $|x_n-L|<\eps$ for
+all $n\ge N$.
+
+\emph{Step 2 (scratch: insert a subsequence term).} We control
+$|x_n-x_m|$ (Cauchy) and $|x_{n_k}-L|$ (subsequence). Insert $x_{n_k}$:
+$|x_n-L|\le|x_n-x_{n_k}|+|x_{n_k}-L|$, and give each piece
+$\frac\eps2$.
+
+\emph{Step 3 (Cauchy with $\frac\eps2$).} There is $N_1$ with
+$|x_n-x_m|<\frac\eps2$ for all $n,m\ge N_1$.
+
+\emph{Step 4 (subsequence with $\frac\eps2$).} There is $K$ with
+$|x_{n_k}-L|<\frac\eps2$ for all $k\ge K$.
+
+\emph{Step 5 (pick one good subsequence index).} Let
+$k_0=\max\{K,N_1\}$. Then $k_0\ge K$, so $|x_{n_{k_0}}-L|<\frac\eps2$.
+By Lemma~\ref{lem:nkk}, $n_{k_0}\ge k_0\ge N_1$. Note that $k_0$ depends
+only on $\eps$, not on $n$.
+
+\emph{Step 6 (choose $N$ and verify).} Let $N=N_1$ and let $n\ge N$.
+Both $n$ and $n_{k_0}$ are $\ge N_1$, so Step 3 with $m=n_{k_0}$ gives
+$|x_n-x_{n_{k_0}}|<\frac\eps2$. Therefore
+\[
+|x_n-L|\le|x_n-x_{n_{k_0}}|+|x_{n_{k_0}}-L|<\frac\eps2+\frac\eps2=\eps.
+\]
+
+\emph{Step 7.} $\eps$ was arbitrary, so $x_n\to L$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:cauchy}, ($\Leftarrow$)]
+Let $(x_n)$ be Cauchy.
+\begin{enumerate}[nosep]
+  \item By Lemma~\ref{lem:cbdd}, $(x_n)$ is bounded.
+  \item By Bolzano--Weierstrass (Lemma~\ref{lem:bw}), it has a convergent
+        subsequence $x_{n_k}\to L$ for some $L\in\R$.
+  \item By Lemma~\ref{lem:csub}, $x_n\to L$.
+\end{enumerate}
+Together with Part I, this proves Theorem~\ref{thm:cauchy}.
+\end{proof}
+
+\subsubsection*{Exam-length version (what to write in about 10 minutes)}
+If you are asked to ``prove every Cauchy sequence converges'' and may
+quote B--W:
+
+\begin{proof}
+Let $(x_n)$ be Cauchy. With $\eps=1$ there is $N$ such that $|x_n-x_N|<1$
+for $n\ge N$, so $|x_n|\le\max\{|x_1|,\dots,|x_{N-1}|,1+|x_N|\}$ for all
+$n$, and $(x_n)$ is bounded. By Bolzano--Weierstrass some subsequence
+$x_{n_k}\to L$. Let $\eps>0$. Choose $N_1$ with $|x_n-x_m|<\frac\eps2$ for
+$n,m\ge N_1$, and $K$ with $|x_{n_k}-L|<\frac\eps2$ for $k\ge K$. Fix
+$k=\max\{K,N_1\}$, so $n_k\ge k\ge N_1$. For $n\ge N_1$,
+$|x_n-L|\le|x_n-x_{n_k}|+|x_{n_k}-L|<\eps$. So $x_n\to L$.
+\end{proof}
+
+\noindent\key{Points graders look for:} (1) boundedness proved, with the
+finite-max trick; (2) B--W named; (3) the $\frac\eps2$ split; (4) the
+justification $n_k\ge k\ge N_1$.
+
+% ---------------------------------------------------------------------
+\subsection{The Nested Interval Theorem}
+\label{sec:nit}
+
+\begin{thm}[Nested Interval Theorem]\label{thm:nit}
+Let $I_n=[a_n,b_n]$ be \textbf{closed, bounded} intervals that are
+\textbf{nested}, i.e.\ $I_1\supseteq I_2\supseteq I_3\supseteq\cdots$.
+Then
+\begin{enumerate}[label=(\alph*),nosep]
+  \item $\displaystyle\bigcap_{n=1}^\infty I_n\neq\emptyset$; in fact
+        $\bigcap_n I_n=[\alpha,\beta]$ where $\alpha=\sup_n a_n$ and
+        $\beta=\inf_n b_n$;
+  \item if in addition $b_n-a_n\to0$, then $\bigcap_n I_n$ is a single
+        point $\{\alpha\}$, and $a_n\to\alpha$, $b_n\to\alpha$.
+\end{enumerate}
+\end{thm}
+
+\noindent\key{Picture.} The left endpoints move right, the right endpoints
+move left, and they never cross. Completeness says there is no ``hole''
+where they could meet, so some real number is trapped in all of the
+intervals.
+
+\begin{proof}[Full proof, step by step]
+\emph{Step 1 (unpack ``nested'').} $I_{n+1}\subseteq I_n$ means
+$[a_{n+1},b_{n+1}]\subseteq[a_n,b_n]$, i.e.
+\[
+a_n\le a_{n+1}\le b_{n+1}\le b_n\qquad\text{for all }n.
+\]
+So $(a_n)$ is increasing and $(b_n)$ is decreasing.
+
+\emph{Step 2 (left endpoints never pass right endpoints).} Claim:
+$a_m\le b_n$ for \emph{all} $m,n\in\N$ (not only $m=n$).
+\begin{itemize}[nosep]
+  \item If $m\le n$: $a_m\le a_n\le b_n$ ($a$ increasing, then
+        $a_n\le b_n$).
+  \item If $m>n$: $a_m\le b_m\le b_n$ ($a_m\le b_m$, then $b$
+        decreasing).
+\end{itemize}
+
+\emph{Step 3 (define $\alpha$ by completeness).} Let
+$A=\{a_m:m\in\N\}$. It is nonempty, and by Step 2 (with $n=1$) $b_1$ is an
+upper bound. By the Completeness Axiom, $\alpha=\sup A$ exists.
+
+\emph{Step 4 ($\alpha\in I_n$ for every $n$).} Fix $n$.
+\begin{itemize}[nosep]
+  \item $\alpha$ is an upper bound of $A$, so $a_n\le\alpha$.
+  \item By Step 2, $b_n$ is an upper bound of $A$. Since $\alpha$ is the
+        \emph{least} upper bound, $\alpha\le b_n$.
+\end{itemize}
+So $a_n\le\alpha\le b_n$, i.e.\ $\alpha\in I_n$. Since $n$ was arbitrary,
+$\alpha\in\bigcap_nI_n$, and the intersection is nonempty.
+
+\emph{Step 5 (the whole intersection).} Similarly
+$\beta=\inf\{b_n\}$ exists, and Step 4 shows $\alpha$ is a lower bound of
+$\{b_n\}$, so $\alpha\le\beta$. If $x\in[\alpha,\beta]$, then
+$a_n\le\alpha\le x\le\beta\le b_n$ for every $n$, so $x\in\bigcap I_n$.
+Conversely, if $x\in\bigcap I_n$ then $a_n\le x\le b_n$ for all $n$, so
+$x$ is an upper bound of $\{a_n\}$ (giving $\alpha\le x$) and a lower
+bound of $\{b_n\}$ (giving $x\le\beta$). Hence $\bigcap I_n=[\alpha,\beta]$.
+
+\emph{Step 6 (part (b): uniqueness).} Suppose $b_n-a_n\to0$ and
+$x,y\in\bigcap I_n$. For every $n$, both $x$ and $y$ lie in
+$[a_n,b_n]$, so $|x-y|\le b_n-a_n$. Let $\eps>0$. For large $n$,
+$b_n-a_n<\eps$, so $|x-y|<\eps$. Since $\eps$ was arbitrary,
+$|x-y|=0$, so $x=y$ (the ``$<\eps$ for all $\eps$'' trick). So
+$\bigcap I_n=\{\alpha\}$.
+
+\emph{Step 7 (endpoints converge).} $0\le\alpha-a_n\le b_n-a_n\to0$ and
+$0\le b_n-\alpha\le b_n-a_n\to0$, so by the Squeeze Theorem
+$a_n\to\alpha$ and $b_n\to\alpha$.
+\end{proof}
+
+\noindent\key{Short proof via MCT.} $(a_n)$ is increasing and bounded
+above by $b_1$, so $a_n\to\alpha$ by MCT. For fixed $n$, $a_m\le b_n$ for
+all $m$, and limits preserve $\le$, so $\alpha\le b_n$. Also
+$a_n\le\alpha$ because an increasing sequence stays below its limit. So
+$\alpha\in I_n$ for all $n$.
+
+\begin{ex}[Every hypothesis is needed]\label{ex:nitcounter}
+\leavevmode
+\begin{itemize}[nosep]
+  \item \textbf{Closed is needed:} $I_n=(0,\frac1n)$ are nested, bounded
+        and open, but $\bigcap_n(0,\frac1n)=\emptyset$. If $x>0$ were in
+        all of them, pick $n>\frac1x$ (Archimedean). Then $x\ge\frac1n$,
+        so $x\notin I_n$. And $x\le0$ is in none of them.
+  \item \textbf{Bounded is needed:} $I_n=[n,\infty)$ are nested and
+        closed, but $\bigcap_n I_n=\emptyset$: any $x$ fails to be in
+        $I_n$ once $n>x$ (Archimedean).
+  \item \textbf{Nested is needed:} $[n,n+1]$ are closed and bounded but not
+        nested, and no point is in all of them.
+  \item \textbf{$\R$ (completeness) is needed:} in $\Q$, let $I_n$ be the
+        rational points of $[q_n,\,q_n+10^{-(n-1)}]$, where $q_n$ is the
+        decimal truncation of $\sqrt2$ to $n-1$ decimal places. Their
+        intersection in $\R$ is $\{\sqrt2\}$, so in $\Q$ it is empty.
+\end{itemize}
+\end{ex}
+
+\begin{ex}[Bisection proof of Bolzano--Weierstrass using NIT]\label{ex:bwbisect}
+Let $|x_n|\le M$ for all $n$. We find a convergent subsequence without
+using Lemma~\ref{lem:monosub}.
+
+\begin{proof}
+\emph{Step 1 (start).} Let $I_1=[-M,M]$. It contains $x_n$ for
+\emph{infinitely many} $n$ (in fact all $n$).
+
+\emph{Step 2 (halve and keep an infinite half).} Suppose $I_k$ has been
+chosen, has length $\frac{2M}{2^{k-1}}$, and contains $x_n$ for infinitely
+many $n$. Split it into its closed left and right halves. If each half
+contained $x_n$ for only finitely many $n$, then $I_k$ would too. So at
+least one half contains $x_n$ for infinitely many $n$. Call it $I_{k+1}$
+(choose the left half if both work). Its length is $\frac{2M}{2^k}$, and
+$I_{k+1}\subseteq I_k$.
+
+\emph{Step 3 (pick indices).} Let $n_1=1$ (so $x_{n_1}\in I_1$). Given
+$n_k$, the set $\{n:x_n\in I_{k+1}\}$ is infinite, so it contains some
+$n>n_k$. Let $n_{k+1}$ be the smallest such $n$. Then
+$n_1<n_2<\cdots$ and $x_{n_k}\in I_k$ for all $k$.
+
+\emph{Step 4 (NIT).} The $I_k$ are closed, bounded and nested, and their
+lengths $\frac{4M}{2^k}\to0$. By Theorem~\ref{thm:nit} there is a single
+$L\in\bigcap_kI_k$.
+
+\emph{Step 5 (convergence).} For each $k$, both $x_{n_k}$ and $L$ lie in
+$I_k$, so $|x_{n_k}-L|\le\frac{4M}{2^k}\le\frac{4M}k$ (using $2^k\ge k$).
+Given $\eps>0$, choose $K>\frac{4M}\eps$. For $k\ge K$,
+$|x_{n_k}-L|<\eps$. So $x_{n_k}\to L$.
+\end{proof}
+\noindent\key{Compare.} The peak proof uses completeness through MCT. The
+bisection proof uses it through NIT. MCT, NIT, B--W and the Cauchy
+criterion are all ways of saying that \emph{$\R$ has no holes}.
+\end{ex}
+
+\begin{ex}[Using NIT to locate a point: $\sqrt2$ by bisection]
+Let $I_1=[1,2]$. At each step keep the half $[a,b]$ with $a^2\le2\le b^2$:
+$[1,1.5]$, $[1.25,1.5]$, $[1.375,1.5]$, $[1.375,1.4375],\dots$ The
+intervals are nested and closed, with lengths $2^{-(n-1)}\to0$, so NIT
+gives a unique $c$ in all of them. Since $a_n^2\le2\le b_n^2$ and
+$a_n,b_n\to c$, the product rule gives $a_n^2,b_n^2\to c^2$. Limits
+preserve $\le$, so $c^2\le2\le c^2$, i.e.\ $c^2=2$. This is another
+proof that $\sqrt2$ exists in $\R$, and it is the same idea as the
+bisection method for root-finding.
+\end{ex}
 
 % =====================================================================
 \section{Common mistakes that cost points}
@@ -1738,13 +2469,25 @@ These may not be on Quiz 1, but you should know the statements.
   \item \textbf{Induction without writing $P(n+1)$ first}, and then
         ``proving'' the wrong target.
   \item \textbf{Strict vs.\ non-strict:} limits preserve $\le$ but not $<$.
+  \item \textbf{Cauchy estimate that depends on $m$.} The bound on
+        $|x_m-x_n|$ must depend only on $n$ (or on $N$), e.g.\
+        $\frac1n-\frac1m<\frac1n$. Drop the $m$-term before choosing $N$.
+  \item \textbf{Checking only neighbors.} Showing $|x_{n+1}-x_n|\to0$ does
+        \emph{not} prove Cauchy (Example~\ref{ex:sqrtn}).
+  \item \textbf{Putting $L$ into a Cauchy proof.} If you are asked to show
+        a sequence is Cauchy because you \emph{don't} know $L$, you may not
+        use $L$.
+  \item \textbf{NIT with open or unbounded intervals.} The theorem needs
+        closed \emph{and} bounded intervals (Example~\ref{ex:nitcounter}).
 \end{enumerate}
 
 % =====================================================================
 \newpage
 \section{Practice problems}
 \label{sec:practice}
-Try these under quiz conditions. Solutions are in the next section.
+Try these under exam conditions. Solutions are in the next section.
+Problems~\ref{prob:c1}--\ref{prob:c8} are on Cauchy sequences and
+Problems~\ref{prob:n1}--\ref{prob:n3} are on nested intervals.
 
 \begin{prob}
 Prove by induction: $1+3+5+\dots+(2n-1)=n^2$ for all $n\in\N$.
@@ -1870,6 +2613,74 @@ Prove: if $x_n\to L>0$, then $x_n>\frac L2$ for all sufficiently large $n$.
 \begin{prob}
 Show that $S=\{x\in\R:x^2<5\}$ is bounded above, explain why $\sup S$
 exists without knowing its value, and identify $\sup S$.
+\end{prob}
+
+\subsection*{Cauchy sequences}
+
+\begin{prob}\label{prob:c1}
+Prove directly from the definition that $x_n=\dfrac{3n+2}{n+1}$ is Cauchy.
+\end{prob}
+
+\begin{prob}\label{prob:c2}
+Let $s_n=\sum_{k=0}^n\frac1{k!}$. Prove $(s_n)$ is Cauchy. (Hint: first show
+$k!\ge2^{k-1}$ for $k\ge1$.)
+\end{prob}
+
+\begin{prob}\label{prob:c3}
+Let $t_n=\sum_{k=1}^n\frac1{\sqrt k}$. Prove $(t_n)$ is not Cauchy.
+\end{prob}
+
+\begin{prob}\label{prob:c4}
+Without looking at Lemma~\ref{lem:csub}: prove that if $(x_n)$ is Cauchy
+and a subsequence $x_{n_k}\to L$, then $x_n\to L$.
+\end{prob}
+
+\begin{prob}\label{prob:c5}
+Suppose $0<r<1$ and $|x_{n+1}-x_n|\le r^n$ for all $n$. Prove $(x_n)$ is
+Cauchy (and hence converges).
+\end{prob}
+
+\begin{prob}\label{prob:c6}
+Let $x_1=1$, $x_2=2$, and $x_{n+2}=\frac{x_n+x_{n+1}}2$. Prove $(x_n)$ is
+Cauchy and find its limit. (Hint: look at $d_n=x_{n+1}-x_n$, and at
+$x_{n+1}+\frac12x_n$.)
+\end{prob}
+
+\begin{prob}[True or false: justify or give a counterexample]\label{prob:c7}\
+\begin{enumerate}[label=(\alph*),nosep]
+  \item If $x_{n+1}-x_n\to0$, then $(x_n)$ is Cauchy.
+  \item Every Cauchy sequence of rational numbers has a rational limit.
+  \item Every subsequence of a Cauchy sequence is Cauchy.
+  \item If $(x_n)$ is Cauchy, then $(|x_n|)$ is Cauchy. Is the converse
+        true?
+  \item Every bounded sequence is Cauchy.
+  \item If $(x_n)$ is Cauchy and $a\le x_n\le b$ for all $n$, then
+        $\lim x_n\in[a,b]$.
+\end{enumerate}
+\end{prob}
+
+\begin{prob}\label{prob:c8}
+Prove from the definition that every Cauchy sequence is bounded. Then give
+a bounded sequence that is not Cauchy.
+\end{prob}
+
+\subsection*{Nested intervals}
+
+\begin{prob}\label{prob:n1}
+Find $\bigcap_{n}\bigl[-\frac1n,\frac1n\bigr]$ and
+$\bigcap_n\bigl(0,\frac1n\bigr]$, with proof. Why doesn't the second one
+contradict the Nested Interval Theorem?
+\end{prob}
+
+\begin{prob}\label{prob:n2}
+Let $I_n=\bigl[1-\frac1n,\ 1+\frac1{n^2}\bigr]$. Show the intervals are
+nested and find $\bigcap_nI_n$.
+\end{prob}
+
+\begin{prob}\label{prob:n3}
+Let $I_n=[a_n,b_n]$ be closed, nested, with $b_n-a_n\to0$, and let $\alpha$
+be the point in $\bigcap_nI_n$. If $x_n\in I_n$ for every $n$, prove
+$x_n\to\alpha$.
 \end{prob}
 
 % =====================================================================
@@ -2020,5 +2831,217 @@ $x<3$, and $3$ is an upper bound. $S\ne\emptyset$ since $0\in S$. By the
 Completeness Axiom, $\sup S$ exists, even though we haven't computed it.
 In fact $\sup S=\sqrt5$, whose existence was proved in lecture by exactly
 this sup argument for $\sqrt2$.
+
+\subsection*{Cauchy sequences}
+
+\paragraph{\ref{prob:c1}.} $x_n=3-\frac1{n+1}$. For $m>n$:
+$|x_m-x_n|=\frac1{n+1}-\frac1{m+1}<\frac1n$. Let $\eps>0$ and choose
+$N>\frac1\eps$. For $m>n\ge N$: $|x_m-x_n|<\frac1n\le\frac1N<\eps$. \qed
+
+\paragraph{\ref{prob:c2}.} \emph{Claim:} $k!\ge2^{k-1}$ for $k\ge1$.
+Base: $1!=1=2^0$. Step: $(k+1)!=(k+1)k!\ge2\cdot2^{k-1}=2^k$. For
+$m>n\ge1$:
+\[
+0<s_m-s_n=\sum_{k=n+1}^m\frac1{k!}\le\sum_{k=n+1}^m\frac1{2^{k-1}}
+<\frac{1/2^n}{1-\frac12}=\frac1{2^{n-1}}\le\frac1n,
+\]
+using $2^{n-1}\ge n$ (Problem 2). Given $\eps>0$, choose $N>\frac1\eps$.
+Then $|s_m-s_n|<\eps$ for $m>n\ge N$. \qed (The limit is $e$.)
+
+\paragraph{\ref{prob:c3}.} Take $\eps=\frac12$. Given $N$, let $n=N$ and
+$m=2N$. The sum $t_{2N}-t_N=\sum_{k=N+1}^{2N}\frac1{\sqrt k}$ has $N$
+terms, each $\ge\frac1{\sqrt{2N}}$, so
+$t_{2N}-t_N\ge\frac N{\sqrt{2N}}=\sqrt{\frac N2}\ge\frac1{\sqrt2}>\frac12$.
+\qed
+
+\paragraph{\ref{prob:c4}.} See Lemma~\ref{lem:csub}. The key line:
+choose $N_1$ (Cauchy, $\frac\eps2$) and $K$ (subsequence, $\frac\eps2$),
+fix $k=\max\{K,N_1\}$ so $n_k\ge k\ge N_1$. Then for $n\ge N_1$,
+$|x_n-L|\le|x_n-x_{n_k}|+|x_{n_k}-L|<\eps$. \qed
+
+\paragraph{\ref{prob:c5}.} For $m>n$, telescoping and the triangle
+inequality give
+$|x_m-x_n|\le\sum_{k=n}^{m-1}|x_{k+1}-x_k|\le\sum_{k=n}^{m-1}r^k<\frac{r^n}{1-r}$.
+Since $r^n\to0$ (basic limit, $0<r<1$), given $\eps>0$ there is $N$ with
+$r^N<\eps(1-r)$. For $m>n\ge N$, $r^n\le r^N$, so
+$|x_m-x_n|<\frac{r^N}{1-r}<\eps$. \qed
+
+\paragraph{\ref{prob:c6}.} Let $d_n=x_{n+1}-x_n$. Then
+$d_{n+1}=\frac{x_n+x_{n+1}}2-x_{n+1}=-\frac12d_n$, and $d_1=1$, so
+$|d_n|=\frac1{2^{n-1}}=2\bigl(\frac12\bigr)^n$. As in Problem~\ref{prob:c5}
+(with an extra factor $2$),
+$|x_m-x_n|<\frac{2(1/2)^n}{1/2}=\frac4{2^n}\le\frac4n$ for $m>n$, so
+$(x_n)$ is Cauchy and converges to some $L$.
+
+\emph{Finding $L$.} Taking limits in the recurrence gives $L=\frac{L+L}2$,
+which is true for every $L$ and tells us nothing. Use the invariant instead:
+$x_{n+2}+\frac12x_{n+1}=\frac{x_n+x_{n+1}}2+\frac12x_{n+1}=x_{n+1}+\frac12x_n$,
+so $x_{n+1}+\frac12x_n=x_2+\frac12x_1=\frac52$ for all $n$. Letting
+$n\to\infty$: $L+\frac L2=\frac52$, so $L=\frac53$. \qed
+
+\paragraph{\ref{prob:c7}.}
+\begin{enumerate}[label=(\alph*),nosep]
+  \item False: $x_n=\sqrt n$ (Example~\ref{ex:sqrtn}).
+  \item False: the decimal truncations of $\sqrt2$ are rational and
+        Cauchy, but their limit is $\sqrt2\notin\Q$.
+  \item True: if $|x_n-x_m|<\eps$ for $n,m\ge N$, then for $k,j\ge N$ we
+        have $n_k\ge k\ge N$ and $n_j\ge N$, so $|x_{n_k}-x_{n_j}|<\eps$.
+  \item True: $\bigl||x_n|-|x_m|\bigr|\le|x_n-x_m|$ (reverse triangle
+        inequality), with the same $N$. The converse is false: $(-1)^n$.
+  \item False: $(-1)^n$.
+  \item True: it converges (Cauchy criterion), and limits preserve
+        $a\le x_n\le b$.
+\end{enumerate}
+
+\paragraph{\ref{prob:c8}.} See Lemma~\ref{lem:cbdd}: use $\eps=1$ to get
+$|x_n|<1+|x_N|$ for $n\ge N$, then
+$M=\max\{|x_1|,\dots,|x_{N-1}|,1+|x_N|\}$. A bounded sequence that is
+not Cauchy: $(-1)^n$. \qed
+
+\subsection*{Nested intervals}
+
+\paragraph{\ref{prob:n1}.} $\bigcap[-\frac1n,\frac1n]=\{0\}$: $0$ is in
+every interval. If $x\ne0$, choose $n>\frac1{|x|}$; then $|x|>\frac1n$,
+so $x\notin[-\frac1n,\frac1n]$. (Or apply NIT(b): the lengths $\frac2n\to0$.)
+
+$\bigcap(0,\frac1n]=\emptyset$: if $x\le0$ it is in none of them. If
+$x>0$, choose $n>\frac1x$, so $x>\frac1n$ and $x\notin(0,\frac1n]$.
+This doesn't contradict NIT because the intervals are \emph{not closed}:
+the point they shrink to, $0$, has been removed. \qed
+
+\paragraph{\ref{prob:n2}.} \emph{Nested:} $1-\frac1n\le1-\frac1{n+1}$ and
+$1+\frac1{(n+1)^2}\le1+\frac1{n^2}$, so $a_n\le a_{n+1}$ and
+$b_{n+1}\le b_n$, which gives $I_{n+1}\subseteq I_n$. \emph{Intersection:} $1\in I_n$
+for all $n$. The lengths $\frac1n+\frac1{n^2}\le\frac2n\to0$, so by
+NIT(b) the intersection is exactly $\{1\}$. \qed
+
+\paragraph{\ref{prob:n3}.} Both $x_n$ and $\alpha$ are in $[a_n,b_n]$, so
+$|x_n-\alpha|\le b_n-a_n$. Given $\eps>0$, choose $N$ with
+$b_n-a_n<\eps$ for $n\ge N$. Then $|x_n-\alpha|<\eps$ for $n\ge N$. \qed
+
+% =====================================================================
+\newpage
+\section{Practice Exam 1 (75 minutes)}
+\label{sec:mock}
+Set a 75-minute timer, use no notes, and write full proofs. Solutions are
+in the next section.
+
+\begin{mprob}[Definitions, 10 pts]
+State precisely: (a) $\sup S$; (b) $x_n\to L$; (c) $(x_n)$ is Cauchy, and
+its negation; (d) the Completeness Axiom; (e) the Nested Interval Theorem.
+\end{mprob}
+
+\begin{mprob}[Induction, 15 pts]
+Prove that $\displaystyle\sum_{k=1}^n\frac1{k^2}\le2-\frac1n$ for all
+$n\in\N$.
+\end{mprob}
+
+\begin{mprob}[Sup/inf, 15 pts]\label{mock:recip}
+Let $A\subseteq(0,\infty)$ be nonempty with $a=\inf A>0$. Let
+$B=\{\frac1x:x\in A\}$. Prove $\sup B=\frac1a$.
+\end{mprob}
+
+\begin{mprob}[$\eps$--$N$, 15 pts]
+Prove from the definition that
+$\displaystyle\lim_{n\to\infty}\frac{n^2+2n}{3n^2-1}=\frac13$.
+\end{mprob}
+
+\begin{mprob}[Monotone sequences, 15 pts]
+Let $x_1=1$ and $x_{n+1}=\sqrt{3+2x_n}$. Prove $(x_n)$ converges and find
+its limit.
+\end{mprob}
+
+\begin{mprob}[Cauchy sequences, 20 pts]\label{mock:cauchy}
+\leavevmode
+\begin{enumerate}[label=(\alph*),nosep]
+  \item Prove that every convergent sequence is Cauchy.
+  \item Let $s_n=\sum_{k=1}^n\frac{\cos k}{k^2}$. Prove $(s_n)$ converges.
+        (Note: $(s_n)$ is not monotone.)
+  \item Let $u_n=\sum_{k=1}^n\frac1{2k-1}$. Prove $(u_n)$ is not Cauchy.
+\end{enumerate}
+\end{mprob}
+
+\begin{mprob}[True/False, 10 pts]
+Justify each answer briefly or give a counterexample.
+\begin{enumerate}[label=(\alph*),nosep]
+  \item If $x_n<1$ for all $n$ and $x_n\to L$, then $L<1$.
+  \item If $(x_n)$ is increasing and not bounded above, then $x_n\to\infty$.
+  \item If $(|x_n|)$ converges, then $(x_n)$ converges.
+  \item $\sup\{r\in\Q:r<\sqrt2\}=\sqrt2$.
+  \item If $(x_n)$ converges and $(y_n)$ diverges, then $(x_n+y_n)$
+        diverges.
+  \item If $I_n$ are nonempty, nested and bounded intervals, then
+        $\bigcap_nI_n\ne\emptyset$.
+\end{enumerate}
+\end{mprob}
+
+% =====================================================================
+\newpage
+\section{Practice Exam 1: solutions}
+
+\paragraph{1.} (a)--(d): see the definitions cheat sheet. Negation of
+Cauchy: $\exists\eps>0\ \forall N\ \exists n,m\ge N$ with
+$|x_n-x_m|\ge\eps$. (e): see Theorem~\ref{thm:nit}. Say ``closed,
+bounded, nested'' explicitly.
+
+\paragraph{2.} $P(n)$: $\sum_{k=1}^n\frac1{k^2}\le2-\frac1n$. Base:
+$1\le2-1$. Assume $P(n)$. Then
+$\sum_{k=1}^{n+1}\frac1{k^2}\le2-\frac1n+\frac1{(n+1)^2}$, and we need
+this to be $\le2-\frac1{n+1}$, i.e.
+$\frac1{(n+1)^2}\le\frac1n-\frac1{n+1}=\frac1{n(n+1)}$. This holds because
+$n(n+1)\le(n+1)^2$. \qed\
+\key{Lesson:} trying to prove ``$\le2$'' directly by induction fails,
+because the hypothesis is too weak. The stronger statement is easier to
+prove.
+
+\paragraph{3.} \emph{Upper bound:} for $x\in A$, $x\ge a>0$, so
+$\frac1x\le\frac1a$. So $\frac1a$ is an upper bound of $B$ and
+$\sup B\le\frac1a$.
+\emph{Least} (Quiz 1 style, no $\eps$): let $u$ be any upper bound of $B$.
+Then $u>0$, since $B$ has positive elements. For each $x\in A$,
+$\frac1x\le u$, so $x\ge\frac1u$. So $\frac1u$ is a lower bound of $A$,
+and $\frac1u\le a$ ($a$ is the \emph{greatest} lower bound). Hence
+$u\ge\frac1a$. So $\frac1a$ is the least upper bound. \qed\
+(If $\inf A=0$, then $B$ is unbounded.)
+
+\paragraph{4.} $\frac{n^2+2n}{3n^2-1}-\frac13=\frac{6n+1}{3(3n^2-1)}>0$.
+For $n\ge1$: $6n+1\le7n$ and $3n^2-1\ge2n^2$, so this is
+$\le\frac{7n}{6n^2}=\frac7{6n}$. Let $\eps>0$ and choose
+$N>\frac7{6\eps}$. For $n\ge N$:
+$\bigl|\frac{n^2+2n}{3n^2-1}-\frac13\bigr|\le\frac7{6n}\le\frac7{6N}<\eps$.
+\qed
+
+\paragraph{5.} \emph{Bounds:} $0<x_n<3$ by induction. True for $n=1$,
+and $0<x_n<3$ gives $3<3+2x_n<9$, so $0<\sqrt3<x_{n+1}<3$.
+\emph{Increasing:} $x_{n+1}^2-x_n^2=3+2x_n-x_n^2=(3-x_n)(1+x_n)>0$, and
+both terms are positive, so $x_{n+1}>x_n$.
+By MCT, $x_n\to L$, and $L\ge x_1=1$. Square the recurrence:
+$x_{n+1}^2=3+2x_n$. By limit laws, $L^2=3+2L$, so $(L-3)(L+1)=0$. Since
+$L\ge1$, $L=3$. \qed
+
+\paragraph{6.} (a) Part I of Theorem~\ref{thm:cauchy} (the $\frac\eps2$
+argument).
+(b) For $m>n$: $|s_m-s_n|=\bigl|\sum_{k=n+1}^m\frac{\cos k}{k^2}\bigr|
+\le\sum_{k=n+1}^m\frac1{k^2}<\frac1n$, by
+Example~\ref{ex:sumsq}. Choose $N>\frac1\eps$. So $(s_n)$ is Cauchy, and
+by the Cauchy criterion it converges. (MCT doesn't apply, since the terms
+$\cos k$ change sign.)
+(c) Take $\eps=\frac14$. Given $N$, let $n=N$, $m=2N$. The sum
+$u_{2N}-u_N=\sum_{k=N+1}^{2N}\frac1{2k-1}$ has $N$ terms, each
+$\ge\frac1{4N-1}>\frac1{4N}$, so $u_{2N}-u_N>\frac14$. \qed
+
+\paragraph{7.}
+\begin{enumerate}[label=(\alph*),nosep]
+  \item False: $1-\frac1n\to1$.
+  \item True: given $M$, $M$ is not an upper bound, so some $x_N>M$. For
+        $n\ge N$, $x_n\ge x_N>M$.
+  \item False: $(-1)^n$.
+  \item True: $\sqrt2$ is an upper bound. Given $\eps>0$, density gives
+        $r\in\Q$ with $\sqrt2-\eps<r<\sqrt2$.
+  \item True: if $x_n+y_n$ converged, then $y_n=(x_n+y_n)-x_n$ would
+        converge.
+  \item False: $(0,\frac1n)$ are not closed and have empty intersection.
+        (True if the intervals are closed.)
+\end{enumerate}
 
 \end{document}
