@@ -1,0 +1,274 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{hyperref}
+
+% Visible placeholder for unfinished steps -- delete every \todo before submitting.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
+\newcommand{\indep}{\perp}
+
+\title{CSE 5830: Probabilistic Graph Analysis \\ Homework 3}
+\author{}
+\date{Due 11:59PM, Wednesday 9/30/2026}
+
+\begin{document}
+\maketitle
+
+Show all your work to get a full score.
+
+% ============================================================
+\section*{Problem 1: Noisy-AND (15 points)}
+
+A Noisy-AND model (independence of the causal mechanisms when all $X$s are 1)
+with binary random variables and leaky parameters
+$(\lambda_0, \lambda_1, \dots, \lambda_K)$.
+
+\subsection*{(a) Expression for $P(Y=0 \mid X_1, \dots, X_K)$ (10 points)}
+
+\textbf{Setup / convention.}
+\todo{State what $\lambda_i$ and $\lambda_0$ mean in your model (in words), and
+  draw or describe the auxiliary variables $Z_i$ if you use them.}
+
+\textbf{Derivation.}
+\todo{Derive the expression step by step.}
+
+\[
+  P(Y = 0 \mid X_1, \dots, X_K) = \todo{final expression}
+\]
+
+\subsection*{(b) Numerical case (5 points)}
+
+$K = 4$, \quad $\lambda_0 = 0,\ \lambda_1 = 0.9,\ \lambda_2 = 0.75,\
+\lambda_3 = 0.8,\ \lambda_4 = 0.85$.
+
+\[
+  P(Y = 0 \mid X_1 = 1, X_2 = 0, X_3 = 0, X_4 = 1)
+  = \todo{substitute into (a)}
+  = \blank
+\]
+
+\todo{One sentence: does the number make sense? (sanity check)}
+
+% ============================================================
+\section*{Problem 2: Factor product (15 points)}
+
+Given factors:
+\begin{center}
+\begin{tabular}{cc|c}
+  \toprule
+  $X$ & $Y$ & $\phi_1(X,Y)$ \\
+  \midrule
+  1 & 1 & 0.8 \\
+  1 & 2 & 0.5 \\
+  2 & 1 & 0.5 \\
+  2 & 2 & 0.6 \\
+  \bottomrule
+\end{tabular}
+\qquad
+\begin{tabular}{cc|c}
+  \toprule
+  $Y$ & $Z$ & $\phi_2(Y,Z)$ \\
+  \midrule
+  1 & 1 & 0.2 \\
+  1 & 2 & 0.2 \\
+  2 & 1 & 0.9 \\
+  2 & 2 & 1.0 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{(a) $\psi(X,Y,Z) = \phi_1(X,Y)\,\phi_2(Y,Z)$ (10 points)}
+
+\begin{center}
+\begin{tabular}{ccc|c|c}
+  \toprule
+  $X$ & $Y$ & $Z$ & $\phi_1(X,Y)\cdot\phi_2(Y,Z)$ & $\psi(X,Y,Z)$ \\
+  \midrule
+  1 & 1 & 1 & \blank $\cdot$ \blank & \blank \\
+  1 & 1 & 2 & \blank $\cdot$ \blank & \blank \\
+  1 & 2 & 1 & \blank $\cdot$ \blank & \blank \\
+  1 & 2 & 2 & \blank $\cdot$ \blank & \blank \\
+  2 & 1 & 1 & \blank $\cdot$ \blank & \blank \\
+  2 & 1 & 2 & \blank $\cdot$ \blank & \blank \\
+  2 & 2 & 1 & \blank $\cdot$ \blank & \blank \\
+  2 & 2 & 2 & \blank $\cdot$ \blank & \blank \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{(b) $\psi(X,Z \mid Y=1)$ (5 points)}
+
+\todo{Explain in one or two sentences what operation you are applying
+  (factor reduction to the context $Y=1$) and whether you normalize.}
+
+\begin{center}
+\begin{tabular}{cc|c}
+  \toprule
+  $X$ & $Z$ & $\psi(X,Z \mid Y=1)$ \\
+  \midrule
+  1 & 1 & \blank \\
+  1 & 2 & \blank \\
+  2 & 1 & \blank \\
+  2 & 2 & \blank \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+% ============================================================
+\section*{Problem 3: Pairwise Markov network (10 points)}
+
+\[
+  p(\mathbf{x}) \propto \phi(x_1,x_2)\,\phi(x_2,x_3)\,\phi(x_3,x_4)\,\phi(x_4,x_1)
+\]
+
+\subsection*{(a) Draw the network (2 points)}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=2cm,
+    var/.style={circle, draw, minimum size=8mm}
+  ]
+  \node[var] (x1) {$x_1$};
+  \node[var, right=of x1] (x2) {$x_2$};
+  \node[var, below=of x2] (x3) {$x_3$};
+  \node[var, below=of x1] (x4) {$x_4$};
+  % TODO: add the edges, e.g.  \draw (x1) -- (x2);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{(b) Conditionals in terms of $\phi$ (8 points)}
+
+\todo{Show the derivation once in full for $p(x_1 \mid x_2, x_4)$ (write the
+  conditional as a ratio of joints, then cancel), then use the same pattern
+  for the rest.}
+
+\begin{align*}
+  p(x_1 \mid x_2, x_4) &= \todo{} \\[4pt]
+  p(x_2 \mid x_1, x_3) &= \todo{} \\[4pt]
+  p(x_3 \mid x_2, x_4) &= \todo{} \\[4pt]
+  p(x_4 \mid x_1, x_3) &= \todo{}
+\end{align*}
+
+% ============================================================
+\section*{Problem 4: Markov network structure (20 points)}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.6cm,
+    var/.style={circle, draw, minimum size=8mm}
+  ]
+  \node[var] (A) {$A$};
+  \node[var, right=of A] (B) {$B$};
+  \node[var, right=of B] (C) {$C$};
+  \node[var, below=of A] (D) {$D$};
+  \node[var, below=of B] (E) {$E$};
+  \node[var, below=of C] (F) {$F$};
+  \draw (A) -- (B);
+  \draw (B) -- (C);
+  \draw (A) -- (D);
+  \draw (B) -- (E);
+  \draw (C) -- (F);
+  \draw (D) -- (E);
+  \draw (E) -- (F);
+  \draw (B) -- (F);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{(a) All factors that factorize over the graph (6 points)}
+
+\textbf{Edges:} \todo{list them}
+
+\textbf{Cliques:} \todo{list every clique (single nodes, edges, triangles, \dots)}
+
+\textbf{Maximal cliques:} \todo{}
+
+\[
+  P(A,B,C,D,E,F) = \frac{1}{Z}\,\todo{product of factors}
+\]
+
+\subsection*{(b) Gibbs distribution as a pairwise MN (6 points)}
+
+\[
+  P(A,B,C,D,E,F) = \frac{1}{Z}\,\todo{product of pairwise factors},
+  \qquad
+  Z = \todo{}
+\]
+
+\subsection*{(c) Local Markov independencies (6 points)}
+
+\begin{center}
+\begin{tabular}{c|c|l}
+  \toprule
+  Node & Neighbors (Markov blanket) & Local independence \\
+  \midrule
+  $A$ & \blank & \todo{} \\
+  $B$ & \blank & \todo{} \\
+  $C$ & \blank & \todo{} \\
+  $D$ & \blank & \todo{} \\
+  $E$ & \blank & \todo{} \\
+  $F$ & \blank & \todo{} \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{(d) Is $A \indep F \mid \{D, C\}$? (2 points)}
+
+\todo{Answer yes/no, and justify with separation: either exhibit an active
+  path from $A$ to $F$ that avoids $\{D,C\}$, or argue that every path passes
+  through $\{D,C\}$.}
+
+% ============================================================
+\section*{Problem 5: Tree-structured CPD (10 points)}
+
+Leaves list $(P(e^0), P(e^1))$.
+
+\begin{center}
+\begin{tikzpicture}[
+    level distance=1.4cm,
+    level 1/.style={sibling distance=4.2cm},
+    level 2/.style={sibling distance=2.2cm},
+    inner/.style={rectangle, draw, fill=teal!40, minimum size=6mm},
+    leaf/.style={rectangle, draw, rounded corners, font=\small},
+    edge from parent/.style={draw, -{Stealth}},
+    lab/.style={font=\small, midway, fill=white, inner sep=1pt}
+  ]
+  \node[inner] {$A$}
+    child { node[inner] {$B$}
+      child { node[inner] {$D$}
+        child { node[leaf] {$(0.2, 0.8)$} edge from parent node[lab] {$d^0$} }
+        child { node[leaf] {$(0.6, 0.4)$} edge from parent node[lab] {$d^1$} }
+        edge from parent node[lab] {$b^0$} }
+      child { node[leaf] {$(0.5, 0.5)$} edge from parent node[lab] {$b^1$} }
+      edge from parent node[lab] {$a^0$} }
+    child { node[inner] {$C$}
+      child { node[leaf] {$(0.1, 0.9)$} edge from parent node[lab] {$c^0$} }
+      child { node[leaf] {$(0.3, 0.7)$} edge from parent node[lab] {$c^1$} }
+      edge from parent node[lab] {$a^1$} };
+\end{tikzpicture}
+\end{center}
+
+\subsection*{(a) $P(E=e^0 \mid a^0, b^1, c^1, d^1)$}
+Path through the tree: \todo{} \qquad Answer: \blank
+
+\subsection*{(b) $P(E=e^1 \mid a^1, b^1, c^1, d^1)$}
+Path through the tree: \todo{} \qquad Answer: \blank
+
+\subsection*{(c) $P(E=e^1 \mid a^0, b^0, c^0, d^0)$}
+Path through the tree: \todo{} \qquad Answer: \blank
+
+\subsection*{(d) Is $E \indep_c B \mid a^0$?}
+\todo{Yes/no + justification using the tree.}
+
+\subsection*{(e) Is $E \indep_c C \mid d^1$?}
+\todo{Yes/no + justification using the tree.}
+
+
+\subsection*{Use of Ai}
+In this assignment, I used Ai to help me understand the assignment give me hints for each question as well as helping whenever I got stuck in a question.
+\end{document}
