@@ -1,0 +1,445 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=2pt,topsep=4pt}
+
+\definecolor{accent}{HTML}{B4540A}
+\newcommand{\say}[1]{\begin{quote}\itshape #1\end{quote}}
+\newcommand{\q}[1]{\par\medskip\noindent\textbf{\color{accent}Q: #1}\par\noindent}
+\newcommand{\key}[1]{\par\smallskip\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\textbf{Key point.} #1}}\par\smallskip}
+
+\title{Project 0 Pitch: Presentation Prep\\[4pt]
+\large Which edges can a GNN trust? A Bayesian view of edge reliability}
+\author{Luis Mendez \quad CSE5825 Bayesian Machine Learning}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent\textbf{How to use this sheet.} Sections~1--2 are what you \emph{say}: the
+3-minute plan and a slide-by-slide script (say it in your own words, don't memorize).
+Sections~3--9 are what you need to \emph{know} so you can answer anything: background, the
+full model, a worked example, metrics, the experiment plan, related work and links to the
+course. Sections~10--12 prepare you for questions. This is rehearsal material, not the
+written Project~0 submission, which you must write yourself.
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+%================================================================
+\section{The pitch in one breath}
+
+\say{GNNs trust every edge, but edges can be noisy or attacked. I treat whether each edge is
+real as a hidden variable and infer it with Bayes' rule: an LLM reads the two nodes' texts to
+give a prior, the graph structure gives a likelihood, and the GNN weights each message by the
+posterior. Because I inject the fake edges myself, I can check every posterior against
+ground truth.}
+
+\subsection*{Three things the audience must remember}
+\begin{enumerate}
+  \item \textbf{The problem:} GNNs blindly trust edges, and fake edges can be made to look
+        plausible.
+  \item \textbf{The idea:} posterior $\propto$ LLM text prior $\times$ structural likelihood,
+        for every edge.
+  \item \textbf{Why it is credible:} injected edges give ground truth, so every claim is
+        checkable.
+\end{enumerate}
+
+\subsection*{Time budget (about 3 minutes)}
+\begin{center}
+\begin{tabular}{clr}
+\toprule
+Slide & Content & Time \\
+\midrule
+1 & Title and question & 15\,s \\
+2 & Motivation & 30\,s \\
+3 & Datasets & 30\,s \\
+4 & Approach (Bayes' rule for every edge) & 40\,s \\
+5 & Three hypotheses & 35\,s \\
+6 & Why this is testable & 15\,s \\
+7 & How I'll check it, and the ask & 15\,s \\
+\midrule
+ & \textbf{Total} & \textbf{3:00} \\
+\bottomrule
+\end{tabular}
+\end{center}
+If you run long, cut slide~6 to one sentence; slide~5 already implies it. If you run short,
+spend the extra time on slide~4.
+
+%================================================================
+\section{Slide-by-slide script}
+
+\subsection*{Slide 1: Title (15\,s)}
+\say{Hi, I'm Luis. My project asks a simple question about graph neural networks: which edges
+in a graph should the model actually trust? I want to answer it with a Bayesian model that
+uses an LLM to read the node texts.}
+
+\subsection*{Slide 2: Motivation (30\,s)}
+\begin{itemize}
+  \item GNNs pass messages along edges and assume every neighbor is reliable evidence.
+  \item Edges can be noisy or deliberately injected. An attacker can connect nodes whose texts
+        \emph{look} related, so the fake edges are hard to spot.
+  \item Two kinds of evidence exist (structure and text), but current defenses combine them
+        with hand-made rules and give no uncertainty.
+  \item \textbf{Goal:} treat each edge's reliability as a hidden variable and infer it.
+\end{itemize}
+\emph{Transition:} ``To study this I need graphs with text, and a way to know which edges are
+fake.''
+
+\subsection*{Slide 3: Datasets (30\,s)}
+\begin{itemize}
+  \item Four standard text-attributed graphs: Cora, CiteSeer, PubMed (paper citations) and
+        WikiCS (Wikipedia CS articles).
+  \item Each node has raw text, a topic label, and citation or hyperlink edges.
+  \item I add fake edges between textually similar non-neighbors (5--40\% of the edge count)
+        and an LLM score for every edge, with SBERT similarity as a cheaper baseline.
+  \item Punchline: I know exactly which edges are fake.
+\end{itemize}
+\emph{Transition:} ``Here is how the model decides which edges to trust.''
+
+\subsection*{Slide 4: Approach (40\,s), the most important slide}
+\[
+\underbrace{p(z_{ij}=1 \mid s_{ij}, d_{ij})}_{\text{posterior}}
+\;\propto\;
+\underbrace{p(z_{ij}=1 \mid s_{ij})}_{\text{prior from LLM text score}}
+\;\times\;
+\underbrace{p(d_{ij} \mid z_{ij}=1)}_{\text{likelihood from structure}}
+\]
+Walk left to right: \textbf{prior card} (the LLM reads both texts), \textbf{likelihood card}
+(do the endpoints' representations agree?), \textbf{posterior card} (the probability the edge
+is real). Then point at the bottom strip: messages weighted by the posterior, a posterior on
+the GNN weights too, predictions with uncertainty.
+\say{In one sentence: posterior equals text prior times structural likelihood, and the GNN
+uses the posterior as a soft trust weight.}
+
+\subsection*{Slide 5: Hypotheses (35\,s)}
+\begin{enumerate}[label=\textbf{H\arabic*}]
+  \item \textbf{Text and structure together find fake edges.} \emph{Test:} AUROC for
+        fake-edge detection.
+  \item \textbf{Uncertainty flags attacked nodes.} \emph{Test:} ECE and predictive
+        uncertainty vs.\ attack size.
+  \item \textbf{LLMs make a better prior than embeddings.} \emph{Test:} AUROC with LLM vs.\
+        SBERT prior, per dataset.
+\end{enumerate}
+
+\subsection*{Slide 6: Why this is testable (15\,s)}
+\say{I inject the fake edges myself, so I know the true answer for every edge and can check
+the posteriors directly, at every attack size, not just final accuracy.}
+
+\subsection*{Slide 7: Checks and ask (15\,s)}
+\say{To trust the results I'll first test on simulated graphs, then compare evidence sources,
+check calibration, and compare three posterior approximations. I'm looking for one or two
+teammates interested in graph learning, LLMs or Bayesian modeling. Thanks!}
+
+%================================================================
+\section{Background you should know}
+
+\subsection{Graph neural networks}
+A graph $G=(V,E)$ has node features $X$ (here, encoded node text) and adjacency matrix $A$.
+A graph convolutional network (GCN) layer computes
+\[
+H^{(\ell+1)} = \sigma\!\left(\tilde D^{-1/2}\tilde A\,\tilde D^{-1/2} H^{(\ell)} W^{(\ell)}\right),
+\qquad \tilde A = A + I,
+\]
+so each node averages its neighbors' (degree-normalized) representations and applies a
+learned linear map $W^{(\ell)}$. Two layers mean information travels two hops.
+\textbf{Task:} semi-supervised node classification. A few nodes are labeled, and the model
+predicts the rest (transductive setting).
+
+\subsection{Why fake edges hurt}
+GNNs work because of \textbf{homophily}: linked nodes usually share a label. A fake edge
+between nodes of different classes pulls a node's representation toward the wrong class.
+Because messages travel several hops, a few edges can flip many predictions.
+
+\subsection{The attack setting}
+\begin{itemize}
+  \item \textbf{Candidate pool:} for each node, rank other nodes' texts with BM25 (a classic
+        keyword-matching relevance score from information retrieval) and keep the top
+        non-neighbors. These pairs look textually plausible.
+  \item \textbf{Selection:} a white-box projected gradient descent (PGD) attack relaxes ``add
+        this edge?'' to a continuous variable, follows the gradient of the classification
+        loss, then keeps the $B$ most damaging edges.
+  \item \textbf{Budget:} $B$ = 5, 10, 20, 30 or 40\% of the original edge count; edges are
+        added at evaluation time only. The attacker cannot change node texts.
+\end{itemize}
+\key{This is the hard case for text: fake edges are chosen to look textually reasonable, so
+the structural signal has to carry part of the load. That is why combining both matters.}
+
+\subsection{Text encoders and LLM scoring}
+\textbf{SBERT} (Sentence-BERT) maps each text to a vector; similarity is the cosine between
+two vectors, computed independently for each text. An \textbf{LLM judge} reads both texts
+together in one prompt and outputs a rating of whether the link makes sense, so it can use
+the relation between the texts, not just topic overlap. It is slower and its scores are not
+automatically calibrated.
+
+%================================================================
+\section{The full model}
+
+\subsection{Variables}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Hidden or observed \\
+\midrule
+$z_{ij}\in\{0,1\}$ & edge $(i,j)$ is real (1) or injected (0) & hidden \\
+$W$ & GNN weights & hidden \\
+$s_{ij}$ & LLM (or SBERT) score for edge $(i,j)$ & observed \\
+$d_{ij}$ & distance between endpoint representations & computed \\
+$X$, $E$ & node texts and observed edge list (incl.\ injected) & observed \\
+$y_{\text{train}}$ & labels of training nodes & observed \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Prior: calibrated LLM score}
+\[
+p(z_{ij}=1 \mid s_{ij}) = \sigma(\alpha + \beta\, s_{ij}),
+\]
+with $\alpha,\beta$ learned (or given a prior). This turns a raw LLM rating into a calibrated
+probability: if the LLM is overconfident, $\beta$ shrinks.
+\emph{Extension:} share $\alpha,\beta$ across datasets through a hierarchical prior.
+
+\subsection{Likelihood: structural consistency}
+After propagation, compare endpoint representations, e.g.
+$d_{ij} = \bigl\lVert h_i/\sqrt{\deg_i} - h_j/\sqrt{\deg_j}\bigr\rVert$. Model it as a
+two-component mixture:
+\[
+d_{ij} \mid z_{ij}=1 \sim \text{Gamma}(a_1,b_1)\ \text{(small, tight)},\qquad
+d_{ij} \mid z_{ij}=0 \sim \text{Gamma}(a_0,b_0)\ \text{(larger, spread out)}.
+\]
+
+\subsection{Posterior for one edge}
+\[
+q_{ij} \equiv p(z_{ij}=1 \mid s_{ij}, d_{ij}) =
+\frac{\pi_{ij}\, p(d_{ij}\mid z=1)}{\pi_{ij}\, p(d_{ij}\mid z=1) + (1-\pi_{ij})\, p(d_{ij}\mid z=0)},
+\qquad \pi_{ij} = \sigma(\alpha+\beta s_{ij}).
+\]
+
+\subsection{Inference loop (EM-style)}
+\begin{enumerate}
+  \item Initialize $q_{ij} = \pi_{ij}$ (trust the prior).
+  \item Propagate with messages weighted by $q_{ij}$ to get representations $h$.
+  \item Compute $d_{ij}$ for every edge.
+  \item \textbf{E-step:} update $q_{ij}$ with the formula above.
+        \textbf{M-step:} refit $a_0,b_0,a_1,b_1$ (and $\alpha,\beta$).
+  \item Repeat until the $q_{ij}$ stop changing; train $W$ on the training labels.
+\end{enumerate}
+Alternatives worth naming: mean-field variational inference over all $z_{ij}$ jointly, or
+Gibbs sampling of $z$ (MCMC) for small graphs like Cora.
+
+\subsection{Uncertainty over the GNN weights}
+Approximate $p(W\mid\mathcal D)$ with MC dropout, deep ensembles or mean-field VI, then
+average predictions:
+$p(y_v \mid \mathcal D) \approx \frac1T\sum_{t=1}^T p(y_v \mid X, E, q, W_t)$.
+Predictive uncertainty splits into two parts:
+\[
+\underbrace{\mathbb H\bigl[\bar p(y_v)\bigr]}_{\text{total}}
+= \underbrace{\mathbb E_{W}\,\mathbb H\bigl[p(y_v\mid W)\bigr]}_{\text{aleatoric (data noise)}}
++ \underbrace{\mathbb I(y_v; W)}_{\text{epistemic (model uncertainty)}} .
+\]
+H2 predicts the \emph{epistemic} part rises on attacked nodes.
+
+%================================================================
+\section{Worked example: why combining evidence helps}
+A fake edge was chosen to look textually plausible, so the LLM is fooled:
+$\pi_{ij} = p(z=1\mid s) = 0.8$. But the endpoints' representations disagree, giving a large
+$d_{ij}$ with $p(d\mid z=1) = 0.1$ and $p(d\mid z=0) = 0.6$:
+\[
+q_{ij} = \frac{0.8\times0.1}{0.8\times0.1 + 0.2\times0.6} = \frac{0.08}{0.20} = 0.40 .
+\]
+Text alone said 80\% real; with structure the posterior drops to 40\%, so the message is
+down-weighted by more than half. Conversely, a real edge between two nodes whose
+representations happen to differ is protected by a strong text prior.
+\key{Each source covers the other's blind spot: text catches structurally plausible fakes,
+structure catches textually plausible fakes. This example is your best answer to ``why
+both?''}
+
+%================================================================
+\section{Metrics in detail}
+\begin{description}[style=nextline]
+  \item[AUROC (H1, H3)] Rank all edges by $1-q_{ij}$. AUROC is the probability that a random
+    fake edge ranks above a random real edge. 0.5 is chance, 1.0 is perfect. It does not
+    depend on a threshold or on the fake/real ratio.
+  \item[AUPRC] Area under precision--recall; more informative when fake edges are rare (at a
+    5\% budget only about 1 in 20 edges is fake).
+  \item[Expected calibration error (H2)] Bin predictions by confidence into $B$ bins:
+    $\text{ECE} = \sum_{b=1}^{B} \frac{|B_b|}{n}\,\bigl|\text{acc}(B_b) - \text{conf}(B_b)\bigr|$.
+    Show it with a reliability diagram (confidence vs.\ accuracy; perfect is the diagonal).
+  \item[Negative log-likelihood and Brier score] Proper scoring rules that reward both
+    accuracy and honest confidence.
+  \item[Uncertainty AUROC (H2)] How well predictive uncertainty separates attacked nodes
+    (those touching a fake edge) from clean ones.
+  \item[Accuracy under attack] Node-classification accuracy at each budget, to show the
+    method still classifies well.
+\end{description}
+
+%================================================================
+\section{Experiment plan}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{1.1cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+& Compare & Metric & Supported if \\
+\midrule
+H1 & LLM prior only; structure only; combined posterior & AUROC/AUPRC for fake edges, per budget & combined beats both on most datasets and budgets \\
+H2 & standard GNN vs.\ Bayesian GNN (3 approximations) & ECE, NLL, uncertainty AUROC vs.\ budget & Bayesian ECE grows more slowly; uncertainty flags attacked nodes \\
+H3 & LLM prior vs.\ SBERT prior (and BM25) & fake-edge AUROC, accuracy & LLM wins, and the gain tracks how well text predicts labels \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\textbf{Baselines to mention:} GCN, GAT, a structure-only robust GNN (e.g.\ GNNGuard or
+RUNG-style robust aggregation), and the same model with a uniform prior.
+\textbf{Repetitions:} several random seeds and splits; report mean $\pm$ standard deviation.
+\textbf{Sanity check first:} contextual SBM graphs with planted fake edges.
+
+%================================================================
+\section{How it connects to the course}
+\begin{itemize}
+  \item \textbf{Latent variable model:} $z_{ij}$ is a discrete latent variable per edge;
+        the likelihood is a mixture model.
+  \item \textbf{EM:} the inference loop is EM (E-step on $z$, M-step on mixture and prior
+        parameters).
+  \item \textbf{Variational inference:} mean-field $q(z)$ and Bayes-by-backprop for $W$; the
+        ELBO is the objective.
+  \item \textbf{MCMC:} Gibbs sampling of $z$ on small graphs as a gold standard to compare
+        VI against.
+  \item \textbf{Hierarchical modeling:} sharing prior parameters across the four datasets.
+  \item \textbf{Model checking:} posterior predictive checks and calibration.
+  \item \textbf{Graphical models:} the graph itself is uncertain, which is a model over
+        structure, not just over node labels.
+\end{itemize}
+
+%================================================================
+\section{Related work (verify each before citing)}
+\begin{itemize}
+  \item \textbf{GNN basics:} GCN (Kipf \& Welling, ICLR 2017); GAT (Veli\v{c}kovi\'c et al.,
+        ICLR 2018); GraphSAGE (Hamilton et al., NeurIPS 2017).
+  \item \textbf{Attacks:} Nettack (Z\"ugner et al., KDD 2018); PGD topology attack (Xu et
+        al., IJCAI 2019).
+  \item \textbf{Defenses:} GNNGuard (Zhang \& Zitnik, NeurIPS 2020); RGCN (Zhu et al., KDD
+        2019); Pro-GNN (Jin et al., KDD 2020); GCN-Jaccard (Wu et al., IJCAI 2019).
+  \item \textbf{Bayesian/uncertain graphs:} Bayesian GCN with a random graph (Zhang et al.,
+        AAAI 2019); Graph Posterior Network (Stadler et al., NeurIPS 2021).
+  \item \textbf{Calibration of GNNs:} Wang et al., ``Be Confident!'' (NeurIPS 2021).
+  \item \textbf{Uncertainty in deep nets:} MC dropout (Gal \& Ghahramani, ICML 2016); deep
+        ensembles (Lakshminarayanan et al., NeurIPS 2017).
+  \item \textbf{Text and LLMs on graphs:} SBERT (Reimers \& Gurevych, EMNLP 2019); LLMs for
+        text-attributed graphs, e.g.\ TAPE (He et al., ICLR 2024).
+  \item \textbf{Datasets:} Sen et al.\ (2008) for Cora/CiteSeer/PubMed; Mernyei \& Cangea
+        (2020) for WikiCS.
+\end{itemize}
+
+%================================================================
+\section{Likely questions and answers}
+
+\q{Why make it Bayesian instead of using an existing robust GNN?}
+Existing defenses output a weight per edge with no uncertainty and combine text and structure
+by hand. The Bayesian version gives a probability per edge that I can check against ground
+truth, combines both sources in a principled way, and yields calibrated predictions.
+
+\q{What is new here?}
+Treating edge trust as a posterior with an \emph{LLM-based prior} and a \emph{structural
+likelihood}, and evaluating the posterior itself (detection and calibration), not just
+accuracy.
+
+\q{Isn't $d_{ij}$ circular? Representations depend on the edges you are judging.}
+Yes, so inference alternates, exactly like EM: representations, then posteriors, then
+representations again. A simpler fallback computes $d_{ij}$ from a text-only encoder, which
+breaks the loop.
+
+\q{Does the EM loop converge?}
+EM never decreases the likelihood when the representation step is held fixed; with the
+alternating GNN step it is a heuristic, so I would monitor $q$ for stability and report it.
+
+\q{You assume edges are independent given the data. Is that reasonable?}
+It is a simplification (mean-field). Attackers often target one node with several edges, so
+edges are correlated. A natural extension is a node-level prior on how many edges are fake.
+
+\q{Why would an LLM beat SBERT?}
+SBERT compares two separately computed embeddings; an LLM reads both texts together. It may
+not win. That is what H3 tests, and a negative result is still useful.
+
+\q{Isn't scoring every edge with an LLM expensive?}
+Cora and CiteSeer have only thousands of edges. PubMed and WikiCS are larger, so I would use
+a small open model with cached scores, score a subset, or fall back to SBERT there.
+
+\q{The attacker picks textually similar pairs. Doesn't that defeat the text prior?}
+That is deliberate: it is the hard case for text, so the structural likelihood must do real
+work. An attacker who adapts to the LLM itself is future work.
+
+\q{How will you know the LLM's scores are trustworthy?}
+I do not assume they are. The logistic prior learns how much to trust them, and I check
+calibration directly: among edges the LLM calls plausible, how many are real?
+
+\q{Why not just threshold the posterior and delete edges?}
+A soft weight keeps information when the model is unsure and avoids deleting real edges; a
+threshold also has to be tuned. I can compare both.
+
+\q{Are the ``real'' edges really all real?}
+No. The original graphs have their own noise. Ground truth covers injected edges only, which
+I state as a limitation.
+
+\q{Why MC dropout, ensembles \emph{and} VI?}
+They are the standard cheap approximations and are known to differ in calibration; comparing
+them is part of the Bayesian question.
+
+\q{Why not full MCMC?}
+Too slow for network weights on larger graphs, but feasible for the edge variables on Cora,
+where it serves as a reference for the cheaper methods.
+
+\q{Will this scale to big graphs?}
+The edge posterior is per edge, so it is linear in the number of edges; the LLM scoring is
+the bottleneck, handled by caching or a cheaper scorer.
+
+\q{What if hypotheses fail?}
+Each has an informative negative outcome: if H1 fails, one evidence source suffices; if H2
+fails, Bayesian GNNs do not help calibration under attack; if H3 fails, embeddings match an
+LLM at lower cost.
+
+\q{How does this relate to your research?}
+It builds on a research setting I work on (robust message passing on text graphs). The class
+project focuses on the Bayesian formulation: edge posteriors, uncertainty and calibration.
+
+%================================================================
+\section{Risks and mitigations}
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+Risk & Mitigation \\
+\midrule
+LLM scoring too slow or costly & small open model, cache scores, SBERT on large graphs \\
+EM loop unstable & damp updates, or compute $d_{ij}$ from a fixed text encoder \\
+Mixture likelihood fits poorly & posterior predictive check on $d_{ij}$; try a different family \\
+Attack code is complex & start with random and BM25-only injection, add PGD later \\
+Results differ by dataset & that is H3's point; report per dataset \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+%================================================================
+\section{Delivery tips and final checklist}
+\begin{itemize}
+  \item Open by stating the question, not your name and course.
+  \item On slide~4, physically point at the three cards in order, then at the bottom strip.
+  \item Read each hypothesis's \emph{title} only; let the audience read the details.
+  \item If asked something you don't know: ``Good question, I haven't tested that yet; my
+        plan would be \ldots''
+  \item End on the ask, and pause for questions.
+\end{itemize}
+\begin{itemize}
+  \item[$\square$] Rehearse twice with a timer; aim for 2:45.
+  \item[$\square$] Explain the slide~4 equation and the worked example without notes.
+  \item[$\square$] Confirm dataset counts and that using the research setting is fine with
+        your advisor.
+  \item[$\square$] Write the HuskyCT submission (data plus three hypotheses) in your own words.
+  \item[$\square$] Bring the deck as both .pptx and PDF.
+\end{itemize}
+
+\end{document}
