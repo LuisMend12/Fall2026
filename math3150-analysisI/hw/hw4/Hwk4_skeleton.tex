@@ -201,7 +201,16 @@ and since $\frac{B}{y_{n+1}}\to0$, there exists $M_2$ such that for $n\ge M_2$,
 Let $M=\max\{N, N_0, M_1, M_2\}$, where $N_0$ is the index from Step 1 with
 $y_{n+1}>0$ for $n\ge N_0$.
 
-\todo{For $n\ge M$, plug these bounds into Step 1: \ \blank\ $<\frac{x_{n+1}}{y_{n+1}}<$ \blank.}
+For $n\ge M$, plugging these bounds into Step 1 gives
+\[
+  L-\varepsilon-\varepsilon < \frac{x_{n+1}}{y_{n+1}} < L+\varepsilon+\varepsilon,
+\]
+that is,
+\[
+  L-2\varepsilon < \frac{x_{n+1}}{y_{n+1}} < L+2\varepsilon,
+  \qquad\text{so}\qquad
+  \left|\frac{x_{n+1}}{y_{n+1}}-L\right| < 2\varepsilon .
+\]
 
 \todo{Conclude (Fix 1: the bound is $2\varepsilon$ and $\varepsilon$ was arbitrary; or Fix 2: redo with $\varepsilon/2$ from the start).}
 
