@@ -161,7 +161,9 @@ and the right half,
   x_{n+1} < x_N+(L+\varepsilon)y_{n+1}-(L+\varepsilon)y_N .
 \]
 
-\todo{Why is $y_{n+1}>0$ for large $n$? Use $y_n\to\infty$ to get an index $N_0$ with $y_{n+1}>0$ for all $n\ge N_0$.}
+Since $y_n\to\infty$, there exists $N_0$ such that $y_{n+1}>0$ for all
+$n\ge N_0$; for such $n$ we may divide by $y_{n+1}$ without changing the
+direction of the inequalities.
 
 Dividing the left half by $y_{n+1}>0$,
 \[
@@ -212,7 +214,13 @@ that is,
   \left|\frac{x_{n+1}}{y_{n+1}}-L\right| < 2\varepsilon .
 \]
 
-\todo{Conclude (Fix 1: the bound is $2\varepsilon$ and $\varepsilon$ was arbitrary; or Fix 2: redo with $\varepsilon/2$ from the start).}
+Since $\varepsilon>0$ was arbitrary, $2\varepsilon$ can be made as small as we
+like (given any target $\eta>0$, run the argument with $\varepsilon=\eta/2$).
+Hence $\dfrac{x_{n+1}}{y_{n+1}}\to L$, and since shifting the index by one does
+not change the limit,
+\[
+  \lim_{n\to\infty}\frac{x_n}{y_n} = L .
+\]
 
 \end{proof}
 
@@ -234,13 +242,29 @@ exists and equals $L$.
 %  What would x_n and y_n be? Do they satisfy the hypotheses of Problem 2?
 %  What is (x_{n+1}-x_n)/(y_{n+1}-y_n)?
 
-\todo{Choose $x_n = \blank$ and $y_n = \blank$.}
+Let
+\[
+  x_n = a_1+a_2+\cdots+a_n \qquad\text{and}\qquad y_n = n,
+\]
+so that $\dfrac{x_n}{y_n} = \dfrac{a_1+a_2+\cdots+a_n}{n}$. We check the
+hypotheses of Problem 2.
 
-\todo{Check the hypotheses of Problem 2: $(y_n)$ increasing, $y_n\to\infty$.}
+The sequence $(y_n)$ is increasing, since $y_{n+1}=n+1>n=y_n$. Also,
+$\displaystyle\lim_{n\to\infty}y_n=\lim_{n\to\infty}n=\infty$.
 
-\todo{Compute $\dfrac{x_{n+1}-x_n}{y_{n+1}-y_n}$ and find its limit.}
+Next, since $x_{n+1}=a_1+a_2+\cdots+a_n+a_{n+1}$, we have
+$x_{n+1}-x_n=a_{n+1}$, and $y_{n+1}-y_n=(n+1)-n=1$. Thus
+\[
+  \frac{x_{n+1}-x_n}{y_{n+1}-y_n} = \frac{a_{n+1}}{1} = a_{n+1}.
+\]
+Since $a_n\to L$, we also have $a_{n+1}\to L$, so
+$\displaystyle\lim_{n\to\infty}\frac{x_{n+1}-x_n}{y_{n+1}-y_n}=L$.
 
-\todo{Conclude.}
+All hypotheses of Problem 2 hold, so $\displaystyle\lim_{n\to\infty}\frac{x_n}{y_n}=L$.
+Substituting $x_n=a_1+\cdots+a_n$ and $y_n=n$,
+\[
+  \lim_{n\to\infty}\frac{a_1+a_2+\cdots+a_n}{n} = L .
+\]
 
 \end{proof}
 
