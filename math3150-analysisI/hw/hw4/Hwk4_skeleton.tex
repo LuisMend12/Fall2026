@@ -1,0 +1,173 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newtheorem*{claim}{Claim}
+
+% Visible placeholder for unfinished steps -- delete every \todo before submitting.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\blank}{\underline{\hspace{1.5cm}}}
+
+\title{MAT 3150 --- Homework 4}
+\author{}
+\date{Due October 1}
+
+\begin{document}
+\maketitle
+
+% ============================================================
+\section*{Problem 1 (10 points)}
+Let $(x_n)_n$ and $(y_n)_n$ be two sequences of real numbers, so that
+$(y_n)_n$ is increasing. Assume that
+\[
+  \lim_{n\to\infty}\frac{x_{n+1}-x_n}{y_{n+1}-y_n} = L,
+\]
+for some $L\in\mathbb{R}$. Prove that for any $\varepsilon>0$ there exists
+$N>0$ so that
+\[
+  (L-\varepsilon)(y_{n+1}-y_N) < x_{n+1}-x_N < (L+\varepsilon)(y_{n+1}-y_N),
+\]
+for all $n>N$.
+
+\noindent\emph{Hint:} Use
+$x_{n+1}-x_N = (x_{n+1}-x_n)+(x_n-x_{n-1})+\cdots+(x_{N+1}-x_N)$, for any $n>N$.
+
+\begin{proof}
+% Roadmap:
+%  (a) Fix eps > 0. Write down what the hypothesis (the limit = L) gives you
+%      for this eps -- an N and an inequality valid for k >= N.
+%  (b) Unpack the absolute value into a two-sided inequality.
+%  (c) Use the sign of y_{k+1} - y_k (what does "increasing" give you?) to
+%      clear the denominator. Be careful about which way the inequality goes.
+%  (d) Apply (c) to each k = N, N+1, ..., n and combine using the hint.
+%  (e) Identify what the y-terms collapse to.
+
+Let $\varepsilon>0$.
+
+\textbf{Step 1: Use the hypothesis.}
+\todo{What does $\lim \frac{x_{k+1}-x_k}{y_{k+1}-y_k}=L$ give for this $\varepsilon$?}
+
+\textbf{Step 2: Clear the denominator.}
+\todo{Rewrite the inequality from Step 1 without a fraction. Justify why the inequality direction is preserved.}
+
+\textbf{Step 3: Sum from $k=N$ to $k=n$.}
+\todo{Apply Step 2 to each $k$ and combine, using the hint.}
+
+\textbf{Step 4: Simplify.}
+\todo{What do the left and right sides become?}
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 2 (10 points)}
+Let $(x_n)_n$ and $(y_n)_n$ be two sequences of real numbers, so that
+$(y_n)_n$ is increasing and $\lim_{n\to\infty}y_n=\infty$. Assume that
+\[
+  \lim_{n\to\infty}\frac{x_{n+1}-x_n}{y_{n+1}-y_n} = L,
+\]
+for some $L\in\mathbb{R}$. Prove that
+\[
+  \lim_{n\to\infty}\frac{x_n}{y_n}
+\]
+exists and is also equal to $L$.
+
+\noindent\emph{Hint:} Use Problem 1.
+
+\begin{proof}
+% Roadmap:
+%  (a) Goal: for every eps > 0, find M with |x_n/y_n - L| < (some multiple of) eps
+%      for n >= M.
+%  (b) Start from Problem 1's inequality. You want x_{n+1}/y_{n+1} in the
+%      middle -- what do you divide by, and why is that allowed for large n?
+%  (c) After dividing, some terms involve the FIXED index N. What happens to
+%      them as n -> infinity (use y_n -> infinity)?
+%  (d) Turn "those terms go to 0" into a concrete second threshold, and take
+%      the larger of the two thresholds.
+
+Let $\varepsilon>0$, and let $N$ be as in Problem 1.
+
+\textbf{Step 1: Rearrange Problem 1's inequality.}
+\todo{Isolate $x_{n+1}$ and divide so that $\frac{x_{n+1}}{y_{n+1}}$ is in the middle. Why is $y_{n+1}>0$ for large $n$?}
+
+\textbf{Step 2: Handle the terms involving $N$.}
+\todo{Which terms are ``leftovers'' with $x_N, y_N$? Why do they tend to $0$?}
+
+\textbf{Step 3: Choose the final threshold.}
+\todo{Pick $M$ so that both estimates hold, and conclude $\left|\frac{x_n}{y_n}-L\right| < \blank$ for $n\ge M$.}
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 3 (10 points)}
+Prove that if
+\[
+  \lim_{n\to\infty}a_n = L,
+\]
+then
+\[
+  \lim_{n\to\infty}\frac{a_1+a_2+\cdots+a_n}{n}
+\]
+exists and equals $L$.
+
+\begin{proof}
+% Roadmap:
+%  Question to ask yourself: the expression is a quotient x_n / y_n.
+%  What would x_n and y_n be? Do they satisfy the hypotheses of Problem 2?
+%  What is (x_{n+1}-x_n)/(y_{n+1}-y_n)?
+
+\todo{Choose $x_n = \blank$ and $y_n = \blank$.}
+
+\todo{Check the hypotheses of Problem 2: $(y_n)$ increasing, $y_n\to\infty$.}
+
+\todo{Compute $\dfrac{x_{n+1}-x_n}{y_{n+1}-y_n}$ and find its limit.}
+
+\todo{Conclude.}
+
+\end{proof}
+
+% ============================================================
+\section*{Problem 4 (10 points)}
+Define the sequence $a_1=1$ and
+\[
+  a_{n+1} = 3-\frac{1}{a_n}.
+\]
+Show that $a_n$ is convergent, by proving that $a_n$ is monotone and bounded.
+What is the limit of $a_n$?
+
+% Scratch work (not part of the write-up): compute a_2, a_3, a_4 to guess
+% whether the sequence is increasing or decreasing, and guess a bound.
+
+\begin{claim}
+$(a_n)$ is \blank\ (increasing / decreasing) and $\blank \le a_n \le \blank$ for all $n$.
+\end{claim}
+
+\begin{proof}
+% Roadmap:
+%  (a) Bounded: induction. Base case n = 1; inductive step a_n -> a_{n+1}.
+%      Note you need a_n > 0 for 1/a_n to behave nicely -- make sure your
+%      bound guarantees that.
+%  (b) Monotone: induction again, OR compute a_{n+1} - a_n directly.
+%  (c) Apply the Monotone Convergence Theorem.
+%  (d) Find the limit: let a = lim a_n and pass to the limit in the recursion.
+%      You'll get more than one candidate -- use the bounds to pick the right one.
+
+\textbf{Step 1: Bounded.}
+\todo{Base case.}
+\todo{Inductive step: assume $\blank \le a_n \le \blank$, show the same for $a_{n+1}$.}
+
+\textbf{Step 2: Monotone.}
+\todo{Base case: compare $a_1$ and $a_2$.}
+\todo{Inductive step.}
+
+\textbf{Step 3: Convergence.}
+\todo{Cite the Monotone Convergence Theorem.}
+
+\textbf{Step 4: The limit.}
+\todo{Let $a=\lim a_n$. Why is $a \neq 0$? Pass to the limit in $a_{n+1}=3-\frac1{a_n}$ and solve.}
+\todo{Which root, and why?}
+
+\end{proof}
+
+\end{document}
