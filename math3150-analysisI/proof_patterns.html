@@ -1,0 +1,532 @@
+<title>Proof Patterns 3150</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a single workbench column. Sticky module tabs on top, one drill card at a time, feedback slides in under the card. */
+:root{
+  --paper:#F3F5F4; --card:#FFFFFF; --ink:#1C2321; --muted:#5B6763; --rule:#D6DDDA;
+  --accent:#0F6B5C; --accent-soft:#E1EFEB; --good:#1E7A46; --good-soft:#E3F2E8;
+  --bad:#B3261E; --bad-soft:#FBE7E5; --warn:#8A5A00;
+  --f-display:"Newsreader", "Iowan Old Style", Georgia, serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111614; --card:#1A211F; --ink:#E4EBE8; --muted:#9AA8A3; --rule:#2E3835;
+  --accent:#5CC8AE; --accent-soft:#183A33; --good:#6BD394; --good-soft:#163323;
+  --bad:#F2847B; --bad-soft:#3A1C1A; --warn:#E3B45A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#111614; --card:#1A211F; --ink:#E4EBE8; --muted:#9AA8A3; --rule:#2E3835;
+  --accent:#5CC8AE; --accent-soft:#183A33; --good:#6BD394; --good-soft:#163323;
+  --bad:#F2847B; --bad-soft:#3A1C1A; --warn:#E3B45A; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:760px;margin:0 auto}
+header{padding-block:28px 12px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between}
+h1{font:600 2.1rem/1.1 var(--f-display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 em{font-style:italic;font-weight:500;color:var(--accent)}
+.exam{font:500 .78rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);margin:0 0 16px;max-width:62ch}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:8px;border-bottom:1px solid var(--rule);margin-bottom:20px}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 14px;font:500 .9rem var(--f-body);cursor:pointer;display:flex;gap:8px;align-items:center}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.tab .sc{font:500 .72rem var(--f-mono);opacity:.75}
+.tab:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.intro{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+.intro h2{font:600 1.35rem/1.2 var(--f-display);margin:0}
+.intro p{margin:2px 0 0;color:var(--muted);font-size:.93rem}
+
+.card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:22px;display:grid;gap:16px;min-width:0}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 .78rem var(--f-mono);color:var(--muted);letter-spacing:.04em}
+.prompt{font:500 1.18rem/1.5 var(--f-display);margin:0;overflow-x:auto}
+.prompt small{display:block;font:400 .85rem var(--f-body);color:var(--muted);margin-bottom:4px;letter-spacing:.02em}
+
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.opts.stack{grid-template-columns:1fr}
+.opt{text-align:left;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;font-size:.95rem;cursor:pointer;min-width:0;overflow-x:auto}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--good-soft);border-color:var(--good);color:var(--ink)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.dim{opacity:.55}
+
+.fb{border-radius:8px;padding:14px 16px;display:grid;gap:8px;font-size:.95rem;overflow-x:auto}
+.fb.good{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.fb.neutral{background:var(--accent-soft)}
+.fb .verdict{font:600 .8rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+.fb.good .verdict{color:var(--good)} .fb.bad .verdict{color:var(--bad)} .fb.neutral .verdict{color:var(--accent)}
+.fb p{margin:0}
+.opener{border-left:0;background:var(--card);border-radius:6px;padding:8px 10px;font-size:.92rem}
+.opener b{font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:2px}
+
+.row{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--card);border-radius:8px;padding:9px 16px;font:600 .92rem var(--f-body);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* proof assembly */
+.lines{list-style:none;margin:0;padding:0;display:grid;gap:6px;counter-reset:ln}
+.lines li{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--rule);border-radius:8px;padding:9px 12px;background:var(--paper);cursor:pointer;font-size:.95rem;min-width:0}
+.lines li > span{min-width:0;overflow-x:auto}
+.lines.placed li::before{counter-increment:ln;content:counter(ln);font:500 .78rem var(--f-mono);color:var(--muted);min-width:1.2em;padding-top:2px}
+.lines li:hover{border-color:var(--accent)}
+.lines li.right{background:var(--good-soft);border-color:var(--good)}
+.lines li.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.lines li.locked{cursor:default}
+.slot-label{font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.empty{border:1px dashed var(--rule);border-radius:8px;padding:12px;color:var(--muted);font-size:.9rem}
+
+/* flaw */
+.proofbox{display:grid;gap:6px}
+.proofbox .opt{display:flex;gap:10px}
+.proofbox .opt .ln{font:500 .78rem var(--f-mono);color:var(--muted);padding-top:2px}
+
+/* flashcards */
+.recall{width:100%;min-height:90px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;padding:10px;resize:vertical}
+.answer{background:var(--accent-soft);border-radius:8px;padding:14px 16px;overflow-x:auto}
+
+.sheet{margin-top:28px}
+.sheet h3{font:600 1.1rem var(--f-display);margin:0 0 8px}
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+
+.foot{margin-top:24px;color:var(--muted);font-size:.82rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.linkbtn{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:0;text-decoration:underline}
+mjx-container{max-width:100%}
+@media (max-width:480px){h1{font-size:1.7rem}.card{padding:16px}.prompt{font-size:1.06rem}}
+@media (prefers-reduced-motion:no-preference){.fb,.answer{animation:in .18s ease-out}@keyframes in{from{transform:translateY(4px);opacity:.4}to{transform:none;opacity:1}}}
+</style>
+
+<script>
+window.MathJax={tex:{inlineMath:[["\\(","\\)"]]},svg:{fontCache:"global"},startup:{typeset:false}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+
+<div class="wrap">
+  <header>
+    <h1>Proof <em>Patterns</em></h1>
+    <span class="exam">MATH 3150 · Exam 1 · Tue Oct 13</span>
+  </header>
+  <p class="lede">The exam rewards one skill above the rest: read the shape of a claim and reach for the right move. Each drill below trains one piece of that, using the problems from your study guide.</p>
+
+  <nav><div class="tabs" role="tablist" id="tabs"></div></nav>
+
+  <section id="stage" aria-live="polite"></section>
+
+  <section class="sheet">
+    <h3>Claim shape → first move</h3>
+    <div class="tablewrap"><table id="sheet"><thead><tr><th>The claim looks like</th><th>Reach for</th><th>First line you write</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <div class="foot"><span>Progress is saved in this browser only.</span><button class="linkbtn" id="reset">Reset progress</button></div>
+</div>
+
+<script>
+const R = String.raw;
+
+/* ------------------------------------------------------------ techniques */
+const TECH = {
+  double:   {name:"Double inclusion", first:R`Let \(x\in S\) be arbitrary … therefore \(x\in T\). Then the reverse.`},
+  induction:{name:"Induction", first:R`Base case. Then write the target \(P(n+1)\) before anything else.`},
+  contra:   {name:"Contradiction", first:R`Suppose not. …`},
+  counter:  {name:"One counterexample", first:R`False. Take \(x_n=\dots\)`},
+  supeps:   {name:"Sup: bound + ε-approach", first:R`(i) \(s\le M\) for all \(s\in S\). (ii) Let \(\varepsilon>0\); find \(s\in S\) with \(s>M-\varepsilon\).`},
+  ubound:   {name:"Show it's an upper bound (least property)", first:R`Fix \(t\). Then \(t\) is an upper bound of \(S\), so \(\sup S\le t\).`},
+  epsN:     {name:"ε–N definition", first:R`Scratch work first. Then: “Let \(\varepsilon>0\). Choose \(N>\dots\)”`},
+  MN:       {name:"M–N (limit is ∞)", first:R`Let \(M>0\). Choose \(N>\dots\). For \(n\ge N\), \(x_n>M\).`},
+  mct:      {name:"Monotone Convergence", first:R`Compute \(x_1,x_2,x_3\). Bound by induction, then monotone, then solve \(L=f(L)\).`},
+  cauchy:   {name:"Show it is Cauchy", first:R`Let \(m>n\). Bound \(|x_m-x_n|\) by something depending only on \(n\).`},
+  notcauchy:{name:"Not Cauchy: one ε, a bad pair", first:R`Take \(\varepsilon=\tfrac12\). For any \(N\), use \(n=N,\ m=2N\).`},
+  abs:      {name:"Absolute value: \(-c\le a\le c\)", first:R`Show \(-c\le a\) and \(a\le c\), then combine.`},
+  subseq:   {name:"Two subsequences, two limits", first:R`Even terms \(\to a\), odd terms \(\to b\ne a\).`},
+};
+
+/* ------------------------------------------------------------ drill data */
+const PATTERNS = [
+  {c:R`\(A\cap(B\cup C)=(A\cap B)\cup(A\cap C)\)`, a:"double", why:R`Equality of sets. Chase an arbitrary element both ways. The “or” in \(B\cup C\) is an assumption here, so the \(\subseteq\) direction splits into two cases.`},
+  {c:R`\(2^n\ge n+1\) for all \(n\in\mathbb N\)`, a:"induction", why:R`“For all \(n\ge n_0\)” is the induction signal. Target: \(2^{n+1}\ge n+2\). Peel off one factor: \(2^{n+1}=2\cdot 2^n\ge 2(n+1)\).`},
+  {c:R`\(\sqrt3\) is irrational`, a:"contra", why:R`“Irrational” means “not rational”, a statement that something does not exist. Assume \(\sqrt3=p/q\) in lowest terms and force both \(p,q\) to be multiples of 3.`},
+  {c:R`True or false: if \(x_ny_n\to0\) then \(x_n\to0\) or \(y_n\to0\).`, a:"counter", why:R`You suspect it is false, so one example settles it: \(x_n=1,0,1,0,\dots\) and \(y_n=0,1,0,1,\dots\).`},
+  {c:R`\(\sup\{1-\tfrac1n:n\in\mathbb N\}=1\)`, a:"supeps", why:R`The sup is not attained, so you need both parts: \(1\) is an upper bound, and for each \(\varepsilon\) the Archimedean property gives \(n\) with \(1-\tfrac1n>1-\varepsilon\).`},
+  {c:R`If \(s\le t\) for all \(s\in S,\ t\in T\), then \(\sup S\le\inf T\).`, a:"ubound", why:R`“\(\sup A\le\) something” means: show that something is an upper bound. Fix \(t\), use “least”, then let \(t\) vary and use “greatest”.`},
+  {c:R`\(\displaystyle\lim_{n\to\infty}\frac{2n^2+1}{n^2+3}=2\) (from the definition)`, a:"epsN", why:R`You know \(L\). Simplify \(|x_n-2|=\frac5{n^2+3}<\frac5n\), then choose \(N>\frac5\varepsilon\).`},
+  {c:R`\(\displaystyle\lim_{n\to\infty}\frac{n^2}{n+1}=\infty\)`, a:"MN", why:R`A limit of \(\infty\) has its own definition. Underestimate: \(\frac{n^2}{n+1}\ge\frac n2\), so take \(N>2M\).`},
+  {c:R`\(x_1=1,\ x_{n+1}=\sqrt{2+x_n}\) converges; find the limit.`, a:"mct", why:R`Recursive, and you can't use \(\varepsilon\)–\(N\) without knowing \(L\). Show \(0<x_n<2\) and increasing, so MCT gives convergence, then \(L^2=2+L\) gives \(L=2\).`},
+  {c:R`\(s_n=\sum_{k=1}^n\frac{\cos k}{k^2}\) converges. (It is not monotone.)`, a:"cauchy", why:R`No guess for \(L\) and not monotone, so MCT is out. For \(m>n\): \(|s_m-s_n|\le\sum_{k=n+1}^m\frac1{k^2}<\frac1n\).`},
+  {c:R`\(u_n=\sum_{k=1}^n\frac1{2k-1}\) does not converge.`, a:"notcauchy", why:R`A slowly growing sum: compare \(u_{2N}-u_N\). It has \(N\) terms, each \(\ge\frac1{4N}\), so it is \(\ge\frac14\) for every \(N\).`},
+  {c:R`\(\bigl||x|-|y|\bigr|\le|x-y|\)`, a:"abs", why:R`\(|a|\le c\) is \(-c\le a\le c\). Get \(|x|-|y|\le|x-y|\) from \(x=(x-y)+y\), then swap \(x\) and \(y\).`},
+  {c:R`\(x_n=\frac{(-1)^n n}{n+1}\) diverges.`, a:"subseq", why:R`Even terms \(\to1\), odd terms \(\to-1\). A convergent sequence has every subsequence converging to the same limit.`},
+  {c:R`\(\sup(A+B)=\sup A+\sup B\)`, a:"supeps", why:R`Both parts of the ε-characterization. Two sets share the tolerance, so give each \(\frac\varepsilon2\).`},
+  {c:R`\(\displaystyle\prod_{k=2}^{n}\Bigl(1-\frac1{k^2}\Bigr)=\frac{n+1}{2n}\) for \(n\ge2\)`, a:"induction", why:R`“For all \(n\ge2\)”. Write \(P(n+1)\) first, peel off the \(k=n+1\) factor, and factor \((n+1)^2-1=n(n+2)\).`},
+  {c:R`If \(x_n\ge0\) for all \(n\) and \(x_n\to L\), then \(L\ge0\).`, a:"contra", why:R`Suppose \(L<0\) and take \(\varepsilon=-\frac L2\). Eventually \(x_n<\frac L2<0\), contradicting \(x_n\ge0\).`},
+  {c:R`\(x_n=\frac n{n+1}\) is Cauchy (directly from the definition).`, a:"cauchy", why:R`The word “Cauchy” is the instruction. For \(m>n\): \(|x_m-x_n|=\frac1{n+1}-\frac1{m+1}<\frac1n\). Drop the \(m\)-term, then pick \(N>\frac1\varepsilon\).`},
+  {c:R`True or false: every bounded sequence converges.`, a:"counter", why:R`\((-1)^n\). Bounded, not convergent. Bolzano–Weierstrass only promises a convergent subsequence.`},
+  {c:R`\(x_1=2,\ x_{n+1}=\frac{x_n+3}2\) converges; find the limit.`, a:"mct", why:R`Terms \(2,\ 2.5,\ 2.75\) suggest increasing to 3. Bound \(x_n<3\) by induction, then \(x_{n+1}-x_n=\frac{3-x_n}2>0\). Solve \(L=\frac{L+3}2\).`},
+  {c:R`For positive sets, \(\sup\{xy:x\in A,y\in B\}=\sup A\cdot\sup B\) (the \(\ge\) direction).`, a:"ubound", why:R`The quiz problem. Fix \(y\): \(x\le\frac{\sup C}y\), so \(\sup A\le\frac{\sup C}y\). Then let \(y\) vary to bound \(B\). This is “fix one, bound, let it vary” done twice.`},
+];
+
+const NEGATIONS = [
+  {s:R`\(x_n\to L\): \(\ \forall\varepsilon>0\ \exists N\ \forall n\ge N:\ |x_n-L|<\varepsilon\)`,
+   o:[R`\(\exists\varepsilon>0\ \forall N\ \exists n\ge N:\ |x_n-L|\ge\varepsilon\)`, R`\(\forall\varepsilon>0\ \exists N\ \forall n\ge N:\ |x_n-L|\ge\varepsilon\)`, R`\(\exists\varepsilon>0\ \forall N\ \forall n\ge N:\ |x_n-L|\ge\varepsilon\)`, R`\(\exists\varepsilon>0\ \exists N\ \exists n\ge N:\ |x_n-L|\ge\varepsilon\)`],
+   why:R`Flip every quantifier, keep the order, negate the inner condition (\(<\) becomes \(\ge\)). Read it as: one bad tolerance, and the sequence keeps coming back outside it however far you go.`},
+  {s:R`\((x_n)\) is Cauchy: \(\ \forall\varepsilon>0\ \exists N\ \forall n,m\ge N:\ |x_n-x_m|<\varepsilon\)`,
+   o:[R`\(\forall\varepsilon>0\ \forall N\ \exists n,m\ge N:\ |x_n-x_m|\ge\varepsilon\)`, R`\(\exists\varepsilon>0\ \forall N\ \exists n,m\ge N:\ |x_n-x_m|\ge\varepsilon\)`, R`\(\exists\varepsilon>0\ \exists N\ \forall n,m\ge N:\ |x_n-x_m|\ge\varepsilon\)`, R`\(\exists\varepsilon>0\ \forall N\ \exists n\ge N:\ |x_{n+1}-x_n|\ge\varepsilon\)`],
+   a:1, why:R`This is the template for every “not Cauchy” proof: name one \(\varepsilon\), then for each \(N\) exhibit a pair. Restricting to neighbours (last option) is a different, stronger statement.`},
+  {s:R`\(M\) is an upper bound of \(S\): \(\ \forall s\in S:\ s\le M\)`,
+   o:[R`\(\forall s\in S:\ s>M\)`, R`\(\exists s\in S:\ s\ge M\)`, R`\(\exists s\in S:\ s>M\)`, R`\(\forall s\in S:\ s\ge M\)`],
+   a:2, why:R`One element above \(M\) is enough to break it. Note \(>\) not \(\ge\): \(s=M\) is allowed for an upper bound.`},
+  {s:R`\(S\) is bounded above: \(\ \exists M\ \forall s\in S:\ s\le M\)`,
+   o:[R`\(\exists M\ \exists s\in S:\ s>M\)`, R`\(\forall M\ \exists s\in S:\ s>M\)`, R`\(\forall M\ \forall s\in S:\ s>M\)`, R`\(\exists M\ \forall s\in S:\ s>M\)`],
+   a:1, why:R`No candidate works: every \(M\) is beaten by some element. This is how the Archimedean proof starts (if \(\mathbb N\) were bounded …).`},
+  {s:R`\(x_n\to\infty\): \(\ \forall M\ \exists N\ \forall n\ge N:\ x_n>M\)`,
+   o:[R`\(\exists M\ \forall N\ \exists n\ge N:\ x_n\le M\)`, R`\(\exists M\ \forall N\ \forall n\ge N:\ x_n\le M\)`, R`\(\forall M\ \exists N\ \exists n\ge N:\ x_n\le M\)`, R`\((x_n)\) is bounded above`],
+   a:0, why:R`Some ceiling \(M\) that the sequence keeps dipping under. That is weaker than “bounded above”: \(0,1,0,2,0,3,\dots\) does not go to \(\infty\) but is unbounded.`},
+  {s:R`\((x_n)\) is bounded: \(\ \exists M>0\ \forall n:\ |x_n|\le M\)`,
+   o:[R`\(\forall M>0\ \exists n:\ |x_n|>M\)`, R`\(\exists M>0\ \exists n:\ |x_n|>M\)`, R`\(\forall M>0\ \forall n:\ |x_n|>M\)`, R`\(x_n\to\infty\)`],
+   a:0, why:R`Unbounded means no \(M\) works. It does not mean \(x_n\to\infty\) (see \(0,1,0,2,\dots\)).`},
+  {s:R`\((x_n)\) is increasing: \(\ \forall n:\ x_n\le x_{n+1}\)`,
+   o:[R`\(\forall n:\ x_n>x_{n+1}\)`, R`\((x_n)\) is decreasing`, R`\(\exists n:\ x_n>x_{n+1}\)`, R`\(\exists n:\ x_n\ge x_{n+1}\)`],
+   a:2, why:R`One step down is enough. “Not increasing” is far weaker than “decreasing”.`},
+  {s:R`Part (ii) of \(M=\sup S\): \(\ \forall\varepsilon>0\ \exists s\in S:\ s>M-\varepsilon\)`,
+   o:[R`\(\forall\varepsilon>0\ \forall s\in S:\ s\le M-\varepsilon\)`, R`\(\exists\varepsilon>0\ \exists s\in S:\ s\le M-\varepsilon\)`, R`\(\exists\varepsilon>0\ \forall s\in S:\ s\le M-\varepsilon\)`, R`\(\exists\varepsilon>0\ \forall s\in S:\ s<M-\varepsilon\)`],
+   a:2, why:R`In words: some \(M-\varepsilon\) is still an upper bound, so \(M\) is not the least one. That is exactly why (ii) captures “least”.`},
+  {s:R`If \((x_n)\) converges, then \((x_n)\) is bounded.`,
+   o:[R`If \((x_n)\) diverges, then it is unbounded.`, R`If \((x_n)\) is unbounded, then it diverges.`, R`\((x_n)\) converges and \((x_n)\) is unbounded.`, R`\((x_n)\) diverges or \((x_n)\) is bounded.`],
+   a:2, why:R`\(\neg(P\Rightarrow Q)\) is \(P\wedge\neg Q\). Option 2 is the contrapositive, which is equivalent to the original, not its negation.`},
+  {s:R`\(x\in B\cup C\)`,
+   o:[R`\(x\notin B\) or \(x\notin C\)`, R`\(x\notin B\) and \(x\notin C\)`, R`\(x\in B\) and \(x\notin C\)`, R`\(x\notin B\cap C\)`],
+   a:1, why:R`De Morgan: negating an “or” gives an “and”. This one line is the whole content of \(A\setminus(B\cup C)=(A\setminus B)\cap(A\setminus C)\).`},
+];
+NEGATIONS[0].a = 0;
+
+const PROOFS = [
+  {t:R`\(\sup(A+B)=\sup A+\sup B\)`, note:R`Upper bound first, then the ε part with the budget split in half.`, s:[
+    R`Let \(\alpha=\sup A\) and \(\beta=\sup B\), which exist by completeness.`,
+    R`Let \(x\in A+B\), so \(x=a+b\) with \(a\in A,\ b\in B\).`,
+    R`Since \(a\le\alpha\) and \(b\le\beta\), \(x\le\alpha+\beta\). So \(\alpha+\beta\) is an upper bound of \(A+B\).`,
+    R`Let \(\varepsilon>0\).`,
+    R`\(\alpha-\frac\varepsilon2\) is not an upper bound of \(A\), so pick \(a\in A\) with \(a>\alpha-\frac\varepsilon2\). Likewise pick \(b\in B\) with \(b>\beta-\frac\varepsilon2\).`,
+    R`Then \(a+b\in A+B\) and \(a+b>\alpha+\beta-\varepsilon\).`,
+    R`By the ε-characterization of sup, \(\sup(A+B)=\alpha+\beta\).`]},
+  {t:R`\(\frac{n+2}{3n+5}\to\frac13\) (forward write-up)`, note:R`The proof runs from “Let ε > 0” to “< ε”. The scratch work that found \(N\) is not part of it.`, s:[
+    R`Let \(\varepsilon>0\).`,
+    R`Choose \(N\in\mathbb N\) with \(N>\frac1{9\varepsilon}\) (Archimedean property).`,
+    R`Let \(n\ge N\).`,
+    R`Then \(\left|\frac{n+2}{3n+5}-\frac13\right|=\frac1{9n+15}\).`,
+    R`\(\frac1{9n+15}<\frac1{9n}\le\frac1{9N}\).`,
+    R`\(\frac1{9N}<\varepsilon\), so \(\left|x_n-\frac13\right|<\varepsilon\) for all \(n\ge N\).`]},
+  {t:R`Monotone Convergence Theorem (increasing, bounded above)`, note:R`This is part (ii) of the sup characterization plus monotonicity. Be able to reproduce it.`, s:[
+    R`Let \(L=\sup\{x_n:n\in\mathbb N\}\), which exists by completeness.`,
+    R`Let \(\varepsilon>0\).`,
+    R`\(L-\varepsilon\) is not an upper bound, so there is \(N\) with \(x_N>L-\varepsilon\).`,
+    R`For \(n\ge N\), monotonicity gives \(x_N\le x_n\).`,
+    R`So \(L-\varepsilon<x_N\le x_n\le L<L+\varepsilon\).`,
+    R`Hence \(|x_n-L|<\varepsilon\) for all \(n\ge N\), so \(x_n\to L\).`]},
+  {t:R`Bernoulli: \((1+x)^n\ge1+nx\) for \(x\ge-1\)`, note:R`The hypothesis \(x\ge-1\) is used exactly once, to multiply an inequality by \(1+x\ge0\).`, s:[
+    R`Fix \(x\ge-1\). Let \(P(n)\) be \((1+x)^n\ge1+nx\).`,
+    R`Base case \(n=1\): \(1+x\ge1+x\).`,
+    R`Target \(P(n+1)\): \((1+x)^{n+1}\ge1+(n+1)x\). Assume \(P(n)\).`,
+    R`Since \(1+x\ge0\), multiplying \(P(n)\) by \(1+x\) gives \((1+x)^{n+1}\ge(1+nx)(1+x)\).`,
+    R`\((1+nx)(1+x)=1+(n+1)x+nx^2\ge1+(n+1)x\), because \(nx^2\ge0\).`,
+    R`So \(P(n+1)\) holds, and by induction \(P(n)\) holds for all \(n\in\mathbb N\).`]},
+  {t:R`If \(s\le t\) for all \(s\in S,\ t\in T\), then \(\sup S\le\inf T\)`, note:R`“Fix one, bound, let it vary”: the least property for \(S\), then the greatest property for \(T\).`, s:[
+    R`Let \(t\in T\) be arbitrary.`,
+    R`By hypothesis \(s\le t\) for every \(s\in S\), so \(t\) is an upper bound of \(S\).`,
+    R`\(\sup S\) is the least upper bound, so \(\sup S\le t\).`,
+    R`Since \(t\) was arbitrary, \(\sup S\) is a lower bound of \(T\).`,
+    R`\(\inf T\) is the greatest lower bound, so \(\sup S\le\inf T\).`]},
+  {t:R`Every convergent sequence is Cauchy`, note:R`Add and subtract \(L\), and give each half \(\frac\varepsilon2\).`, s:[
+    R`Suppose \(x_n\to L\), and let \(\varepsilon>0\).`,
+    R`Choose \(N\) with \(|x_n-L|<\frac\varepsilon2\) for all \(n\ge N\).`,
+    R`Let \(n,m\ge N\).`,
+    R`\(|x_n-x_m|=|(x_n-L)+(L-x_m)|\le|x_n-L|+|L-x_m|\).`,
+    R`\(<\frac\varepsilon2+\frac\varepsilon2=\varepsilon\). So \((x_n)\) is Cauchy.`]},
+  {t:R`The harmonic sums \(h_n=\sum_{k=1}^n\frac1k\) are not Cauchy`, note:R`Negated Cauchy: one fixed \(\varepsilon\), and a bad pair for every \(N\). The pair \(m=2N\) is the standard choice for sums.`, s:[
+    R`Take \(\varepsilon=\frac12\).`,
+    R`Let \(N\in\mathbb N\) be arbitrary, and take \(n=N,\ m=2N\).`,
+    R`\(h_{2N}-h_N=\sum_{k=N+1}^{2N}\frac1k\) has \(N\) terms.`,
+    R`Each term is \(\ge\frac1{2N}\), so the sum is \(\ge N\cdot\frac1{2N}=\frac12\).`,
+    R`So for every \(N\) there are \(n,m\ge N\) with \(|h_m-h_n|\ge\frac12\). The sequence is not Cauchy.`]},
+];
+
+const FLAWS = [
+  {t:R`Claim: \(\frac{n+1}n\to1\).`, l:[R`Scratch: \(\left|\frac{n+1}n-1\right|=\frac1n\).`, R`Let \(\varepsilon>0\). Choose \(N=n+\frac1\varepsilon\).`, R`Then for \(n\ge N\), \(\left|\frac{n+1}n-1\right|=\frac1n\le\frac1N<\varepsilon\).`], a:1,
+   why:R`\(N\) may depend only on \(\varepsilon\) (and fixed constants), never on \(n\). Fix: choose \(N>\frac1\varepsilon\).`},
+  {t:R`Claim: \(\sup\{1-\frac1n:n\in\mathbb N\}=1\).`, l:[R`Let \(\varepsilon>0\).`, R`By the Archimedean property choose \(n\) with \(\frac1n<\varepsilon\). Then \(1-\frac1n>1-\varepsilon\).`, R`Therefore \(\sup S=1\) by the ε-characterization.`], a:2,
+   why:R`Part (i) is missing: the proof never shows \(1\) is an upper bound. Without it, the same argument would “prove” \(\sup S=5\). Add: \(1-\frac1n<1\) for all \(n\).`},
+  {t:R`Claim: \(x_1=1,\ x_{n+1}=\sqrt{2+x_n}\) has limit \(2\).`, l:[R`Let \(L=\lim x_n\).`, R`Taking limits in the recursion, \(L=\sqrt{2+L}\).`, R`So \(L^2-L-2=0\), and since \(L\ge1\), \(L=2\).`], a:0,
+   why:R`It assumes the limit exists. Prove convergence first (bounded by induction, increasing, then MCT), and only then pass to the limit. Compare \(x_{n+1}=2x_n\): “\(L=2L\)” gives \(L=0\), which is false.`},
+  {t:R`Claim: \(\lim\frac{\sin n}n=0\).`, l:[R`By the product rule, \(\lim\frac{\sin n}n=\lim\sin n\cdot\lim\frac1n\).`, R`\(\lim\frac1n=0\).`, R`So the limit is \((\lim\sin n)\cdot0=0\).`], a:0,
+   why:R`Limit laws need both limits to exist, and \(\lim\sin n\) does not. Use the squeeze instead: \(\left|\frac{\sin n}n\right|\le\frac1n\to0\).`},
+  {t:R`Claim: if \(x_n>0\) for all \(n\) and \(x_n\to L\), then \(L>0\).`, l:[R`Suppose \(x_n\to L\).`, R`Since \(x_n>0\) for every \(n\), taking limits gives \(L>0\).`, R`So \(L>0\).`], a:1,
+   why:R`Limits preserve \(\le\), not \(<\). \(\frac1n>0\) but \(\frac1n\to0\). The correct conclusion is only \(L\ge0\).`},
+  {t:R`Claim: \(x_n=\sqrt n\) is Cauchy.`, l:[R`\(|x_{n+1}-x_n|=\sqrt{n+1}-\sqrt n=\frac1{\sqrt{n+1}+\sqrt n}\).`, R`This tends to \(0\).`, R`So consecutive terms get arbitrarily close, and \((x_n)\) is Cauchy.`], a:2,
+   why:R`Cauchy controls all pairs \(n,m\ge N\), not just neighbours. \(\sqrt n\to\infty\), so it is not Cauchy (try \(m=4n\): \(|x_m-x_n|=\sqrt n\)).`},
+  {t:R`Claim: \(x_n=\frac1n\) is Cauchy.`, l:[R`Let \(\varepsilon>0\) and let \(m>n\).`, R`\(|x_n-x_m|=\frac1n-\frac1m\).`, R`Choose \(N\) with \(\frac1N-\frac1m<\varepsilon\).`, R`Then for \(m>n\ge N\), \(|x_n-x_m|<\varepsilon\).`], a:2,
+   why:R`\(N\) depends on \(m\). Drop the \(m\)-term first: \(\frac1n-\frac1m<\frac1n\), then choose \(N>\frac1\varepsilon\).`},
+  {t:R`Claim: for any \(c\in\mathbb R\), \(\sup(cA)=c\sup A\).`, l:[R`Let \(\alpha=\sup A\) and let \(x=ca\in cA\).`, R`Since \(a\le\alpha\), multiplying by \(c\) gives \(ca\le c\alpha\).`, R`So \(c\alpha\) is an upper bound of \(cA\), and the ε part follows as usual.`], a:1,
+   why:R`Multiplying by \(c\) keeps the direction only when \(c>0\). For \(c<0\) the inequality flips, and in fact \(\sup(cA)=c\inf A\).`},
+  {t:R`Claim: \(1+3+\dots+(2n-1)=n^2\).`, l:[R`Base case: \(1=1^2\).`, R`Assume \(1+3+\dots+(2n-1)=n^2\).`, R`Then \(1+3+\dots+(2n-1)+2n=n^2+2n\).`, R`…which is not \((n+1)^2\), so the formula must be wrong.`], a:2,
+   why:R`Wrong target. The next odd number is \(2(n+1)-1=2n+1\). Write \(P(n+1)\) out before starting: then \(n^2+2n+1=(n+1)^2\).`},
+  {t:R`Claim: \(\bigcap_n\bigl(0,\frac1n\bigr)\) is a single point.`, l:[R`The intervals \(\bigl(0,\frac1n\bigr)\) are nested.`, R`Their lengths \(\frac1n\to0\).`, R`By the Nested Interval Theorem the intersection is a single point.`], a:2,
+   why:R`NIT needs closed and bounded intervals. These are open, and the intersection is empty: any \(x>0\) misses \(\bigl(0,\frac1n\bigr)\) once \(n>\frac1x\).`},
+];
+
+const TF = [
+  {s:R`If \(x_n<1\) for all \(n\) and \(x_n\to L\), then \(L<1\).`, a:false, why:R`\(x_n=1-\frac1n\). Limits preserve \(\le\), not \(<\).`},
+  {s:R`Every convergent sequence is bounded.`, a:true, why:R`Use \(\varepsilon=1\): \(|x_n|<1+|L|\) for \(n\ge N\), then take the max with the finitely many earlier terms.`},
+  {s:R`Every bounded sequence converges.`, a:false, why:R`\((-1)^n\). It has a convergent subsequence (Bolzano–Weierstrass), but that's all.`},
+  {s:R`If \((x_n)\) is increasing and not bounded above, then \(x_n\to\infty\).`, a:true, why:R`Given \(M\), some \(x_N>M\), and increasing gives \(x_n\ge x_N>M\) for all \(n\ge N\).`},
+  {s:R`If \((|x_n|)\) converges, then \((x_n)\) converges.`, a:false, why:R`\((-1)^n\). (It is true when the limit of \(|x_n|\) is \(0\).)`},
+  {s:R`If \((x_n)\) converges and \((y_n)\) diverges, then \((x_n+y_n)\) diverges.`, a:true, why:R`Contradiction: if \(x_n+y_n\) converged, then \(y_n=(x_n+y_n)-x_n\) would converge by the difference law.`},
+  {s:R`If \((x_n)\) and \((y_n)\) both diverge, then \((x_n+y_n)\) diverges.`, a:false, why:R`\(x_n=(-1)^n,\ y_n=-(-1)^n\): the sum is \(0\).`},
+  {s:R`Every nonempty subset of \(\mathbb Q\) that is bounded above has a sup in \(\mathbb Q\).`, a:false, why:R`\(\{q\in\mathbb Q:q^2<2\}\) would need \(\sup=\sqrt2\notin\mathbb Q\). This is why \(\mathbb R\) needs the completeness axiom.`},
+  {s:R`If \(\sup S\) exists and \(\sup S\in S\), then \(S\) has a maximum.`, a:true, why:R`An upper bound that belongs to the set is, by definition, its maximum.`},
+  {s:R`If \(x_{n+1}-x_n\to0\), then \((x_n)\) is Cauchy.`, a:false, why:R`\(x_n=\sqrt n\): neighbours get close, but the sequence goes to \(\infty\).`},
+  {s:R`Every Cauchy sequence of rational numbers has a rational limit.`, a:false, why:R`Decimal truncations of \(\sqrt2\): \(1,\ 1.4,\ 1.41,\dots\) are rational and Cauchy, but the limit is irrational.`},
+  {s:R`Every subsequence of a Cauchy sequence is Cauchy.`, a:true, why:R`\(n_k\ge k\), so for \(k,j\ge N\) both \(n_k,n_j\ge N\) and \(|x_{n_k}-x_{n_j}|<\varepsilon\).`},
+  {s:R`If \((x_n)\) is Cauchy and \(a\le x_n\le b\) for all \(n\), then \(\lim x_n\in[a,b]\).`, a:true, why:R`Cauchy in \(\mathbb R\) means convergent, and limits preserve \(\le\).`},
+  {s:R`\(\sup\{r\in\mathbb Q:r<\sqrt2\}=\sqrt2\).`, a:true, why:R`\(\sqrt2\) is an upper bound, and by density of \(\mathbb Q\) there is a rational in \((\sqrt2-\varepsilon,\sqrt2)\) for every \(\varepsilon\).`},
+  {s:R`If \(I_n\) are nonempty, nested, bounded intervals, then \(\bigcap I_n\ne\emptyset\).`, a:false, why:R`\(\bigl(0,\frac1n\bigr]\). NIT also needs the intervals to be closed.`},
+  {s:R`If \(x_ny_n\to0\), then \(x_n\to0\) or \(y_n\to0\).`, a:false, why:R`\(1,0,1,0,\dots\) and \(0,1,0,1,\dots\).`},
+];
+
+const DEFS = [
+  {t:R`\(\sup S\)`, d:R`An upper bound \(M\) of \(S\) such that no \(M'<M\) is an upper bound. Equivalently: \(s\le M\ \forall s\in S\), and \(\forall\varepsilon>0\ \exists s\in S:\ s>M-\varepsilon\).`},
+  {t:R`\(\inf S\)`, d:R`A lower bound \(m\) such that no \(m'>m\) is a lower bound. Equivalently: \(m\le s\ \forall s\in S\), and \(\forall\varepsilon>0\ \exists s\in S:\ s<m+\varepsilon\).`},
+  {t:"Completeness Axiom", d:R`Every nonempty subset of \(\mathbb R\) that is bounded above has a supremum in \(\mathbb R\).`},
+  {t:"Archimedean property", d:R`For every \(x\in\mathbb R\) there is \(n\in\mathbb N\) with \(n>x\). Equivalently, for every \(\varepsilon>0\) there is \(n\) with \(\frac1n<\varepsilon\).`},
+  {t:"Density", d:R`If \(x<y\), there are \(r\in\mathbb Q\) and \(z\notin\mathbb Q\) with \(x<r<y\) and \(x<z<y\).`},
+  {t:R`\(x_n\to L\)`, d:R`\(\forall\varepsilon>0\ \exists N\in\mathbb N\ \forall n\ge N:\ |x_n-L|<\varepsilon\).`},
+  {t:R`\(x_n\to\infty\)`, d:R`\(\forall M\ \exists N\ \forall n\ge N:\ x_n>M\).`},
+  {t:"Bounded sequence", d:R`\(\exists M>0\ \forall n:\ |x_n|\le M\).`},
+  {t:"Monotone Convergence Theorem", d:R`A bounded monotone sequence converges. If it is increasing and bounded above, \(x_n\to\sup\{x_n\}\); if decreasing and bounded below, \(x_n\to\inf\{x_n\}\).`},
+  {t:"Cauchy sequence", d:R`\(\forall\varepsilon>0\ \exists N\ \forall n,m\ge N:\ |x_n-x_m|<\varepsilon\).`},
+  {t:"Not Cauchy", d:R`\(\exists\varepsilon>0\ \forall N\ \exists n,m\ge N:\ |x_n-x_m|\ge\varepsilon\).`},
+  {t:"Subsequence", d:R`\((x_{n_k})_k\) with \(n_1<n_2<n_3<\cdots\) (so \(n_k\ge k\)).`},
+  {t:"Cauchy criterion", d:R`In \(\mathbb R\): \((x_n)\) converges if and only if \((x_n)\) is Cauchy.`},
+  {t:"Bolzano–Weierstrass", d:R`Every bounded sequence in \(\mathbb R\) has a convergent subsequence.`},
+  {t:"Nested Interval Theorem", d:R`If \(I_n=[a_n,b_n]\) are closed, bounded and nested (\(I_{n+1}\subseteq I_n\)), then \(\bigcap_n I_n\ne\emptyset\). If also \(b_n-a_n\to0\), the intersection is a single point.`},
+  {t:R`\(|x|\le a\) (for \(a\ge0\))`, d:R`\(-a\le x\le a\). The most useful absolute-value fact.`},
+];
+
+/* ------------------------------------------------------------ state */
+const MODS = [
+  {id:"pattern", name:"Claim → technique", n:PATTERNS.length, h:"Claim → technique", p:"Read the claim. Pick the move you would open with."},
+  {id:"negate", name:"Negate it", n:NEGATIONS.length, h:"Negate it", p:"Pick the correct negation. You need this for divergence, not-Cauchy and contradiction proofs."},
+  {id:"order", name:"Put it in order", n:PROOFS.length, h:"Put it in order", p:"Tap the steps in the order they belong. Tap a placed step to send it back."},
+  {id:"flaw", name:"Find the flaw", n:FLAWS.length, h:"Find the flaw", p:"Each proof has exactly one bad line. Tap it. These are the guide's point-losing mistakes."},
+  {id:"tf", name:"True or false", n:TF.length, h:"True or false", p:"Decide, then check the justification or counterexample you'd write."},
+  {id:"defs", name:"Definitions", n:DEFS.length, h:"State it exactly", p:"Write the definition from memory, then compare. Be honest when you grade yourself."},
+];
+const KEY = "pp3150-v1";
+let store = {};
+try { store = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e) { store = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} }
+function mstate(id){ return store[id] || (store[id] = {i:0, right:{}, order:null}); }
+let active = (()=>{ try { return localStorage.getItem(KEY+"-tab") || "pattern"; } catch(e){ return "pattern"; } })();
+
+const $ = (s, el=document) => el.querySelector(s);
+const h = (tag, attrs={}, html="") => { const e=document.createElement(tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (html) e.innerHTML = html; return e; };
+function shuffle(a, seed){ const r=[...a]; let s=seed*9301+49297; for(let i=r.length-1;i>0;i--){ s=(s*9301+49297)%233280; const j=Math.floor(s/233280*(i+1)); [r[i],r[j]]=[r[j],r[i]]; } return r; }
+function typeset(el){ if (window.MathJax && MathJax.typesetPromise) { MathJax.typesetClear && MathJax.typesetClear([el]); MathJax.typesetPromise([el]).catch(()=>{}); } }
+function score(id){ const s=mstate(id); return Object.values(s.right).filter(Boolean).length; }
+
+/* ------------------------------------------------------------ chrome */
+function renderTabs(){
+  const t = $("#tabs"); t.innerHTML = "";
+  MODS.forEach(m => {
+    const b = h("button", {class:"tab", role:"tab", "aria-selected": String(m.id===active), id:"tab-"+m.id},
+      `${m.name}<span class="sc">${score(m.id)}/${m.n}</span>`);
+    b.onclick = () => { active = m.id; try{localStorage.setItem(KEY+"-tab", active);}catch(e){} render(); };
+    t.appendChild(b);
+  });
+}
+function shell(mod, idx){
+  const st = $("#stage"); st.innerHTML = "";
+  st.appendChild(h("div", {class:"intro"}, `<div><h2>${mod.h}</h2><p>${mod.p}</p></div>`));
+  const card = h("div", {class:"card"});
+  card.appendChild(h("div", {class:"meta"}, `<span>${String(idx+1).padStart(2,"0")} / ${String(mod.n).padStart(2,"0")}</span><span>${score(mod.id)} correct so far</span>`));
+  st.appendChild(card);
+  return card;
+}
+function navRow(mod, after){
+  const s = mstate(mod.id);
+  const row = h("div", {class:"row"});
+  const prev = h("button", {class:"btn ghost", id:"prev-"+mod.id}, "Previous");
+  prev.disabled = s.i===0;
+  prev.onclick = () => { s.i--; s.order=null; save(); render(); };
+  const next = h("button", {class:"btn", id:"next-"+mod.id}, s.i===mod.n-1 ? "Start over" : "Next");
+  next.onclick = () => { s.i = (s.i+1) % mod.n; s.order=null; save(); render(); };
+  row.append(prev, next);
+  if (after) row.insertBefore(after, next);
+  return row;
+}
+function feedback(kind, verdict, body, opener){
+  const f = h("div", {class:"fb "+kind});
+  f.innerHTML = `<span class="verdict">${verdict}</span><p>${body}</p>` + (opener ? `<div class="opener"><b>Write this first</b>${opener}</div>` : "");
+  return f;
+}
+function mark(id, i, ok){ const s=mstate(id); if (s.right[i]===undefined) s.right[i]=ok; save(); renderTabs(); }
+
+/* ------------------------------------------------------------ modules */
+function renderPattern(mod){
+  const s = mstate(mod.id), it = PATTERNS[s.i], card = shell(mod, s.i);
+  card.appendChild(h("p", {class:"prompt"}, `<small>Prove or decide:</small>${it.c}`));
+  const opts = h("div", {class:"opts"});
+  Object.entries(TECH).forEach(([k,t]) => {
+    const b = h("button", {class:"opt", "data-k":k}, t.name);
+    b.onclick = () => {
+      const ok = k===it.a;
+      opts.querySelectorAll(".opt").forEach(o => { o.disabled=true; if (o.dataset.k===it.a) o.classList.add("right"); else if (o===b) o.classList.add("wrong"); else o.classList.add("dim"); });
+      mark(mod.id, s.i, ok);
+      const fb = feedback(ok?"good":"bad", ok?"Right move":"Better move: "+TECH[it.a].name, it.why, TECH[it.a].first);
+      card.insertBefore(fb, card.lastChild); typeset(fb);
+    };
+    opts.appendChild(b);
+  });
+  card.append(opts, navRow(mod));
+}
+function renderChoice(mod, items, promptLabel){
+  const s = mstate(mod.id), it = items[s.i], card = shell(mod, s.i);
+  card.appendChild(h("p", {class:"prompt"}, `<small>${promptLabel}</small>${it.s}`));
+  const opts = h("div", {class:"opts stack"});
+  shuffle(it.o.map((o,i)=>({o,i})), s.i+3).forEach(({o,i}) => {
+    const b = h("button", {class:"opt", "data-i":i}, o);
+    b.onclick = () => {
+      const ok = i===it.a;
+      opts.querySelectorAll(".opt").forEach(x => { x.disabled=true; if (+x.dataset.i===it.a) x.classList.add("right"); else if (x===b) x.classList.add("wrong"); else x.classList.add("dim"); });
+      mark(mod.id, s.i, ok);
+      const fb = feedback(ok?"good":"bad", ok?"Correct":"Not quite", it.why);
+      card.insertBefore(fb, card.lastChild); typeset(fb);
+    };
+    opts.appendChild(b);
+  });
+  card.append(opts, navRow(mod));
+}
+function renderOrder(mod){
+  const s = mstate(mod.id), it = PROOFS[s.i], card = shell(mod, s.i);
+  card.appendChild(h("p", {class:"prompt"}, `<small>Rebuild the proof of</small>${it.t}`));
+  if (!s.order) { s.order = {placed:[], checked:false}; save(); }
+  const pool = shuffle(it.s.map((_,i)=>i), s.i+11).filter(i => !s.order.placed.includes(i));
+  const wrapP = h("div"), wrapR = h("div");
+  wrapP.appendChild(h("p", {class:"slot-label"}, "Your proof"));
+  wrapR.appendChild(h("p", {class:"slot-label"}, "Steps left"));
+  const placed = h("ol", {class:"lines placed"}), rest = h("ul", {class:"lines"});
+  if (!s.order.placed.length) wrapP.appendChild(h("div", {class:"empty"}, "Tap the step that comes first."));
+  s.order.placed.forEach((i,pos) => {
+    const li = h("li", {}, `<span>${it.s[i]}</span>`);
+    if (s.order.checked) { li.classList.add(i===pos?"right":"wrong","locked"); }
+    else li.onclick = () => { s.order.placed.splice(pos,1); save(); render(); };
+    placed.appendChild(li);
+  });
+  pool.forEach(i => {
+    const li = h("li", {}, `<span>${it.s[i]}</span>`);
+    li.onclick = () => { if (s.order.checked) return; s.order.placed.push(i); save(); render(); };
+    rest.appendChild(li);
+  });
+  if (s.order.placed.length) wrapP.appendChild(placed);
+  card.appendChild(wrapP);
+  if (pool.length) { wrapR.appendChild(rest); card.appendChild(wrapR); }
+  const check = h("button", {class:"btn ghost", id:"check-order"}, s.order.checked ? "Try again" : "Check order");
+  check.disabled = !s.order.checked && pool.length>0;
+  check.onclick = () => {
+    if (s.order.checked) { s.order = {placed:[], checked:false}; save(); render(); return; }
+    s.order.checked = true; const ok = s.order.placed.every((v,p)=>v===p);
+    mark(mod.id, s.i, ok); save(); render();
+  };
+  if (s.order.checked) {
+    const ok = s.order.placed.every((v,p)=>v===p);
+    const body = ok ? it.note : it.note + `<br><br><b>Correct order:</b><ol style="margin:6px 0 0;padding-left:1.3em">${it.s.map(x=>`<li>${x}</li>`).join("")}</ol>`;
+    card.appendChild(feedback(ok?"good":"bad", ok?"Proof holds":"Some steps are out of place", body));
+  }
+  card.appendChild(navRow(mod, check));
+  typeset(card);
+}
+function renderFlaw(mod){
+  const s = mstate(mod.id), it = FLAWS[s.i], card = shell(mod, s.i);
+  card.appendChild(h("p", {class:"prompt"}, `<small>Which line breaks the proof?</small>${it.t}`));
+  const box = h("div", {class:"proofbox"});
+  it.l.forEach((line, i) => {
+    const b = h("button", {class:"opt", "data-i":i}, `<span class="ln">${i+1}</span><span>${line}</span>`);
+    b.onclick = () => {
+      const ok = i===it.a;
+      box.querySelectorAll(".opt").forEach(x => { x.disabled=true; if (+x.dataset.i===it.a) x.classList.add("right"); else x.classList.add(x===b?"wrong":"dim"); });
+      mark(mod.id, s.i, ok);
+      const fb = feedback(ok?"good":"bad", ok?"Found it":"The bad line is "+(it.a+1), it.why);
+      card.insertBefore(fb, card.lastChild); typeset(fb);
+    };
+    box.appendChild(b);
+  });
+  card.append(box, navRow(mod));
+}
+function renderTF(mod){
+  const s = mstate(mod.id), it = TF[s.i], card = shell(mod, s.i);
+  card.appendChild(h("p", {class:"prompt"}, `<small>True or false?</small>${it.s}`));
+  const opts = h("div", {class:"opts"});
+  [true,false].forEach(v => {
+    const b = h("button", {class:"opt", "data-v":String(v)}, v ? "True: I can prove it" : "False: I have a counterexample");
+    b.onclick = () => {
+      const ok = v===it.a;
+      opts.querySelectorAll(".opt").forEach(x => { x.disabled=true; if (x.dataset.v===String(it.a)) x.classList.add("right"); else x.classList.add(x===b?"wrong":"dim"); });
+      mark(mod.id, s.i, ok);
+      const fb = feedback(ok?"good":"bad", (it.a?"True":"False") + (ok?" — correct":""), it.why);
+      card.insertBefore(fb, card.lastChild); typeset(fb);
+    };
+    opts.appendChild(b);
+  });
+  card.append(opts, navRow(mod));
+}
+function renderDefs(mod){
+  const s = mstate(mod.id), it = DEFS[s.i], card = shell(mod, s.i);
+  card.appendChild(h("p", {class:"prompt"}, `<small>State precisely:</small>${it.t}`));
+  const ta = h("textarea", {class:"recall", id:"recall-"+s.i, placeholder:"Write it out word for word, quantifiers included…"});
+  card.appendChild(ta);
+  const reveal = h("button", {class:"btn ghost", id:"reveal"}, "Show the definition");
+  reveal.onclick = () => {
+    reveal.disabled = true;
+    const ans = h("div", {class:"answer"}, it.d);
+    const grade = h("div", {class:"row"});
+    const yes = h("button", {class:"btn", id:"got-it"}, "I had it exactly");
+    const no = h("button", {class:"btn ghost", id:"missed"}, "I missed something");
+    yes.onclick = () => { mark(mod.id, s.i, true); s.right[s.i]=true; save(); renderTabs(); yes.disabled=no.disabled=true; };
+    no.onclick = () => { s.right[s.i]=false; save(); renderTabs(); yes.disabled=no.disabled=true; };
+    grade.append(no, yes);
+    card.insertBefore(ans, card.lastChild); card.insertBefore(grade, card.lastChild); typeset(ans);
+  };
+  card.appendChild(navRow(mod, reveal));
+}
+
+function render(){
+  renderTabs();
+  const mod = MODS.find(m=>m.id===active) || MODS[0];
+  ({pattern:renderPattern, order:renderOrder, flaw:renderFlaw, defs:renderDefs,
+    negate:m=>renderChoice(m, NEGATIONS, "Negate:"), tf:renderTF})[mod.id](mod);
+  typeset($("#stage"));
+}
+
+/* ------------------------------------------------------------ cheat sheet */
+const SHEET = [
+  [R`\(S=T\) (sets)`, "double"], [R`“for all \(n\ge n_0\)”`, "induction"], [R`“\(x\) is irrational”, “no such …”`, "contra"],
+  [R`“Is it always true?” (you suspect not)`, "counter"], [R`\(M=\sup S\)`, "supeps"], [R`\(\sup A\le\) something`, "ubound"],
+  [R`\(\lim x_n=L\)`, "epsN"], [R`\(\lim x_n=\infty\)`, "MN"], [R`Converges, limit unknown, monotone`, "mct"],
+  [R`Converges, limit unknown, not monotone`, "cauchy"], [R`Diverges (sums, slow growth)`, "notcauchy"], [R`Diverges (oscillates)`, "subseq"], [R`\(|a|\le c\)`, "abs"],
+];
+const tb = $("#sheet tbody");
+SHEET.forEach(([c,k]) => tb.appendChild(h("tr", {}, `<td>${c}</td><td>${TECH[k].name}</td><td>${TECH[k].first}</td>`)));
+
+$("#reset").onclick = () => { store = {}; save(); render(); };
+render();
+if (window.MathJax && MathJax.startup) MathJax.startup.promise.then(() => typeset(document.body));
+</script>
