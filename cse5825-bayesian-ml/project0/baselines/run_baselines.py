@@ -68,7 +68,7 @@ def sbert_embeddings(texts):
 
 
 # --------------------------------------------------------------------------- attack
-def text_similar_candidates(emb, y, existing, k=20):
+def text_similar_candidates(emb, y, existing, k=60):
     """Non-adjacent, different-label pairs among each node's top-k SBERT neighbours."""
     e = torch.from_numpy(emb)
     n = e.shape[0]
@@ -227,6 +227,9 @@ def main():
     existing = set(map(tuple, und.numpy().T.tolist()))
     cands = text_similar_candidates(emb, y.numpy(), existing)
     print(f"text-similar cross-label candidate pairs: {len(cands)}")
+    need = int(round(max(args.budgets) * und.shape[1]))
+    if need > len(cands):
+        raise SystemExit(f"budget {max(args.budgets):.0%} needs {need} fake edges but only {len(cands)} candidates; raise k")
 
     settings = [("text", b) for b in args.budgets] + [("random", 0.20)]
     rows = []
@@ -268,6 +271,7 @@ def main():
                 }
                 row["detect"] = detection(pairs, is_fake, scores)
             rows.append(row)
+            (OUT / "raw.json").write_text(json.dumps(rows, indent=1))
             print(f"[{time.time() - t0:6.0f}s] {mode:6s} b={b:.2f} split={split} "
                   f"gcn acc={row['gcn']['acc']:.3f} ece={row['gcn']['ece']:.3f}"
                   + (f"  mlp acc={row['mlp']['acc']:.3f}" if "mlp" in row else ""))
@@ -285,7 +289,7 @@ def ms(vals):
 def write_summary(rows, homophily, n_cands, m):
     L = ["# Baseline results — WikiCS", "",
          f"- {m} clean undirected edges, edge homophily {homophily:.3f}",
-         f"- {n_cands} text-similar, cross-label candidate pairs (top-20 SBERT neighbours)",
+         f"- {n_cands} text-similar, cross-label candidate pairs (top-60 SBERT neighbours)",
          f"- mean ± std over {len({r['split'] for r in rows})} splits; GCN = 2-layer, 64 hidden, GloVe features", ""]
     L += ["## Node classification (test set)", "",
           "| model | attack | budget | acc | NLL | ECE | Brier | acc (touched) | acc (untouched) |",
