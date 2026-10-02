@@ -44,19 +44,74 @@ $x_{n+1}-x_N = (x_{n+1}-x_n)+(x_n-x_{n-1})+\cdots+(x_{N+1}-x_N)$, for any $n>N$.
 %  (d) Apply (c) to each k = N, N+1, ..., n and combine using the hint.
 %  (e) Identify what the y-terms collapse to.
 
-Let $\varepsilon>0$.
+% Reading the goal: for n > N, the quantity x_{n+1} - x_N is trapped between
+%   lower bound (L - eps)(y_{n+1} - y_N)  and  upper bound (L + eps)(y_{n+1} - y_N).
+% The hypothesis only bounds ONE step (the ratio for a single k), so the plan is:
+%   one-step bound on the ratio -> one-step bound on x_{k+1} - x_k -> sum the steps.
+
+Let $\varepsilon>0$. For each $k$, write
+\[
+  r_k = \frac{x_{k+1}-x_k}{y_{k+1}-y_k},
+\]
+so the hypothesis says $\lim_{k\to\infty} r_k = L$.
 
 \textbf{Step 1: Use the hypothesis.}
-\todo{What does $\lim \frac{x_{k+1}-x_k}{y_{k+1}-y_k}=L$ give for this $\varepsilon$?}
+By the definition of $\lim_{k\to\infty} r_k = L$, there exists $N$ such that
+for all $k \ge N$,
+\[
+  |r_k - L| < \varepsilon .
+\]
+
+Unpacking the absolute value, $-\varepsilon < r_k - L < \varepsilon$, and
+adding $L$ throughout gives, for all $k\ge N$,
+\[
+  L - \varepsilon < \frac{x_{k+1}-x_k}{y_{k+1}-y_k} < L + \varepsilon .
+\]
 
 \textbf{Step 2: Clear the denominator.}
-\todo{Rewrite the inequality from Step 1 without a fraction. Justify why the inequality direction is preserved.}
+We multiply the inequality from Step 1 by $y_{k+1}-y_k$. Since
+$y_{k+1}-y_k > 0$, multiplying by it preserves the direction of the strict
+inequalities $<$.
+
+Indeed, since $(y_n)$ is increasing, $y_{k+1}-y_k \ge 0$; and
+$y_{k+1}-y_k \ne 0$, since otherwise the fraction in the hypothesis would be
+undefined. Hence $y_{k+1}-y_k>0$, and we obtain, for all $k\ge N$,
+\[
+  (L-\varepsilon)(y_{k+1}-y_k) < x_{k+1}-x_k < (L+\varepsilon)(y_{k+1}-y_k).
+\]
 
 \textbf{Step 3: Sum from $k=N$ to $k=n$.}
-\todo{Apply Step 2 to each $k$ and combine, using the hint.}
+Let $n>N$. The inequality from Step 2 holds for each $k=N,N+1,\dots,n$.
+Adding these $n-N+1$ inequalities gives
+\[
+  \sum_{k=N}^{n}(L-\varepsilon)(y_{k+1}-y_k)
+  < \sum_{k=N}^{n}(x_{k+1}-x_k)
+  < \sum_{k=N}^{n}(L+\varepsilon)(y_{k+1}-y_k).
+\]
+Since $L-\varepsilon$ and $L+\varepsilon$ do not depend on $k$, we can pull
+them out of the sums:
+\[
+  (L-\varepsilon)\sum_{k=N}^{n}(y_{k+1}-y_k)
+  < \sum_{k=N}^{n}(x_{k+1}-x_k)
+  < (L+\varepsilon)\sum_{k=N}^{n}(y_{k+1}-y_k).
+\]
 
 \textbf{Step 4: Simplify.}
-\todo{What do the left and right sides become?}
+The $y$-sum telescopes, since every $y_{N+1},\dots,y_n$ appears once with $+$
+and once with $-$:
+\[
+  \sum_{k=N}^{n}(y_{k+1}-y_k) = y_{n+1}-y_N .
+\]
+Likewise, the $x$-sum telescopes (this is the hint):
+\[
+  \sum_{k=N}^{n}(x_{k+1}-x_k) = x_{n+1}-x_N .
+\]
+
+Substituting both sums into the inequality from Step 3 gives
+\[
+  (L-\varepsilon)(y_{n+1}-y_N) < x_{n+1}-x_N < (L+\varepsilon)(y_{n+1}-y_N)
+\]
+for all $n>N$, which is what we wanted to prove.
 
 \end{proof}
 
@@ -89,13 +144,66 @@ exists and is also equal to $L$.
 Let $\varepsilon>0$, and let $N$ be as in Problem 1.
 
 \textbf{Step 1: Rearrange Problem 1's inequality.}
-\todo{Isolate $x_{n+1}$ and divide so that $\frac{x_{n+1}}{y_{n+1}}$ is in the middle. Why is $y_{n+1}>0$ for large $n$?}
+By Problem 1, for all $n>N$,
+\[
+  (L-\varepsilon)(y_{n+1}-y_N) < x_{n+1}-x_N < (L+\varepsilon)(y_{n+1}-y_N).
+\]
+Adding $x_N$ throughout,
+\[
+  x_N+(L-\varepsilon)(y_{n+1}-y_N) < x_{n+1} < x_N+(L+\varepsilon)(y_{n+1}-y_N).
+\]
+Expanding the left half,
+\[
+  x_N+(L-\varepsilon)y_{n+1}-(L-\varepsilon)y_N < x_{n+1} .
+\]
+and the right half,
+\[
+  x_{n+1} < x_N+(L+\varepsilon)y_{n+1}-(L+\varepsilon)y_N .
+\]
+
+\todo{Why is $y_{n+1}>0$ for large $n$? Use $y_n\to\infty$ to get an index $N_0$ with $y_{n+1}>0$ for all $n\ge N_0$.}
+
+Dividing the left half by $y_{n+1}>0$,
+\[
+  L-\varepsilon + \frac{x_N-(L-\varepsilon)y_N}{y_{n+1}} < \frac{x_{n+1}}{y_{n+1}} .
+\]
+and the right half,
+\[
+  \frac{x_{n+1}}{y_{n+1}} < L+\varepsilon + \frac{x_N-(L+\varepsilon)y_N}{y_{n+1}} .
+\]
+Together,
+\[
+  L-\varepsilon + \frac{x_N-(L-\varepsilon)y_N}{y_{n+1}}
+  < \frac{x_{n+1}}{y_{n+1}}
+  < L+\varepsilon + \frac{x_N-(L+\varepsilon)y_N}{y_{n+1}} .
+\]
 
 \textbf{Step 2: Handle the terms involving $N$.}
-\todo{Which terms are ``leftovers'' with $x_N, y_N$? Why do they tend to $0$?}
+The leftover terms are $\dfrac{A}{y_{n+1}}$ and $\dfrac{B}{y_{n+1}}$, where
+\[
+  A = x_N-(L-\varepsilon)y_N, \qquad B = x_N-(L+\varepsilon)y_N .
+\]
+Since $N$ is fixed, $A$ and $B$ are constants: they do not depend on $n$.
+Since $y_{n+1}\to\infty$, a constant divided by $y_{n+1}$ tends to $0$, so
+\[
+  \frac{A}{y_{n+1}}\to 0 \qquad\text{and}\qquad \frac{B}{y_{n+1}}\to 0 .
+\]
 
 \textbf{Step 3: Choose the final threshold.}
-\todo{Pick $M$ so that both estimates hold, and conclude $\left|\frac{x_n}{y_n}-L\right| < \blank$ for $n\ge M$.}
+Since $\frac{A}{y_{n+1}}\to0$, there exists $M_1$ such that for $n\ge M_1$,
+\[
+  \left|\frac{x_N-(L-\varepsilon)y_N}{y_{n+1}}\right| < \varepsilon ,
+\]
+and since $\frac{B}{y_{n+1}}\to0$, there exists $M_2$ such that for $n\ge M_2$,
+\[
+  \left|\frac{x_N-(L+\varepsilon)y_N}{y_{n+1}}\right| < \varepsilon .
+\]
+Let $M=\max\{N, N_0, M_1, M_2\}$, where $N_0$ is the index from Step 1 with
+$y_{n+1}>0$ for $n\ge N_0$.
+
+\todo{For $n\ge M$, plug these bounds into Step 1: \ \blank\ $<\frac{x_{n+1}}{y_{n+1}}<$ \blank.}
+
+\todo{Conclude (Fix 1: the bound is $2\varepsilon$ and $\varepsilon$ was arbitrary; or Fix 2: redo with $\varepsilon/2$ from the start).}
 
 \end{proof}
 

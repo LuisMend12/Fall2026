@@ -1,0 +1,283 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+
+\title{MAT 3150 --- Homework 4\\
+\large Practice: Same Techniques, Different Problems}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+Each section practices the technique behind one homework problem.
+The \textbf{worked example} is fully solved; the \textbf{practice} problems
+are for you to try (hints only).
+
+% ============================================================
+\section{Telescoping and step-by-step bounds \quad (for HW Problem 1)}
+
+\textbf{Tools.}
+\begin{itemize}
+  \item Telescoping: $x_{n+1}-x_N = (x_{n+1}-x_n)+(x_n-x_{n-1})+\cdots+(x_{N+1}-x_N)$.
+  \item Adding inequalities: if $a_1<b_1$, $a_2<b_2$, \dots, $a_m<b_m$, then
+        $a_1+\cdots+a_m < b_1+\cdots+b_m$.
+  \item Multiplying by $c>0$ keeps the direction of $<$.
+\end{itemize}
+
+\subsection*{Worked example}
+\textbf{Prove:} if $1 < x_{k+1}-x_k < 3$ for every $k\ge 1$, then
+\[
+  n < x_{n+1}-x_1 < 3n \qquad\text{for every } n\ge 1 .
+\]
+
+\emph{Solution.} Write the one-step inequality for $k=1,2,\dots,n$:
+\[
+\begin{aligned}
+  1 &< x_2 - x_1 < 3\\
+  1 &< x_3 - x_2 < 3\\
+    &\;\;\vdots\\
+  1 &< x_{n+1} - x_n < 3 .
+\end{aligned}
+\]
+There are $n$ lines. Add them. The left sides add to $n\cdot 1 = n$, the right
+sides to $n\cdot 3 = 3n$, and the middle telescopes:
+\[
+  (x_2-x_1)+(x_3-x_2)+\cdots+(x_{n+1}-x_n) = x_{n+1}-x_1 ,
+\]
+because every $x_2,\dots,x_n$ appears once with $+$ and once with $-$.
+Hence $n < x_{n+1}-x_1 < 3n$. \hfill$\checkmark$
+
+\subsection*{Practice 1A}
+Compute $(y_5-y_4)+(y_4-y_3)+(y_3-y_2)$. Then compute
+$(y_{n+1}-y_n)+(y_n-y_{n-1})+\cdots+(y_{N+1}-y_N)$ for general $N<n$.
+
+\vspace{2.5cm}
+
+\subsection*{Practice 1B}
+Let $(y_n)$ be increasing. \textbf{Prove:} if
+$2(y_{k+1}-y_k) < x_{k+1}-x_k$ for every $k\ge 5$, then
+\[
+  2(y_{n+1}-y_5) < x_{n+1}-x_5 \qquad\text{for every } n\ge 5 .
+\]
+\emph{Hint:} same as the worked example, but now the left sides are not all
+equal. Factor out the $2$ before you add, then telescope inside the bracket.
+
+\vspace{3cm}
+
+\subsection*{Practice 1C}
+Use telescoping to show
+$\displaystyle\sum_{k=1}^{n}\frac{1}{k(k+1)} = 1-\frac{1}{n+1}$.
+
+\emph{Hint:} $\dfrac{1}{k(k+1)} = \dfrac1k - \dfrac1{k+1}$.
+
+\textbf{Setup.} First check the hint by combining over a common denominator:
+\[
+  \frac1k - \frac1{k+1} = \frac{(k+1)-k}{k(k+1)} = \frac{1}{k(k+1)} .
+\]
+Now replace every term of the sum by its split form and write the terms out
+one per $k$:
+\[
+\begin{aligned}
+  \sum_{k=1}^{n}\frac{1}{k(k+1)}
+  &= \sum_{k=1}^{n}\left(\frac1k - \frac1{k+1}\right)\\[4pt]
+  &= \underbrace{\left(\frac11 - \frac12\right)}_{k=1}
+   + \underbrace{\left(\frac12 - \frac13\right)}_{k=2}
+   + \underbrace{\left(\frac13 - \frac14\right)}_{k=3}
+   + \cdots
+   + \underbrace{\left(\frac1{n-1} - \frac1n\right)}_{k=n-1}
+   + \underbrace{\left(\frac1n - \frac1{n+1}\right)}_{k=n} .
+\end{aligned}
+\]
+
+\textbf{Cancel.} Each of $\frac12, \frac13, \dots, \frac1n$ appears exactly
+twice: once with a minus sign (as the second part of one bracket) and once
+with a plus sign (as the first part of the next bracket). For example,
+$-\frac12$ from $k=1$ cancels $+\frac12$ from $k=2$, and $-\frac1n$ from
+$k=n-1$ cancels $+\frac1n$ from $k=n$. The only terms that never get a
+partner are the very first, $+\frac11$, and the very last, $-\frac1{n+1}$.
+
+\textbf{Finish.} Therefore
+\[
+  \sum_{k=1}^{n}\frac{1}{k(k+1)} = \frac11 - \frac1{n+1} = 1 - \frac{1}{n+1}.
+  \qquad\checkmark
+\]
+
+\textbf{Check with $n=2$.} Directly:
+$\frac{1}{1\cdot2}+\frac{1}{2\cdot3} = \frac12+\frac16 = \frac23$. Formula:
+$1-\frac13 = \frac23$. They agree.
+
+\textbf{Connection to HW Problem 1.} The same collapse happens in
+$(x_{n+1}-x_n)+(x_n-x_{n-1})+\cdots+(x_{N+1}-x_N)$: only the first term of
+the first bracket and the last term of the last bracket survive.
+
+\vspace{1cm}
+
+% ============================================================
+\newpage
+\section{Squeeze, divide, and kill the leftovers \quad (for HW Problem 2)}
+
+\textbf{Tools.}
+\begin{itemize}
+  \item If $C$ is a fixed number and $y_n\to\infty$, then $C/y_n\to 0$.
+  \item If you need two conditions ``for $n\ge N_1$'' and ``for $n\ge N_2$'',
+        take $n\ge\max(N_1,N_2)$.
+\end{itemize}
+
+\subsection*{Worked example}
+\textbf{Prove:} if $2n-7 < x_n < 2n+4$ for all $n\ge 10$, then
+$\displaystyle\lim_{n\to\infty}\frac{x_n}{n}=2$.
+
+\emph{Solution.} For $n\ge 10$ we have $n>0$, so dividing by $n$ keeps the
+inequalities:
+\[
+  2-\frac{7}{n} < \frac{x_n}{n} < 2+\frac{4}{n}.
+\]
+Subtract $2$:
+\[
+  -\frac7n < \frac{x_n}{n}-2 < \frac4n,
+  \qquad\text{so}\qquad
+  \left|\frac{x_n}{n}-2\right| < \frac7n .
+\]
+The leftover terms $\frac7n$ and $\frac4n$ come from \emph{fixed} constants
+divided by something going to $\infty$, so they can be made small.
+
+Let $\varepsilon>0$. Choose $N_2\in\mathbb{N}$ with $N_2>\frac{7}{\varepsilon}$
+(Archimedean property), and let $M=\max(10,N_2)$. For $n\ge M$, both the
+squeeze (needs $n\ge10$) and $\frac7n<\varepsilon$ (needs $n\ge N_2$) hold, so
+\[
+  \left|\frac{x_n}{n}-2\right| < \frac7n \le \frac{7}{M} < \varepsilon .
+\]
+Hence $x_n/n\to 2$. \hfill$\checkmark$
+
+\subsection*{Practice 2A}
+\textbf{Prove from the definition:} if $C\in\mathbb{R}$ is fixed and
+$y_n\to\infty$, then $C/y_n\to 0$.
+
+\emph{Hint:} you want $|C|/y_n<\varepsilon$, i.e.\ $y_n > |C|/\varepsilon$.
+Which definition gives you that? (Handle $C=0$ separately, or note it's trivial.)
+
+\vspace{3cm}
+
+\subsection*{Practice 2B}
+\textbf{Prove:} if $n^2-5n < x_n < n^2+3$ for all $n\ge1$, then
+$\displaystyle\lim_{n\to\infty}\frac{x_n}{n^2}=1$.
+
+\emph{Hint:} divide by $n^2$, subtract $1$, and look at which leftover is
+bigger in absolute value.
+
+\vspace{3cm}
+
+\subsection*{Practice 2C}
+Let $y_n\to\infty$, $y_n>0$, and fix numbers $a,b$. \textbf{Prove:} if
+$(3-\varepsilon)\,y_n + a < x_n < (3+\varepsilon)\,y_n + b$ for all large $n$,
+then for all large $n$,
+\[
+  3-2\varepsilon < \frac{x_n}{y_n} < 3+2\varepsilon .
+\]
+\emph{Hint:} divide by $y_n$; then use Practice 2A to make $a/y_n$ and
+$b/y_n$ smaller than $\varepsilon$ in absolute value.
+
+\vspace{3cm}
+
+% ============================================================
+\newpage
+\section{Using a theorem by choosing $x_n$ and $y_n$ \quad (for HW Problem 3)}
+
+\textbf{Tool (HW Problem 2, Stolz--Ces\`aro).} If $(y_n)$ is increasing,
+$y_n\to\infty$, and $\dfrac{x_{n+1}-x_n}{y_{n+1}-y_n}\to L$, then
+$\dfrac{x_n}{y_n}\to L$.
+
+\subsection*{Worked example}
+\textbf{Prove:} $\displaystyle\lim_{n\to\infty}\frac{1+2+\cdots+n}{n^2}=\frac12$.
+
+\emph{Solution.} Let $x_n = 1+2+\cdots+n$ and $y_n=n^2$.
+\begin{itemize}
+  \item $(y_n)$ is increasing since $(n+1)^2 > n^2$, and $y_n=n^2\to\infty$.
+  \item $x_{n+1}-x_n = n+1$ (only the last term survives), and
+        $y_{n+1}-y_n = (n+1)^2-n^2 = 2n+1$.
+  \item So $\dfrac{x_{n+1}-x_n}{y_{n+1}-y_n} = \dfrac{n+1}{2n+1} \to \dfrac12$
+        (divide top and bottom by $n$).
+\end{itemize}
+By Stolz--Ces\`aro, $\dfrac{x_n}{y_n}\to\dfrac12$. \hfill$\checkmark$
+
+\subsection*{Practice 3A}
+\textbf{Prove:}
+$\displaystyle\lim_{n\to\infty}\frac{1^2+2^2+\cdots+n^2}{n^3}=\frac13$.
+
+\emph{Hint:} $(n+1)^3-n^3 = 3n^2+3n+1$.
+
+\vspace{3cm}
+
+\subsection*{Practice 3B}
+\textbf{Prove:} if $b_n\to 5$, then
+$\displaystyle\lim_{n\to\infty}\frac{b_1+b_2+\cdots+b_n}{n^2}=0$.
+
+\emph{Hint:} what are $x_{n+1}-x_n$ and $y_{n+1}-y_n$ now? Does a
+convergent sequence divided by something going to $\infty$ go to $0$?
+
+\vspace{3cm}
+
+% ============================================================
+\newpage
+\section{Monotone and bounded recursive sequences \quad (for HW Problem 4)}
+
+\textbf{Tools.}
+\begin{itemize}
+  \item Monotone Convergence Theorem: a monotone, bounded sequence converges.
+  \item Induction: prove a base case, then ``true for $n$ $\Rightarrow$ true for $n+1$''.
+  \item If $a_n\to a$ and $a_{n+1}=f(a_n)$ with $f$ continuous at $a$, then
+        $a=f(a)$ (since $a_{n+1}\to a$ too).
+\end{itemize}
+
+\subsection*{Worked example}
+Let $a_1=2$ and $a_{n+1}=4-\dfrac{3}{a_n}$. Show $(a_n)$ converges and find
+the limit.
+
+\emph{Scratch work.} $a_2 = 4-\tfrac32 = 2.5$, \ $a_3 = 4-\tfrac{3}{2.5}=2.8$,
+\ $a_4\approx 2.93$. Guess: increasing, and stays between $1$ and $3$.
+
+\textbf{Bounded: $1<a_n<3$ for all $n$.} Base case: $a_1=2$. \ Inductive step:
+assume $1<a_n<3$. Then $\tfrac13<\tfrac1{a_n}<1$, so $1<\tfrac3{a_n}<3$, so
+\[
+  4-3 < 4-\frac3{a_n} < 4-1,\qquad\text{i.e.}\qquad 1<a_{n+1}<3 .
+\]
+
+\textbf{Increasing.} Compute directly:
+\[
+  a_{n+1}-a_n = 4-\frac3{a_n}-a_n = \frac{4a_n-3-a_n^2}{a_n}
+  = -\frac{(a_n-1)(a_n-3)}{a_n}.
+\]
+Since $1<a_n<3$: $a_n-1>0$, $a_n-3<0$, $a_n>0$, so the fraction is negative
+and $a_{n+1}-a_n>0$.
+
+\textbf{Converges.} Increasing and bounded, so by the Monotone Convergence
+Theorem $a_n\to a$ for some $a$. Since $a_n\ge a_1=2$, we get $a\ge2$; in
+particular $a\neq0$.
+
+\textbf{The limit.} Let $n\to\infty$ in $a_{n+1}=4-\frac3{a_n}$:
+\[
+  a = 4-\frac3a \;\Longrightarrow\; a^2-4a+3=0 \;\Longrightarrow\; a=1 \text{ or } a=3 .
+\]
+Since $a\ge 2$, $a=3$. \hfill$\checkmark$
+
+\subsection*{Practice 4A}
+Same recursion, different start: $a_1=5$, $a_{n+1}=4-\dfrac3{a_n}$.
+Show $(a_n)$ converges and find the limit.
+
+\emph{Hint:} compute $a_2,a_3$ first. Is it still increasing? What bound do you
+expect now?
+
+\vspace{4cm}
+
+\subsection*{Practice 4B}
+Let $a_1=1$ and $a_{n+1}=\sqrt{2+a_n}$. Show $(a_n)$ converges and find the
+limit.
+
+\emph{Hint:} guess the bound $a_n<2$. For monotone, compare $a_{n+1}^2$ and
+$a_n^2$, or use induction: if $a_n<a_{n+1}$, is $a_{n+1}<a_{n+2}$?
+
+\vspace{4cm}
+
+\end{document}
