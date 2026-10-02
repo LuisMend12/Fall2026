@@ -207,6 +207,17 @@ def detection(pairs, is_fake, scores):
 
 
 # ----------------------------------------------------------------------------- main
+def keep_awake():
+    """Stop Windows from idle-sleeping while this process runs (no-op elsewhere)."""
+    try:
+        import ctypes
+
+        ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
+        ctypes.windll.kernel32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+    except (AttributeError, OSError):
+        pass
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--splits", type=int, default=3)
@@ -214,6 +225,7 @@ def main():
     ap.add_argument("--budgets", type=float, nargs="+", default=[0.0, 0.05, 0.10, 0.20, 0.40])
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
+    keep_awake()
     t0 = time.time()
 
     x, y, und, texts, masks = load_wikics()

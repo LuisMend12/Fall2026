@@ -1,0 +1,123 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=2pt,topsep=4pt}
+
+\definecolor{accent}{HTML}{B4540A}
+\newcommand{\key}[1]{\par\smallskip\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\textbf{Key point.} #1}}\par\smallskip}
+
+\IfFileExists{baselines/results/tables.tex}{\input{baselines/results/tables.tex}}{%
+  \newcommand{\nodetable}{\emph{(run \texttt{python baselines/make\_tables.py})}}%
+  \newcommand{\aurocTable}{\nodetable}\newcommand{\auprcTable}{\nodetable}%
+  \newcommand{\nruns}{0}\newcommand{\nsplits}{0}}
+
+\title{Which Edges Can a GNN Trust?\\[4pt]
+\large Baseline results on WikiCS}
+\author{Luis Mendez \quad CSE5825 Bayesian Machine Learning}
+\date{October 2, 2026}
+
+\begin{document}
+\maketitle
+
+%================================================================
+\section{Summary}
+%SUMMARY%
+
+%================================================================
+\section{Setup}
+
+\paragraph{Data.} WikiCS \cite{wikics}: 11{,}701 Wikipedia articles on computer science,
+215{,}603 undirected hyperlink edges, and 10 topic labels. Each node has its raw article text
+(title plus tokens) and a 300-dimensional averaged GloVe feature vector. Clean edge homophily
+(the share of edges joining two nodes with the same label) is 0.654. I use the first
+\nsplits{} of the 20 standard train/validation splits (580 training nodes each) and the
+standard test set of 5{,}847 nodes. The data was loaded from the original JSON release.
+
+\paragraph{Attack.} Fake edges are injected between nodes whose texts look related but whose
+labels differ. For every node I take its 60 nearest neighbours by SBERT cosine similarity
+(\texttt{all-MiniLM-L6-v2} on title plus the first 256 tokens) and keep the non-adjacent pairs
+with different labels. This gives 201{,}981 candidate pairs. An attack at budget $b$ samples
+$b \cdot 215{,}603$ of them uniformly, for $b \in \{5, 10, 20, 40\}\%$. As a contrast, a
+\emph{random} attack at $b = 20\%$ samples non-edges uniformly, ignoring text and labels.
+Because I inject the fake edges myself, every edge has a known ground-truth label (real or
+fake).
+
+\paragraph{Models.} A 2-layer GCN \cite{gcn} and a 2-layer MLP that ignores edges, both with
+64 hidden units, dropout 0.5, Adam (learning rate 0.01, weight decay $5\times10^{-4}$), up to
+300 epochs, and early stopping on validation loss (patience 50). Node features are the GloVe
+vectors. The GCN at budget 0\% is also the \emph{oracle defense}: it is what any method that
+removed exactly the fake edges would achieve.
+
+\paragraph{Node metrics.} Test accuracy, negative log-likelihood (NLL), expected calibration
+error (ECE, 15 bins) and Brier score. I also split test accuracy by whether a node is an
+endpoint of at least one fake edge (\emph{touched}) or not.
+
+\paragraph{Edge-detection baselines.} Each method gives every edge of the attacked graph a
+suspicion score, higher meaning more likely fake. Scores are compared with the ground truth by
+AUROC and AUPRC, with fake edges as the positive class.
+\begin{itemize}
+  \item \textbf{Text only:} $1 - \cos$ of the two endpoints' SBERT embeddings, and the same for
+        their GloVe features. These stand in for the text prior until the LLM prior is added.
+  \item \textbf{Structure only:} $1 -$ Jaccard overlap of the endpoints' neighbourhoods, and
+        the Jensen--Shannon divergence between the GCN's predicted class distributions at the
+        two endpoints (the GCN trained on the attacked graph).
+  \item \textbf{Naive mix:} the unweighted average of the rank-normalised text and structure
+        scores. This is the ``hand-made rule'' that the Bayesian model should beat.
+\end{itemize}
+
+%================================================================
+\section{Results}
+
+\subsection{Node classification}
+
+\begin{table}[h]
+\centering\small
+\resizebox{\linewidth}{!}{\nodetable}
+\caption{Test-set node classification on WikiCS, mean\,$\pm$\,std over \nsplits{} splits.
+``Touched'' nodes are endpoints of at least one fake edge.}
+\label{tab:node}
+\end{table}
+
+%NODE-DISCUSSION%
+
+\subsection{Fake-edge detection}
+
+\begin{table}[h]
+\centering\small
+\aurocTable
+\caption{Fake-edge detection AUROC (fake = positive; 0.5 = chance, below 0.5 = ranks fakes
+as \emph{more} trustworthy). Mean over \nsplits{} splits; best per row in bold.}
+\label{tab:auroc}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\auprcTable
+\caption{Fake-edge detection AUPRC. The chance level equals the share of fake edges:
+0.048, 0.091, 0.167 and 0.286 at budgets 5, 10, 20 and 40\%.}
+\label{tab:auprc}
+\end{table}
+
+%DETECT-DISCUSSION%
+
+%================================================================
+\section{What this means for the hypotheses}
+%HYPOTHESES%
+
+%================================================================
+\section{Limitations and next steps}
+%NEXT%
+
+\begin{thebibliography}{9}
+\bibitem{wikics} P.~Mernyei and C.~Cangea. Wiki-CS: A Wikipedia-based benchmark for graph
+  neural networks. \emph{ICML Workshop on Graph Representation Learning}, 2020.
+\bibitem{gcn} T.~N.~Kipf and M.~Welling. Semi-supervised classification with graph
+  convolutional networks. \emph{ICLR}, 2017.
+\end{thebibliography}
+
+\end{document}
